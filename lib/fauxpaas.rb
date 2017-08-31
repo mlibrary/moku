@@ -1,5 +1,5 @@
 require "fauxpaas/version"
+require "fauxpaas/cli"
 
 module Fauxpaas
-  # Your code goes here...
 end

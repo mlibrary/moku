@@ -1,5 +1,7 @@
 require "thor"
 
-class CLI < Thor
-  
+module Fauxpaas
+  class CLI < Thor
+
+  end
 end
