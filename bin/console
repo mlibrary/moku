@@ -3,4 +3,4 @@
 require "bundler/setup"
 require "fauxpaas"
 
-Fauxpaas::CLI.start(ARGV)
+Fauxpaas::CLI::Main.start(ARGV)
