@@ -1,0 +1,12 @@
+/.idea/
+/.bundle/
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/doc/
+/docs/_book/
+/pkg/
+/spec/reports/
+/tmp/
+tags
