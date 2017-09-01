@@ -3,23 +3,34 @@ require "thor"
 module Fauxpaas
   module CLI
 
-    class Config < Thor
+    class Var < Thor
       desc "list <named_instance>", "List out the config"
       def list(named_instance); end
 
-      desc "set <named_instance> <key> <value>", "Set the key to value on subsequent deploys"
-      def set(named_instance, key, value); end
+      desc "add <named_instance> <key> <value>",
+        "Add a variable on subsequent deploys"
+      def add(named_instance, key, value); end
 
-      desc "unset <named_instance> <key>", "Unset the key to value on subsequent deploys"
-      def unset(named_instance, key); end
+      desc "remove <named_instance> <key>",
+        "Cease installing the key to value on subsequent deploys"
+      def remove(named_instance, key); end
+    end
 
-      desc "upload <named_instance> <app_path> <local_path>",
+    class File < Thor
+      desc "list <named_instance>", "List the files"
+      def list(named_instance); end
+
+      desc "add <named_instance> <app_path> <local_path>",
         "Add a file to be installed to <app_path> on subsequent deploys"
-      def upload(named_instance, destpath, file); end
+      def add(named_instance, app_path, local_path); end
 
       desc "remove <named_instance> <app_path>",
         "Cease installing the file to <app_path> on subsequent deploys"
-      def remove(named_instance, destpath); end
+      def remove(named_instance, app_path); end
+
+      desc "move <named_instance> <app_path> <new_app_path>",
+        "Install the file at <app_path> to <new_app_path> instead on subsequent deploys"
+      def move(named_isntance, app_path, new_app_path); end
     end
 
     class Log < Thor
@@ -53,8 +64,11 @@ module Fauxpaas
       desc "rollback <named_instance> <cache>", "Rollback to a cached deployment"
       def rollback(named_instance, cache); end
 
-      desc "config SUBCOMMAND", "View and manage config"
-      subcommand "config", Config
+      desc "var SUBCOMMAND", "View and manage configuration variables"
+      subcommand "var", Var
+
+      desc "file SUBCOMMAND", "View and manage configuration files"
+      subcommand "file", File
 
       desc "log SUBCOMMAND", "View and manage logs"
       subcommand "log", Log
