@@ -12,13 +12,18 @@ module Fauxpaas
       @app, @stage = name.split("-")
     end
 
-    def var_file
-      VarFile.new(path + "fauxpaas.yml")
+    def config_files
+      ConfigFiles.new(path)
     end
 
     def path
       Fauxpaas.instance_root + app + stage
     end
+
+    def var_file
+      VarFile.new(path + "fauxpaas.yml")
+    end
+
 
   end
 
