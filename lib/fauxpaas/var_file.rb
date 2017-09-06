@@ -29,7 +29,7 @@ module Fauxpaas
 
 
     private
-    attr_reader :contents, :fs
+    attr_reader :fs
 
     def contents
       @contents ||= if fs.exist?(path)
