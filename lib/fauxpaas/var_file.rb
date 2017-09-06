@@ -3,6 +3,7 @@ require "yaml"
 module Fauxpaas
 
   class VarFile
+    attr_reader :path
 
     def initialize(path, fs = Filesystem.new)
       @path = path
@@ -22,12 +23,13 @@ module Fauxpaas
     end
 
     def write
+      # this needs to build the directories...maybe
       fs.write(contents.to_yaml)
     end
 
 
     private
-    attr_reader :contents, :path, :fs
+    attr_reader :contents, :fs
 
     def contents
       @contents ||= if fs.exist?(path)
