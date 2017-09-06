@@ -16,17 +16,13 @@ module Fauxpaas
 
     def add(key, value)
       contents[key.to_s] = value
+      fs.write(path, contents.to_yaml)
     end
 
     def remove(key)
       contents.delete(key.to_s)
+      fs.write(path, contents.to_yaml)
     end
-
-    def write
-      # this needs to build the directories...maybe
-      fs.write(contents.to_yaml)
-    end
-
 
     private
     attr_reader :fs

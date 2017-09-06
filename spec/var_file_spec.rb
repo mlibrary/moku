@@ -35,23 +35,36 @@ module Fauxpaas
     describe "#add" do
       let(:key) { "zip" }
       let(:value) { ["a","b","c"] }
+      let(:new_contents) { contents.merge(key => value) }
       it "adds the variable" do
         var_file.add(key, value)
-        expect(var_file.list).to eql(contents.merge({ key => value}))
+        expect(var_file.list).to eql(new_contents)
+      end
+      it "writes the file" do
+        var_file.add(key, value)
+        expect(fs).to have_received(:write).with(var_file.path, new_contents.to_yaml)
       end
     end
 
     describe "#remove" do
       let(:key) { contents.keys.first }
+      let(:new_contents) do
+        new_contents = contents.dup
+        new_contents.delete(key)
+        new_contents
+      end
       it "removes the variable if it exists" do
         var_file.remove(key)
-        contents.delete(key)
-        expect(var_file.list).to eql(contents)
+        expect(var_file.list).to eql(new_contents)
       end
       it "does not error if the variable is new" do
         expect{
           described_class.new(new_path, fs).remove("test")
         }.to_not raise_error
+      end
+      it "writes the file" do
+        var_file.remove(key)
+        expect(fs).to have_received(:write).with(var_file.path, new_contents.to_yaml)
       end
     end
 
