@@ -12,3 +12,5 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+Fauxpaas.instance_root = Pathname.new(__FILE__).dirname + "fixtures"
