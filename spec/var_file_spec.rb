@@ -16,8 +16,8 @@ module Fauxpaas
       }
     end
     before(:each) do
-      allow(fs).to receive(:exist?).with(existing_path).and_return true
-      allow(fs).to receive(:exist?).with(new_path).and_return false
+      allow(fs).to receive(:exists?).with(existing_path).and_return true
+      allow(fs).to receive(:exists?).with(new_path).and_return false
       allow(fs).to receive(:read).with(existing_path).and_return(contents.to_yaml)
       allow(fs).to receive(:write)
     end
@@ -29,6 +29,12 @@ module Fauxpaas
       end
       it "returns {} for a new file" do
         expect(described_class.new(new_path, fs).list).to eql({})
+      end
+    end
+
+    describe "#fetch" do
+      it "returns the element" do
+        expect(var_file.fetch(contents.keys.first)).to eql(contents[contents.keys.first])
       end
     end
 
@@ -65,6 +71,12 @@ module Fauxpaas
       it "writes the file" do
         var_file.remove(key)
         expect(fs).to have_received(:write).with(var_file.path, new_contents.to_yaml)
+      end
+      it "is idempotent" do
+        expect{
+          var_file.remove(key)
+          var_file.remove(key)
+        }.to_not raise_error
       end
     end
 
