@@ -12,10 +12,6 @@ module Fauxpaas
       @app, @stage = name.split("-")
     end
 
-    def config_files
-      ConfigFiles.new(path)
-    end
-
     def path
       Fauxpaas.instance_root + app + stage
     end
