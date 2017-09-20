@@ -1,5 +1,4 @@
 require "pathname"
-require "fauxpaas/var_file"
 
 module Fauxpaas
 
@@ -15,11 +14,6 @@ module Fauxpaas
     def path
       Fauxpaas.instance_root + app + stage
     end
-
-    def var_file
-      VarFile.new(path + "fauxpaas.yml")
-    end
-
 
   end
 
