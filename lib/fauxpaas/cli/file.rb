@@ -8,8 +8,19 @@ module Fauxpaas
       desc "list <named_instance>", "List the files"
       def list(named_instance)
         #TODO: authz
-        Instance.new(named_instance).config_files
-          .list
+        #TODO: add SHA to params or option
+        History.new(Instance.new(named_instance)).checkout(sha) do |instance|
+          instance.config_files.list
+        end
+      end
+
+      desc "show <named_instance> <filename>", "Show the contents of a file"
+      def show(named_instance, app_path)
+        #TODO: authz
+        #TODO: add SHA to params or option
+        History.new(Instance.new(named_instance)).checkout(sha) do |instance|
+          instance.config_files.read(app_path)
+        end
       end
 
       desc "add <named_instance> <app_path>",

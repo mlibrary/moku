@@ -1,4 +1,5 @@
 require "thor"
+require "fauxpaas"
 require "fauxpaas/cli/file"
 require "fauxpaas/cli/log"
 require "fauxpaas/cli/var"
@@ -15,6 +16,12 @@ module Fauxpaas
 
       desc "rollback <named_instance> <cache>", "Rollback to a cached deployment"
       def rollback(named_instance, cache); end
+
+      desc "history <named_instance>", "Show deploy history"
+      def history(named_instance)
+        #TODO: Authz
+        History.new(Instance.new(named_instance)).list
+      end
 
       desc "var SUBCOMMAND", "View and manage configuration variables"
       subcommand "var", Var

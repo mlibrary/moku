@@ -8,8 +8,10 @@ module Fauxpaas
       desc "list <named_instance>", "List out the config"
       def list(named_instance)
         #TODO: authz
-        Instance.new(named_instance).var_file
-          .list
+        #TODO: add SHA to params or option
+        History.new(Instance.new(named_instance)).checkout(sha) do |instance|
+          instance.var_file.list
+        end
       end
 
       desc "add <named_instance> <key> <value>",
