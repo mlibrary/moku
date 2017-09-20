@@ -1,7 +1,4 @@
-require "fauxpaas/cli/file"
-require "fauxpaas/cli/log"
 require "fauxpaas/cli/main"
-require "fauxpaas/cli/var"
 
 module Fauxpaas
   module CLI
