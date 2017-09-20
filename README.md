@@ -1,35 +1,159 @@
-# Fauxpaas
+# Fauxpaas Design
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/fauxpaas`. To experiment with that code, run `bin/console` for an interactive prompt.
+This page contains a general overview of how the software is designed.  It 
+is not a guide for how to use it--that comes later.
 
-TODO: Delete this and the text above, and describe your gem
+To begin, this project is implemented as a command-line utility. Many commands
+modify or query the program's state. It has no notion of sessions.  
 
-## Installation
 
-Add this line to your application's Gemfile:
+## Named Instance
 
-```ruby
-gem 'fauxpaas'
+The application primarily interacts with what we are calling "named instances". A named instance
+is a specific application + environment name to be deployed. Most applications will have multiple
+named instances, e.g. myapp-production and myapp-testing. It is generally assumed that the source
+code for all of an app's named instances is the same (albeit possibly at different versions), while
+their configuration differs. 
+
+Internally, they are represented by objects of the Instance class in code, and as a folder on disk
+otherwise. We often shorten this name to simply "instance".
+
+
+## Parts
+
+### Source Code
+
+The code being deployed. This is supplied from an external git repository. The location 
+is set in the deployment configuration. This is accessed via an ssh key that has been 
+granted access to the repository; for most repos, this will be an organization-wide key.
+
+### Developer Configuration
+
+Configuration set by developers; includes everything that is not infrastructure configuration.
+This is supplied from an external git repository that is shared by all instances; a given
+instance's dev config is on a shared branch. Developers manage their own access, while the
+application has read-only access to all branches.  The branch matches the instance's name.
+
+### Infrastructure Configuration
+
+Configuration set by infrastructure administrators, such as application user IDs, database
+connection strings, and connection information for other managed services. This is kept
+separate from other configuration so that it can change independently. 
+
+Because it is useful to know if infrastructure changed, at least a log of when changes 
+occurred will be available to developers.
+
+### Deployment Configuration
+
+A configuration file that drives the deployment machinery. It includes config that is tied
+to the infrastructure that is needed at deploy-time instead of runtime, e.g. the servers
+where the instance will be deployed.
+
+
+## Folder Structure
+
+```
+faux
+ |- permissions.yml             global whitelist
+ |- instances
+ |  |- myapp                    app dir
+ |  |  |- permissions.yml       app whitelist
+ |  |  |- prod                  stage dir
+ |  |  |  |- permissions.yml    stage whitelist
+ |  |  |  |- config.yml         configuration of the deployment process             
+ |  |  |  |- history.log        release history             
+ |  |  |- test                  we call myapp-test a "named instance"
+ |  |- yourapp
+ |- infrastructure (git)
+ |  |- myapp-prod.yml           infrastructure config
+ |  |- myapp-test.yml
+faux-app                        this code
 ```
 
-And then execute:
+## Authorization and Authentication
 
-    $ bundle
+This project assumes that an underprivileged user ("the user") elevated its privileges to become
+a privileged, non-root user. This latter user is the application user, and all commands are run
+with its identity. The software must be able to access the real user's username.
 
-Or install it yourself as:
+From there, the CLI verifies that the user is allowed to run the given command on the given
+target. It does so by instantiating the ApplicationPolicy with the user object and the target
+object, and asking the policy if the command is allowed.
 
-    $ gem install fauxpaas
+The ApplicationPolicy itself will look in the following locations for files named `permissions.yml`.
+The order does not matter.
 
-## Usage
+* The folder of the named instance
+* The folder of the app to which the named instance belongs
+* The top-level folder
 
-TODO: Write usage instructions here
+We understand the following permissions:
 
-## Development
+| Permission | Description |
+| --- | --- |
+| view | View the configuration of the current and past deployments. |
+| log | View the instance's application and system logs. |
+| deploy | Deploy and rollback the application. Implies view. | 
+| all | Implies all other permissions. |
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+The ApplicationPolicy, and thus the authorization mechanism, is not accessed beyond this
+point.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-## Contributing
+## Releases
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fauxpaas.
+The result of a successful deploy operation is the creation of a new *release*. Strictly speaking,
+a release is defined by the following information:
+
+* the user that deployed it
+* Repo+SHA of the source code
+* Repo+SHA of the developer configuration
+* ~SHA of the infrastructure configuration _(hidden)_~
+* SHA of the deployment machinery _(hidden)_
+
+Note that this does not include the infrastructure configuration. That is because the infrastructure
+can change during the course of a release. Provided the application is restarted, developers need
+not be concerned about these changes.  
+
+### Cached Releases
+
+The most recent few releases are kept on the servers to which they were deployed. The active release
+is set by a symlink. This allows for rapid rollback.
+
+
+## Deployment aka Creating a Release
+
+The process is as follows:
+
+1. Create a new, empty cache
+1. Copy the source code
+1. Copy the developer configuration
+1. Copy the infrastructure configuration
+1. Run before_build hooks
+1. Build the application
+1. Run after_build hooks
+1. Set this release as the current release
+1. Log the successful deployment
+1. Run after_release hooks
+
+Should any step fail, the process ends and the subsequent steps are skipped.
+
+_Note: Failed deployments still consume one of the cache slots._
+
+
+## History
+
+We keep a log of every successful deployment.
+
+> TIMESTAMP: USER deployed SRC CONFIG with DEPLOY
+
+* TIMESTAMP: When deployment process completed
+* USER: The user who initiated it
+* SRC: SHA of the source code deployed
+* CONFIG: SHA of the developer configuration deployed
+* DEPLOY: SHA of the deployment configuration used
+ 
+
+
+
+
