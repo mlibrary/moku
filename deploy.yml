@@ -1,0 +1,11 @@
+# We've intentionally kept knowledge of how these fields are related out
+# of cap, so expect duplication here.
+
+instance: myapp-mystage
+source:
+  repo: git@github.com:mlibrary/myapp.git
+  branch: master
+release_dir: /path/to/where/we/put/things/myapp-mystage
+deploy_user: myapp-mystage
+rails_env: production
+assets_prefix: assets

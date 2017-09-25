@@ -153,7 +153,15 @@ We keep a log of every successful deployment.
 * CONFIG: SHA of the developer configuration deployed
 * DEPLOY: SHA of the deployment configuration used
  
+## Developer Config Repo Structure
 
+```
+/
+ |- after_build.yml             contains after_build commands
+ |- after_release.yml           contains after_release commands
+ |- yourdir
+ |  |- yourfile.cfg             will be installed to yourdir/yourfile.cfg
+ |- yourotherfile.txt           will be installed to /yourotherfile.txt
+```
 
-
-
+The files `after_build.yml` and `after_release.yml` are not installed with the application.
