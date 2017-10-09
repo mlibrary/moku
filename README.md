@@ -1,10 +1,10 @@
 # Fauxpaas Design
 
-This page contains a general overview of how the software is designed.  It 
+This page contains a general overview of how the software is designed.  It
 is not a guide for how to use it--that comes later.
 
 To begin, this project is implemented as a command-line utility. Many commands
-modify or query the program's state. It has no notion of sessions.  
+modify or query the program's state. It has no notion of sessions.
 
 
 ## Named Instance
@@ -13,7 +13,7 @@ The application primarily interacts with what we are calling "named instances". 
 is a specific application + environment name to be deployed. Most applications will have multiple
 named instances, e.g. myapp-production and myapp-testing. It is generally assumed that the source
 code for all of an app's named instances is the same (albeit possibly at different versions), while
-their configuration differs. 
+their configuration differs.
 
 Internally, they are represented by objects of the Instance class in code, and as a folder on disk
 otherwise. We often shorten this name to simply "instance".
@@ -23,8 +23,8 @@ otherwise. We often shorten this name to simply "instance".
 
 ### Source Code
 
-The code being deployed. This is supplied from an external git repository. The location 
-is set in the deployment configuration. This is accessed via an ssh key that has been 
+The code being deployed. This is supplied from an external git repository. The location
+is set in the deployment configuration. This is accessed via an ssh key that has been
 granted access to the repository; for most repos, this will be an organization-wide key.
 
 ### Developer Configuration
@@ -38,9 +38,9 @@ application has read-only access to all branches.  The branch matches the instan
 
 Configuration set by infrastructure administrators, such as application user IDs, database
 connection strings, and connection information for other managed services. This is kept
-separate from other configuration so that it can change independently. 
+separate from other configuration so that it can change independently.
 
-Because it is useful to know if infrastructure changed, at least a log of when changes 
+Because it is useful to know if infrastructure changed, at least a log of when changes
 occurred will be available to developers.
 
 ### Deployment Configuration
@@ -60,8 +60,8 @@ faux
  |  |  |- permissions.yml       app whitelist
  |  |  |- prod                  stage dir
  |  |  |  |- permissions.yml    stage whitelist
- |  |  |  |- config.yml         configuration of the deployment process             
- |  |  |  |- history.log        release history             
+ |  |  |  |- deploy_config.yml  configuration of the deployment process
+ |  |  |  |- history.log        release history
  |  |  |- test                  we call myapp-test a "named instance"
  |  |- yourapp
  |- infrastructure (git)
@@ -93,7 +93,7 @@ We understand the following permissions:
 | --- | --- |
 | view | View the configuration of the current and past deployments. |
 | log | View the instance's application and system logs. |
-| deploy | Deploy and rollback the application. Implies view. | 
+| deploy | Deploy and rollback the application. Implies view. |
 | all | Implies all other permissions. |
 
 The ApplicationPolicy, and thus the authorization mechanism, is not accessed beyond this
@@ -113,7 +113,7 @@ a release is defined by the following information:
 
 Note that this does not include the infrastructure configuration. That is because the infrastructure
 can change during the course of a release. Provided the application is restarted, developers need
-not be concerned about these changes.  
+not be concerned about these changes.
 
 ### Cached Releases
 
@@ -152,7 +152,7 @@ We keep a log of every successful deployment.
 * SRC: SHA of the source code deployed
 * CONFIG: SHA of the developer configuration deployed
 * DEPLOY: SHA of the deployment configuration used
- 
+
 ## Developer Config Repo Structure
 
 ```
