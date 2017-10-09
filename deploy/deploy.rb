@@ -4,18 +4,20 @@ lock "3.9.1"
 
 DEPLOY_CONF_VAR = "FAUXPAAS_DEPLOY_CONFIG_PATH"
 
-set :deployconf, ->{ 
+set :deployconf, ->{
   raise ArgumentError, "Please set #{DEPLOY_CONF_VAR}" unless ENV[DEPLOY_CONF_VAR]
-  YAML.load_file(ENV[DEPLOY_CONF_VAR])  
+  YAML.load_file(ENV[DEPLOY_CONF_VAR])
 }
 
-set :application, ->{ fetch(:deployconf)["instance"] }
-set :repo_url, ->{ fetch(:deployconf)["source"]["repo"] }
-set :branch, ->{ fetch(:deployconf)["source"]["branch"] }
-set :deploy_to, ->{ fetch(:deployconf)["release_dir"] }
+set :instance, ->{ Fauxpaas::Instance.new(fetch(:deployconf)["instance"]) }
+
+set :application, ->{ fetch(:instance).name }
+set :repo_url, ->{ fetch(:instance).deployconf.src_repo_url }
+set :branch, ->{ fetch(:instance).deployconf.src_branch }
+set :deploy_to, ->{ fetch(:instance).deployconf.release_root }
 
 set :keep_releases, 5
-set :local_user, ->{ fetch(:deployconf)["deploy_user"] }
+set :local_user, ->{ fetch(:instance).deployconf.deploy_user }
 set :pty, false
 
 # We only link files that would be non-sensical to be release-specific.
@@ -44,18 +46,17 @@ set :rbenv_prefix, ->{"RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:r
 set :rbenv_roles, :all
 
 # Configure capistrano-rails
-set :rails_env, ->{ fetch(:deployconf)["rails_env"] }
+set :rails_env, ->{ fetch(:instance).deployconf.rails_env }
 set :migration_role, :app                                     # default: :db, but :app is recommended
 set :migration_servers, ->{ primary(fetch(:migration_role)) } # this is default
 set :conditionally_migrate, false                             # this is default
 set :assets_roles, [:web]                                     # this is default
-set :assets_prefix, ->{ fetch(:deployconf)["assets_prefix"] } # default: assets
+set :assets_prefix, ->{ fetch(:instance).deployconf.assets.prefix } # default: assets
 set :normalize_asset_timestamps, %w{public/images public/javascripts public/stylesheets}
 set :keep_assets, 2                                           # default: nil (disabled)
 
 # Setup the other crap we do
 
-set :instance, ->{ Fauxpaas::Instance.new(fetch(:deployconf)["instance"]) }
 
 namespace :fauxpaas do
   namespace :devconf do
