@@ -4,7 +4,7 @@ set :ssh_options, {
   user: "fauxpaas",
   keys: %w(our_key_here),
   forward_agent: false,
-  auth_methods: %(publickey)
+  auth_methods: %w(publickey)
 }
 
 set :keep_releases, 5
@@ -13,14 +13,11 @@ set :pty, false
 
 # We only link files that would be non-sensical to be release-specific.
 # This notably does not contain developer configuration.
-append :linked_files, "bundle/config", "infrastructure.yml"
-append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
+append :linked_dirs, "bundle", "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
 # Configure capistrano-bundler
 set :bundle_roles, :all                                         # this is default
 set :bundle_servers, -> { release_roles(fetch(:bundle_roles)) } # this is default
-set :bundle_binstubs, -> { shared_path.join('bin') }            # default: nil
-set :bundle_gemfile, nil                                        # default: nil
 set :bundle_path, -> { shared_path.join('bundle') }             # this is default
 set :bundle_without, %w{development test}.join(' ')             # this is default
 set :bundle_flags, '--deployment --quiet'                       # this is default

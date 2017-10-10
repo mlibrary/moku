@@ -12,3 +12,4 @@
 /log/
 tags
 .rspec_status
+/spec/sandbox/
