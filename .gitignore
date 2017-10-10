@@ -9,5 +9,6 @@
 /pkg/
 /spec/reports/
 /tmp/
+/log/
 tags
 .rspec_status
