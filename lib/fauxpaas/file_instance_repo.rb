@@ -5,35 +5,27 @@ require "yaml"
 module Fauxpaas
 
   class FileInstanceRepo
-    def initialize(fs = Filesystem.new)
+    def initialize(path, fs = Filesystem.new)
+      @path = path
       @fs = fs
     end
 
     def find(name)
-      contents = YAML.load(fs.read(path + name + "deploy_config.yml"))
+      contents = YAML.load(fs.read(path + name))
       Instance.new(
         name: name,
-        source: contents["source"],
-        deploy_user: contents["deploy_user"],
-        release_root: contents["release_root"]
+        deployer_env: contents["deployer_env"]
       )
     end
 
     def save(instance)
       fs.mkdir_p(path + instance.name)
-      fs.write(YAML.dump(
-        name: instance.name,
-        source: instance.source,
-        deploy_user: instance.deploy_user,
-        release_root: instance.release_root
-      ))
+      fs.write(path + instance.name, YAML.dump("deployer_env" => instance.deployer_env))
     end
 
     private
+    attr_reader :path, :fs
 
-    def path
-      Fauxpaas.instance_root + app + stage
-    end
 
   end
 
