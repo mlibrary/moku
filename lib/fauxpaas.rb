@@ -2,23 +2,28 @@ require "fauxpaas/version"
 require "fauxpaas/cli"
 require "fauxpaas/instance"
 require "fauxpaas/file_instance_repo"
+require "fauxpaas/capistrano_deployer"
 
 module Fauxpaas
 
   class << self
-    attr_writer :instance_root
 
     def root
       @root ||= Pathname.new(__FILE__).dirname.parent
     end
 
     def instance_repo
-      @instance_repo ||= FileInstanceRepo.new(root + "deploy" + "instances")
+      @instance_repo ||= FileInstanceRepo.new(instance_root)
     end
 
     def instance_root
-      @instance_root ||= Pathname.new(__FILE__).dirname.parent.parent
+      @instance_root ||= root + "deploy" + "instances"
     end
+
+    def deployer
+      @deployer ||= CapistranoDeployer.new(root + "deploy" + "capfiles")
+    end
+
   end
 
 end
