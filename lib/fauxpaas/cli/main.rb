@@ -9,7 +9,8 @@ module Fauxpaas
       desc "deploy <instance>",
       "Deploys the latest revision of the instance's source"
       def deploy(instance_name)
-        system("cap #{instance_name} deploy")
+        instance = Fauxpaas.instance_repo.find(instance_name)
+        Fauxpaas.deployer.deploy(instance)
       end
     end
 
