@@ -1,4 +1,5 @@
 require "fauxpaas/instance"
+require "fauxpaas/filesystem"
 require "pathname"
 require "yaml"
 
@@ -11,7 +12,7 @@ module Fauxpaas
     end
 
     def find(name)
-      contents = YAML.load(fs.read(path + name))
+      contents = YAML.load(fs.read(path + "#{name}.yml"))
       Instance.new(
         name: name,
         deployer_env: contents["deployer_env"]
@@ -19,8 +20,9 @@ module Fauxpaas
     end
 
     def save(instance)
-      fs.mkdir_p(path + instance.name)
-      fs.write(path + instance.name, YAML.dump("deployer_env" => instance.deployer_env))
+      save_path = path + "#{instance.name}.yml"
+      fs.mkdir_p(save_path)
+      fs.write(save_path, YAML.dump("deployer_env" => instance.deployer_env))
     end
 
     private
