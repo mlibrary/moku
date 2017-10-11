@@ -13,4 +13,3 @@ RSpec.configure do |config|
   end
 end
 
-Fauxpaas.instance_root = Pathname.new(__FILE__).dirname + "fixtures"
