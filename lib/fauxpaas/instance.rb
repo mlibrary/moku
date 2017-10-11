@@ -5,32 +5,23 @@ module Fauxpaas
   # Represents a named instance within fauxpaas, as opposed
   # to installed on destination servers.
   class Instance
-    def initialize(name:, source:, release_root:, deploy_user:)
+    def initialize(name:, deployer_env:)
       @app, @stage = name.split("-")
-      @source = source
-      @release_root = Pathname.new(release_root)
-      @deploy_user = deploy_user
+      @deployer_env = deployer_env
     end
 
-    # Source reference
-    # @return [Source]
-    attr_reader :source
-
-    # Root directory where releases are deployed
-    # I.e. the current release will be release_root/current
-    # @return [Pathname]
-    attr_reader :release_root
-
-    # The user that will be used to run commands on the
-    # remote machines.
-    # @return [String]
-    attr_reader :deploy_user
+    attr_reader :app, :stage, :deployer_env
 
     def name
       "#{app}-#{stage}"
     end
 
-    attr_reader :app, :stage
+    def eql?(other)
+      name == other.name &&
+        deployer_env == other.deployer_env
+    end
+    alias_method :==, :eql?
+
 
   end
 
