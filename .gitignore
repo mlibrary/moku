@@ -13,3 +13,5 @@
 tags
 .rspec_status
 /spec/sandbox/
+*~
+.*.sw?
