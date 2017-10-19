@@ -165,3 +165,12 @@ We keep a log of every successful deployment.
 ```
 
 The files `after_build.yml` and `after_release.yml` are not installed with the application.
+
+# Examples
+
+The included examples can be used for end-to-end testing:
+
+Included sample capistrano configurations:
+
+`bundle exec cap -f deploy/capfiles/norails.capfile test-norails deploy`
+`bundle exec cap -f deploy/capfiles/rails.capfile test-rails deploy`
