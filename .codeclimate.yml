@@ -1,0 +1,41 @@
+plugins:
+  brakeman:
+    enabled: false # not a rails app
+  bundler-audit:
+    enabled: false # gems don't have Gemfile.lock
+  rubocop:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - ruby:
+        - javascript:
+  fixme:
+    enabled: true
+    config:
+      strings:
+        - FIXME
+        - TODO
+
+ratings:
+  paths:
+    - app/**/*
+    - lib/**/*
+
+exclude_paths:
+  - spec/
+  - .bundle/
+  - app/assets/fonts/
+  - app/assets/images/
+  - app/assets/javascripts/vendor/
+  - app/assets/stylesheets/vendor/
+  - bin/rails
+  - bin/rake
+  - db/
+  - doc/
+  - public/
+  - tmp/
+
+
+

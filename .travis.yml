@@ -1,0 +1,43 @@
+# This is an example travis-ci config. It should work out of the box,
+# but you may need to enable it by going to travis-ci.org.
+sudo: false
+language: ruby
+rvm:
+  - 2.4
+  - 2.3
+
+branches:
+  only:
+    - master
+    - develop
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
+env:
+  global:
+    - CC_TEST_REPORTER_ID=your_test_reporter_id_here
+    # See: https://docs.codeclimate.com/v1.0/docs/finding-your-test-coverage-token
+
+before_install: gem install bundler
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+script:
+    - bundle exec rspec
+
+after_script:
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT || true
+
+# You can also setup notifications, for example if you wanted an
+# alert in your team's slack channel if a build fails. You'll have to
+# follow the steps in the travis-ci docs to set up your own:
+# https://docs.travis-ci.com/user/notifications/#Configuring-slack-notifications
+#
+# You should encrypt any tokens you generate.
+# notifications:
+#   slack:
+#     on_success: change
+#     on_failure: always
+#     on_pull_requests: always
