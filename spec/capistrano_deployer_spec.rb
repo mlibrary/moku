@@ -32,6 +32,20 @@ module Fauxpaas
       end
     end
 
+    describe "#rollback" do
+      let(:cache) { "20160614133327" }
+      it "invokes capistrano with ROLLBACK_RELEASE when a cache supplied" do
+        expect(kernel).to receive(:capture3)
+          .with("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy:rollback ROLLBACK_RELEASE=#{cache}")
+        deployer.rollback(instance, cache: cache)
+      end
+      it "invokes capistrano without ROLLBACK_RELEASE when no cache supplied" do
+        expect(kernel).to receive(:capture3)
+          .with("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy:rollback")
+        deployer.rollback(instance)
+      end
+    end
+
     describe "#caches" do
       it "invokes capistrano" do
         expect(kernel).to receive(:capture3)
