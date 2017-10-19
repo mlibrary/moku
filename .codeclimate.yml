@@ -1,6 +1,6 @@
 plugins:
   brakeman:
-    enabled: true
+    enabled: false # not a rails app
   bundler-audit:
     enabled: true
   rubocop:
