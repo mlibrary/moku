@@ -9,10 +9,12 @@ module Fauxpaas
     let(:stage) { "mystage" }
     let(:name) { "#{app}-#{stage}" }
     let(:deployer_env) { double(:deployer_env) }
+    let(:somebranch) { "somebranch" }
     let(:instance) do
       described_class.new(
         name: name,
-        deployer_env: deployer_env
+        deployer_env: deployer_env,
+        default_branch: somebranch
       )
     end
 
@@ -37,6 +39,24 @@ module Fauxpaas
     describe "#deployer_env" do
       it "returns the deployer_env" do
         expect(instance.deployer_env).to eql(deployer_env)
+      end
+    end
+
+    describe "#default_branch" do
+      it "defaults to master" do
+        instance = described_class.new(
+          name: "asdf",
+          deployer_env: deployer_env
+        )
+        expect(instance.default_branch).to eql("master")
+      end
+      it "returns the branch" do
+        expect(instance.default_branch).to eql("somebranch")
+      end
+      it "can be set" do
+        expect { instance.default_branch = "newbranch" }
+          .to change { instance.default_branch }
+          .from(somebranch).to("newbranch")
       end
     end
 

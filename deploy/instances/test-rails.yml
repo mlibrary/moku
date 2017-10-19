@@ -1,2 +1,3 @@
 deployer_env: rails
+default_branch: master
 

@@ -8,22 +8,24 @@ module Fauxpaas
     let(:kernel) { double(:kernel, system: nil) }
 
     let(:instance) do
-      double(:instance, name: "myapp-staging", deployer_env: "rails")
+      double(:instance,
+        name: "myapp-staging",
+        deployer_env: "rails",
+        default_branch: "develop")
     end
 
     let(:deployer) { described_class.new(path, kernel) }
 
     describe "#deploy" do
-      it "invokes capistrano and deploys the master branch" do
+      it "gets the default from the instance" do
         expect(kernel).to receive(:system)
-          .with("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy BRANCH=master")
+          .with("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy BRANCH=#{instance.default_branch}")
         deployer.deploy(instance)
       end
-
-      it "can invoke capistrano with an arbitrary branch/revision" do
+      it "deploys the given branch or commit" do
         expect(kernel).to receive(:system)
-          .with("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy BRANCH=deadbeef")
-        deployer.deploy(instance,branch: 'deadbeef')
+          .with("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy BRANCH=master")
+        deployer.deploy(instance, reference: "master")
       end
     end
 

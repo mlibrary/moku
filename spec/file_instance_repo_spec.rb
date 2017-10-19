@@ -14,11 +14,21 @@ module Fauxpaas
 
     let(:name) { "myapp-mystage" }
     let(:deployer_env) { "something" }
+    let(:default_branch) { "somebranch" }
     let(:instance) do
-      Instance.new(name: name, deployer_env: deployer_env)
+      Instance.new(
+        name: name,
+        deployer_env: deployer_env,
+        default_branch: default_branch
+      )
     end
 
-    let(:contents) { YAML.dump("deployer_env" => deployer_env) }
+    let(:contents) do
+      YAML.dump(
+        "deployer_env" => deployer_env,
+        "default_branch" => default_branch
+      )
+    end
 
     describe "#find" do
       it "returns the corresponding instance" do
