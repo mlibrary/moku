@@ -2,7 +2,7 @@ plugins:
   brakeman:
     enabled: false # not a rails app
   bundler-audit:
-    enabled: true
+    enabled: false # gems don't have Gemfile.lock
   rubocop:
     enabled: true
   duplication:
