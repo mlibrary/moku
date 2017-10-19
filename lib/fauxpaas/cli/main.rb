@@ -35,6 +35,7 @@ module Fauxpaas
 
       option :cache,
         type: :string,
+        aliases: "-c",
         desc: "The specific cache to rollback to. Defaults to the latest." +
           "Use with care."
       desc "rollback <instance> [<cache>]",
