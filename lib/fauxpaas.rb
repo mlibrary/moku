@@ -24,6 +24,10 @@ module Fauxpaas
       @deployer ||= CapistranoDeployer.new(root + "deploy" + "capfiles")
     end
 
+    def split_token
+      @split_token ||= File.read(root + ".split_token").chomp.freeze
+    end
+
   end
 
 end
