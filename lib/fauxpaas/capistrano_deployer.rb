@@ -9,10 +9,10 @@ module Fauxpaas
       @kernel = kernel
     end
 
-    def deploy(instance)
+    def deploy(instance,branch: 'master')
       instance_capfile_path = capfile_path + "#{instance.deployer_env}.capfile"
       stdout, stderr, status = kernel.capture3(
-        "cap -f #{instance_capfile_path} #{instance.name} deploy"
+        "cap -f #{instance_capfile_path} #{instance.name} deploy BRANCH=#{branch}"
       )
       return status
     end
