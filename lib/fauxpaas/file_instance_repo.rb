@@ -15,14 +15,18 @@ module Fauxpaas
       contents = YAML.load(fs.read(path + "#{name}.yml"))
       Instance.new(
         name: name,
-        deployer_env: contents["deployer_env"]
+        deployer_env: contents["deployer_env"],
+        default_branch: contents["default_branch"]
       )
     end
 
     def save(instance)
       save_path = path + "#{instance.name}.yml"
       fs.mkdir_p(save_path)
-      fs.write(save_path, YAML.dump("deployer_env" => instance.deployer_env))
+      fs.write(save_path, YAML.dump(
+        "deployer_env" => instance.deployer_env,
+        "default_branch" => instance.default_branch
+      ))
     end
 
     private

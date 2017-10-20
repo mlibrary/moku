@@ -5,12 +5,14 @@ module Fauxpaas
   # Represents a named instance within fauxpaas, as opposed
   # to installed on destination servers.
   class Instance
-    def initialize(name:, deployer_env:)
+    def initialize(name:, deployer_env:, default_branch: "master")
       @app, @stage = name.split("-")
       @deployer_env = deployer_env
+      @default_branch = default_branch
     end
 
-    attr_reader :app, :stage, :deployer_env
+    attr_reader :app, :stage, :deployer_env, :default_branch
+    attr_writer :default_branch
 
     def name
       "#{app}-#{stage}"
