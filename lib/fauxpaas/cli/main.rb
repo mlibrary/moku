@@ -13,7 +13,7 @@ module Fauxpaas
           "Use default_branch to display or set the default branch."
 
       desc "deploy <instance>",
-        "Deploys the instance."
+        "Deploys the instance's source; by default deploys master. Use --reference to deploy a specific revision"
       def deploy(instance_name)
         instance = Fauxpaas.instance_repo.find(instance_name)
         Fauxpaas.deployer.deploy(instance, reference: options[:reference])
@@ -31,6 +31,13 @@ module Fauxpaas
         else
           puts "Default branch: #{instance.default_branch}"
         end
+      end
+
+      desc "caches <instance>",
+        "List cached releases for the instance"
+      def caches(instance_name)
+        instance = Fauxpaas.instance_repo.find(instance_name)
+        puts Fauxpaas.deployer.caches(instance)
       end
     end
 

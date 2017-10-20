@@ -7,6 +7,8 @@ set :ssh_options, {
   auth_methods: %w(publickey)
 }
 
+set :split_token, File.read(File.join(File.dirname(__FILE__), "../.split_token"))
+
 set :keep_releases, 5
 set :local_user, "fauxpaas"
 set :pty, false
@@ -43,3 +45,17 @@ set :assets_roles, [:web]                                     # this is default
 set :normalize_asset_timestamps, %w{public/images public/javascripts public/stylesheets}
 set :keep_assets, 2                                           # default: nil (disabled)
 
+
+namespace :caches do
+  desc "List caches"
+  task :list do
+    on roles(:all) do
+      within fetch(:deploy_to) do
+        within "releases" do
+          STDERR.puts fetch(:split_token)
+          STDERR.puts capture(:ls)
+        end
+      end
+    end
+  end
+end
