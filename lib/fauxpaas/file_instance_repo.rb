@@ -25,13 +25,13 @@ module Fauxpaas
       fs.mkdir_p(save_path)
       fs.write(save_path, YAML.dump(
         "deployer_env" => instance.deployer_env,
-        "default_branch" => instance.default_branch
+        "default_branch" => instance.default_branch,
+        "deployments" => instance.deployments.map { |d| d.to_hash }
       ))
     end
 
     private
     attr_reader :path, :fs
-
 
   end
 
