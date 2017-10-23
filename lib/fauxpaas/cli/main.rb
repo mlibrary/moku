@@ -33,6 +33,18 @@ module Fauxpaas
         end
       end
 
+      option :cache,
+        type: :string,
+        aliases: "-c",
+        desc: "The specific cache to rollback to. Defaults to the latest." +
+          "Use with care."
+      desc "rollback <instance> [<cache>]",
+        "Rollsback to the specified cache, or the most recent one."
+      def rollback(instance_name)
+        instance = Fauxpaas.instance_repo.find(instance_name)
+        Fauxpaas.deployer.rollback(instance, cache: options[:cache])
+      end
+
       desc "caches <instance>",
         "List cached releases for the instance"
       def caches(instance_name)

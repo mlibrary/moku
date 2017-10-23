@@ -17,6 +17,14 @@ module Fauxpaas
       return status
     end
 
+    def rollback(instance, cache: nil)
+      instance_capfile_path = capfile_path + "#{instance.deployer_env}.capfile"
+      stdout, stderr, status = kernel.capture3(
+        "cap -f #{instance_capfile_path} #{instance.name} deploy:rollback #{rollback_cache_option(cache)}".strip
+      )
+      return status
+    end
+
     def caches(instance)
       instance_capfile_path = capfile_path + "#{instance.deployer_env}.capfile"
       stdout, stderr, status = kernel.capture3(
@@ -31,6 +39,14 @@ module Fauxpaas
 
     private
     attr_reader :capfile_path, :kernel
+
+    def rollback_cache_option(cache)
+      if cache
+        "ROLLBACK_RELEASE=#{cache}"
+      else
+        ""
+      end
+    end
 
   end
 
