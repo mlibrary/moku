@@ -2,7 +2,6 @@ set :application, "test-rails"
 
 # We must use a public repo because our ssh key hasn't been added anywhere
 set :repo_url, "https://github.com/mlibrary/chipmunk.git"
-set :branch, ENV['BRANCH']
 set :deploy_to, File.expand_path(File.join(File.dirname(__FILE__), "../../spec/sandbox/test-rails"))
 set :rails_env, "development"
 set :assets_prefix, "assets"

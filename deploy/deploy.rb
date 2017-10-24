@@ -14,6 +14,7 @@ set :local_user, "fauxpaas"
 set :pty, false
 
 # Choose which branch/revision to deploy if BRANCH env var is set.
+set :branch, ENV['BRANCH']
 
 # We only link files that would be non-sensical to be release-specific.
 # This notably does not contain developer configuration.
