@@ -60,3 +60,14 @@ namespace :caches do
     end
   end
 end
+
+namespace :deploy do
+  desc "Print the current deployed revision"
+  task :show_revision do
+    run_locally do
+      STDERR.puts revision_log_message
+    end
+  end
+
+  after :log_revision, :show_revision
+end

@@ -22,7 +22,7 @@ module Fauxpaas
 
     def save(instance)
       save_path = path + "#{instance.name}.yml"
-      fs.mkdir_p(save_path)
+      fs.mkdir_p(save_path.dirname)
       fs.write(save_path, YAML.dump(
         "deployer_env" => instance.deployer_env,
         "default_branch" => instance.default_branch,

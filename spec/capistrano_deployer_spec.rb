@@ -10,30 +10,83 @@ module Fauxpaas
     let(:path) { "/base/path" }
     let(:kernel) { double(:kernel, capture3: ["", "", success]) }
 
-    let(:instance) do
-      double(:instance,
-        name: "myapp-staging",
-        deployer_env: "rails",
-        default_branch: "develop")
+    class TestInstance
+      def initialize(*args)
+        @deployments = []
+      end
+
+      attr_reader :deployments
+
+      def name 
+        "myapp_staging" 
+      end
+
+      def deployer_env 
+        "rails" 
+      end
+
+      def default_branch
+        "develop"
+      end
+
+      def log_deployment(deployment)
+        @deployments << deployment
+      end
     end
+
+    class TestDeployment < OpenStruct
+      def initialize(rev)
+        super()
+        self.src=rev
+      end
+    end
+
+    let(:instance) { TestInstance.new }
 
     let(:deployer) { described_class.new(path, kernel) }
 
     describe "#deploy" do
-      it "invokes cap deploy" do
-        expect(kernel).to receive(:capture3)
-          .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy"))
-        deployer.deploy(instance)
+      let(:commit) { "031d744fe4228d2440830d59d070a8598ac19da0" }
+      let(:cap_stderr) { "Branch master (at #{commit}) deployed as release 20171024181746 by fauxpaas"}
+
+      context "when capistrano prints the revision message" do
+        let(:kernel) { double(:kernel, capture3: ["", cap_stderr, success]) }
+
+        it "invokes cap deploy" do
+          expect(kernel).to receive(:capture3)
+            .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy"))
+          deployer.deploy(instance)
+        end
+
+        it "sets BRANCH to instance.default_branch when no reference given" do
+          expect(kernel).to receive(:capture3)
+            .with(a_string_matching("BRANCH=#{instance.default_branch}"))
+          deployer.deploy(instance)
+        end
+
+        it "sets BRANCH to the given reference" do
+          expect(kernel).to receive(:capture3)
+            .with(a_string_matching("BRANCH=mybranch"))
+          deployer.deploy(instance, reference: "mybranch")
+        end
+
+        it "logs the deployment" do
+          deployer.deploy(instance,deployment: TestDeployment)
+          expect(instance.deployments).to contain_exactly(an_instance_of(TestDeployment))
+        end
+
+        it "by default, logs a Deployment with the current commit" do
+          deployer.deploy(instance,deployment: TestDeployment)
+          expect(instance.deployments.first.src).to eq(commit)
+        end
       end
-      it "sets BRANCH to instance.default_branch when no reference given" do
-        expect(kernel).to receive(:capture3)
-          .with(a_string_matching("BRANCH=#{instance.default_branch}"))
-        deployer.deploy(instance)
-      end
-      it "sets BRANCH to the given reference" do
-        expect(kernel).to receive(:capture3)
-          .with(a_string_matching("BRANCH=mybranch"))
-        deployer.deploy(instance, reference: "mybranch")
+
+      context "when the deployment fails" do
+        let(:kernel) { double(:kernel, capture3: ["", "", failure]) }
+        it "does not log the deployment" do
+          deployer.deploy(instance,deployment: TestDeployment)
+          expect(instance.deployments.length).to eq(0)
+        end
       end
     end
 

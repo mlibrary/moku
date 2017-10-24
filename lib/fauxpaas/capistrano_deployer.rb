@@ -1,5 +1,6 @@
 require "pathname"
 require "open3"
+require "fauxpaas/deployment"
 
 module Fauxpaas
 
@@ -9,10 +10,13 @@ module Fauxpaas
       @kernel = kernel
     end
 
-    def deploy(instance, reference: nil)
+    def deploy(instance, reference: nil, deployment: Deployment)
       stdout, stderr, status = run(instance, "deploy", [
         "BRANCH=#{reference || instance.default_branch}"
       ])
+
+      instance.log_deployment(deployment.new(find_revision(stderr))) if status.success?
+
       return status
     end
 
@@ -48,6 +52,21 @@ module Fauxpaas
         "ROLLBACK_RELEASE=#{cache}"
       else
         ""
+      end
+    end
+
+    def find_revision(stderr)
+      ensure_match(stderr.split("\n")
+        .find(lambda { '' }) { |s| /deployed as release/ }
+        .match(/\(at ([0-9a-f]{40})\)/),
+      no_match: "Can't find revision in capistrano stderr")
+    end
+
+    def ensure_match(match, no_match: "No match")
+      if match
+        match.captures[0]
+      else
+        raise no_match
       end
     end
 
