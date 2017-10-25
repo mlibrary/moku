@@ -60,3 +60,6 @@ namespace :caches do
     end
   end
 end
+
+load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")
+

@@ -9,12 +9,14 @@ module Fauxpaas
     let(:failure) { double(:failure, success?: false) }
     let(:path) { "/base/path" }
     let(:kernel) { double(:kernel, capture3: ["", "", success]) }
+    let(:infrastructure_config_path) { "/myapp-staging/infrastructure.path" }
 
     let(:instance) do
       double(:instance,
         name: "myapp-staging",
         deployer_env: "rails",
-        default_branch: "develop")
+        default_branch: "develop"
+      )
     end
 
     let(:deployer) { described_class.new(path, kernel) }
@@ -23,17 +25,22 @@ module Fauxpaas
       it "invokes cap deploy" do
         expect(kernel).to receive(:capture3)
           .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy"))
-        deployer.deploy(instance)
+        deployer.deploy(instance, infrastructure_config_path: infrastructure_config_path)
       end
       it "sets BRANCH to instance.default_branch when no reference given" do
         expect(kernel).to receive(:capture3)
           .with(a_string_matching("BRANCH=#{instance.default_branch}"))
-        deployer.deploy(instance)
+        deployer.deploy(instance, infrastructure_config_path: infrastructure_config_path)
       end
       it "sets BRANCH to the given reference" do
         expect(kernel).to receive(:capture3)
           .with(a_string_matching("BRANCH=mybranch"))
-        deployer.deploy(instance, reference: "mybranch")
+        deployer.deploy(instance, reference: "mybranch", infrastructure_config_path: infrastructure_config_path)
+      end
+      it "sets INFRASTRUCTURE_PATH to infrastructure_config_path" do
+        expect(kernel).to receive(:capture3)
+          .with(a_string_matching("INFRASTRUCTURE_PATH=#{infrastructure_config_path}"))
+        deployer.deploy(instance, infrastructure_config_path: infrastructure_config_path)
       end
     end
 
