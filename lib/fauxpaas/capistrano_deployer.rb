@@ -10,24 +10,19 @@ module Fauxpaas
     end
 
     def deploy(instance, reference: nil)
-      stdout, stderr, status = kernel.capture3(
-        "cap -f #{capfile_for(instance)} #{instance.name} deploy " +
-          "BRANCH=#{reference || instance.default_branch}"
-      )
+      stdout, stderr, status = run(instance, "deploy", [
+        "BRANCH=#{reference || instance.default_branch}"
+      ])
       return status
     end
 
     def rollback(instance, cache: nil)
-      stdout, stderr, status = kernel.capture3(
-        "cap -f #{capfile_for(instance)} #{instance.name} deploy:rollback #{rollback_cache_option(cache)}".strip
-      )
+      stdout, stderr, status = run(instance, "deploy:rollback", [rollback_cache_option(cache)])
       return status
     end
 
     def caches(instance)
-      stdout, stderr, status = kernel.capture3(
-        "cap -f #{capfile_for(instance)} #{instance.name} caches:list"
-      )
+      stdout, stderr, status = run(instance, "caches:list", [])
       stderr
         .split(Fauxpaas.split_token + "\n")
         .drop(1)
@@ -37,6 +32,12 @@ module Fauxpaas
 
     private
     attr_reader :capfile_path, :kernel
+
+    def run(instance, task, options)
+      kernel.capture3(
+        "cap -f #{capfile_for(instance)} #{instance.name} #{task} #{options.join(" ")}".strip
+      )
+    end
 
     def capfile_for(instance)
       capfile_path + "#{instance.deployer_env}.capfile"
