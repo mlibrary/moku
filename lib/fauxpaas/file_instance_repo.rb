@@ -16,7 +16,8 @@ module Fauxpaas
       Instance.new(
         name: name,
         deployer_env: contents["deployer_env"],
-        default_branch: contents["default_branch"]
+        default_branch: contents["default_branch"],
+        deployments: contents.fetch("deployments",[]).map { |d| Deployment.from_hash(d) }
       )
     end
 

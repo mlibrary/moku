@@ -24,7 +24,16 @@ module Fauxpaas
         'user' => user,
         'config' => dev_config,
         'deploy' => deploy_config,
-        'timestamp' => timestamp.to_s }
+        'timestamp' => timestamp }
+    end
+
+    def self.from_hash(hash)
+      self.new(hash['src'],
+               timestamp: hash['timestamp'],
+               dev_config: hash['config'],
+               deploy_config: hash['deploy'],
+               user: hash['user'])
+
     end
 
     def to_s

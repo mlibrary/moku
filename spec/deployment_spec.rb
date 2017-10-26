@@ -73,8 +73,9 @@ module Fauxpaas
     end
 
     context "with a fully-specified instance" do
+      let(:time) { Time.at(9999) }
       let(:instance) do
-        described_class.new(SOME_COMMIT,timestamp: "whenever",
+        described_class.new(SOME_COMMIT,timestamp: time,
                             user: 'foouser',
                             dev_config: SOME_OTHER_COMMIT,
                             deploy_config: SOME_OTHER_COMMIT)
@@ -84,18 +85,35 @@ module Fauxpaas
 
           expect(instance.to_hash).to eq( { 'src' =>  SOME_COMMIT,
                                             'user' => 'foouser',
-                                            # sha1sum of "fooconfig\n"
                                             'config' => SOME_OTHER_COMMIT,
-                                             # sha1sum of "barconfig\n"
                                             'deploy' => SOME_OTHER_COMMIT,
-                                            'timestamp' => "whenever" })
+                                            'timestamp' => time })
         end
       end
 
       describe '#to_s' do
         it "returns a formatted version of the parameters with the sha1sum of dev & deploy configs" do
-          expect(instance.to_s).to eq( "whenever: foouser deployed #{SOME_COMMIT} #{SOME_OTHER_COMMIT} with #{SOME_OTHER_COMMIT}" )
+          expect(instance.to_s).to eq( "#{time}: foouser deployed #{SOME_COMMIT} #{SOME_OTHER_COMMIT} with #{SOME_OTHER_COMMIT}" )
         end
+      end
+
+    end
+
+    describe '#from_hash' do
+      it "correctly deserializes from a hash" do
+        time = Time.at(9999)
+        instance = described_class.from_hash ( {
+          'src' => SOME_COMMIT,
+          'user' => 'foouser',
+          'config' => SOME_OTHER_COMMIT,
+          'deploy' => SOME_OTHER_COMMIT,
+          'timestamp' => time })
+
+        expect(instance.src).to eq(SOME_COMMIT)
+        expect(instance.user).to eq('foouser')
+        expect(instance.dev_config).to eq(SOME_OTHER_COMMIT)
+        expect(instance.deploy_config).to eq(SOME_OTHER_COMMIT)
+        expect(instance.timestamp).to eq(time)
       end
     end
 
