@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "fauxpaas"
+require "fauxpaas/cli/test"
+
+Fauxpaas::CLI::Test.start(ARGV)
