@@ -1,5 +1,6 @@
 require "fauxpaas/instance"
 require "fauxpaas/filesystem"
+require "fauxpaas/release"
 require "pathname"
 require "yaml"
 
@@ -16,7 +17,8 @@ module Fauxpaas
       Instance.new(
         name: name,
         deployer_env: contents["deployer_env"],
-        default_branch: contents["default_branch"]
+        default_branch: contents["default_branch"],
+        releases: contents.fetch("releases",[]).map { |r| Release.from_hash(r) }
       )
     end
 
@@ -24,7 +26,8 @@ module Fauxpaas
       fs.mkdir_p(instance_path(instance.name))
       fs.write(instance_path(instance.name), YAML.dump(
         "deployer_env" => instance.deployer_env,
-        "default_branch" => instance.default_branch
+        "default_branch" => instance.default_branch,
+        "releases" => instance.releases.map { |d| d.to_hash }
       ))
     end
 
@@ -34,7 +37,6 @@ module Fauxpaas
     def instance_path(name)
       path + name + "instance.yml"
     end
-
 
   end
 

@@ -18,6 +18,7 @@ module Fauxpaas
         infrastructure_config_path = Fauxpaas.instance_root + instance_name + "infrastructure.yml"
         instance = Fauxpaas.instance_repo.find(instance_name)
         Fauxpaas.deployer.deploy(instance, reference: options[:reference], infrastructure_config_path: infrastructure_config_path)
+        Fauxpaas.instance_repo.save(instance)
       end
 
       desc "default_branch <instance> [<new_branch>]",
@@ -27,7 +28,7 @@ module Fauxpaas
         if new_branch
           old_branch = instance.default_branch
           instance.default_branch = new_branch
-          Fauxpass.instance_repo.save(instance)
+          Fauxpaas.instance_repo.save(instance)
           puts "Changed default branch from #{old_branch} to #{new_branch}"
         else
           puts "Default branch: #{instance.default_branch}"

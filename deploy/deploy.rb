@@ -1,4 +1,4 @@
-lock "3.9.1"
+lock "~> 3.9.1"
 
 set :ssh_options, {
   user: "fauxpaas",
@@ -61,5 +61,15 @@ namespace :caches do
   end
 end
 
-load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")
+namespace :deploy do
+  desc "Print the current deployed revision"
+  task :show_revision do
+    run_locally do
+      STDERR.puts revision_log_message
+    end
+  end
 
+  after :log_revision, :show_revision
+end
+
+load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")
