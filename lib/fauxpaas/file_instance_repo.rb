@@ -1,5 +1,6 @@
 require "fauxpaas/instance"
 require "fauxpaas/filesystem"
+require "fauxpaas/release"
 require "pathname"
 require "yaml"
 
@@ -16,22 +17,23 @@ module Fauxpaas
       Instance.new(
         name: name,
         deployer_env: contents["deployer_env"],
-        default_branch: contents["default_branch"]
+        default_branch: contents["default_branch"],
+        releases: contents.fetch("releases",[]).map { |r| Release.from_hash(r) }
       )
     end
 
     def save(instance)
       save_path = path + "#{instance.name}.yml"
-      fs.mkdir_p(save_path)
+      fs.mkdir_p(save_path.dirname)
       fs.write(save_path, YAML.dump(
         "deployer_env" => instance.deployer_env,
-        "default_branch" => instance.default_branch
+        "default_branch" => instance.default_branch,
+        "releases" => instance.releases.map { |d| d.to_hash }
       ))
     end
 
     private
     attr_reader :path, :fs
-
 
   end
 

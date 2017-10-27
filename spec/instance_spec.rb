@@ -60,5 +60,33 @@ module Fauxpaas
       end
     end
 
+    describe "#releases" do
+      context "with an instance that was constructed with releases" do
+        let(:deploy) { double('deploy1') }
+        let(:instance) do
+          described_class.new(
+            name: name,
+            deployer_env: deployer_env,
+            releases: [deploy]
+          )
+        end
+        it "returns the releases" do
+          expect(instance.releases).to contain_exactly(deploy)
+        end
+        it "returns logged releases" do
+          another_deploy = double('another_deploy')
+          instance.log_release(another_deploy)
+          expect(instance.releases).to contain_exactly(deploy,another_deploy)
+        end
+      end
+
+      it "returns logged releases" do
+        another_deploy = double('another_deploy')
+        instance.log_release(another_deploy)
+        expect(instance.releases).to contain_exactly(another_deploy)
+      end
+
+    end
+
   end
 end
