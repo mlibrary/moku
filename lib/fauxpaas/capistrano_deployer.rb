@@ -1,6 +1,6 @@
 require "pathname"
 require "open3"
-require "fauxpaas/deployment"
+require "fauxpaas/release"
 
 module Fauxpaas
 
@@ -10,12 +10,12 @@ module Fauxpaas
       @kernel = kernel
     end
 
-    def deploy(instance, reference: nil, deployment: Deployment)
+    def deploy(instance, reference: nil, release: Release)
       stdout, stderr, status = run(instance, "deploy", [
         "BRANCH=#{reference || instance.default_branch}"
       ])
 
-      instance.log_deployment(deployment.new(find_revision(stderr))) if status.success?
+      instance.log_release(release.new(find_revision(stderr))) if status.success?
 
       return status
     end

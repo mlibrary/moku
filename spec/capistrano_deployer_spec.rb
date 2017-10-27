@@ -12,10 +12,10 @@ module Fauxpaas
 
     class TestInstance
       def initialize(*args)
-        @deployments = []
+        @releases = []
       end
 
-      attr_reader :deployments
+      attr_reader :releases
 
       def name 
         "myapp_staging" 
@@ -29,12 +29,12 @@ module Fauxpaas
         "develop"
       end
 
-      def log_deployment(deployment)
-        @deployments << deployment
+      def log_release(release)
+        @releases << release
       end
     end
 
-    class TestDeployment < OpenStruct
+    class TestRelease < OpenStruct
       def initialize(rev)
         super()
         self.src=rev
@@ -70,22 +70,22 @@ module Fauxpaas
           deployer.deploy(instance, reference: "mybranch")
         end
 
-        it "logs the deployment" do
-          deployer.deploy(instance,deployment: TestDeployment)
-          expect(instance.deployments).to contain_exactly(an_instance_of(TestDeployment))
+        it "logs the release" do
+          deployer.deploy(instance, release: TestRelease)
+          expect(instance.releases).to contain_exactly(an_instance_of(TestRelease))
         end
 
-        it "by default, logs a Deployment with the current commit" do
-          deployer.deploy(instance,deployment: TestDeployment)
-          expect(instance.deployments.first.src).to eq(commit)
+        it "by default, logs a Release with the current commit" do
+          deployer.deploy(instance, release: TestRelease)
+          expect(instance.releases.first.src).to eq(commit)
         end
       end
 
       context "when the deployment fails" do
         let(:kernel) { double(:kernel, capture3: ["", "", failure]) }
-        it "does not log the deployment" do
-          deployer.deploy(instance,deployment: TestDeployment)
-          expect(instance.deployments.length).to eq(0)
+        it "does not log the release" do
+          deployer.deploy(instance, release: TestRelease)
+          expect(instance.releases.length).to eq(0)
         end
       end
     end

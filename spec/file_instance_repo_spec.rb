@@ -34,7 +34,7 @@ module Fauxpaas
       YAML.dump(
         "deployer_env" => deployer_env,
         "default_branch" => default_branch,
-        "deployments" => []
+        "releases" => []
       )
     end
 
@@ -50,7 +50,7 @@ module Fauxpaas
           YAML.dump(
             "deployer_env" => deployer_env,
             "default_branch" => default_branch,
-            "deployments" => [
+            "releases" => [
               { 'src' => revision,
                 'user' => 'somebody',
                 'config' => '(none)',
@@ -64,12 +64,12 @@ module Fauxpaas
           allow(fs).to receive(:read).with(path).and_return(contents_with_deploy)
         end
 
-        it "returns an instance with a deployment" do
-          expect(repo.find(name).deployments.length).to eql(1)
+        it "returns an instance with a release" do
+          expect(repo.find(name).releases.length).to eql(1)
         end
 
-        it "returns an instance with the correct deployment" do
-          expect(repo.find(name).deployments.first.src).to eql(revision)
+        it "returns an instance with the correct release" do
+          expect(repo.find(name).releases.first.src).to eql(revision)
         end
       end
     end
@@ -81,24 +81,24 @@ module Fauxpaas
       end
 
       context "with an instance that has been deployed" do
-          let(:deployments) { [double('deploy1', to_hash: {'foo' => 'bar'}),
+          let(:releases) { [double('deploy1', to_hash: {'foo' => 'bar'}),
                                double('deploy2', to_hash: {'baz' => 'quux'})] }
           let(:instance) do 
             Instance.new(name: name, 
                          deployer_env: deployer_env, 
                          default_branch: default_branch,
-                         deployments: deployments)
+                         releases: releases)
           end
             
           let(:contents) do
             YAML.dump(
               "deployer_env" => deployer_env,
               "default_branch" => default_branch,
-              "deployments" => [ { "foo" => "bar" }, { "baz" => "quux" } ]
+              "releases" => [ { "foo" => "bar" }, { "baz" => "quux" } ]
             )
           end
 
-          it "saves the deployments to a yaml file" do
+          it "saves the releases to a yaml file" do
             expect(fs).to receive(:write).with(path, contents).and_return(nil)
             repo.save(instance)
           end

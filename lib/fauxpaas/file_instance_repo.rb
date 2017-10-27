@@ -1,5 +1,6 @@
 require "fauxpaas/instance"
 require "fauxpaas/filesystem"
+require "fauxpaas/release"
 require "pathname"
 require "yaml"
 
@@ -17,7 +18,7 @@ module Fauxpaas
         name: name,
         deployer_env: contents["deployer_env"],
         default_branch: contents["default_branch"],
-        deployments: contents.fetch("deployments",[]).map { |d| Deployment.from_hash(d) }
+        releases: contents.fetch("releases",[]).map { |r| Release.from_hash(r) }
       )
     end
 
@@ -27,7 +28,7 @@ module Fauxpaas
       fs.write(save_path, YAML.dump(
         "deployer_env" => instance.deployer_env,
         "default_branch" => instance.default_branch,
-        "deployments" => instance.deployments.map { |d| d.to_hash }
+        "releases" => instance.releases.map { |d| d.to_hash }
       ))
     end
 
