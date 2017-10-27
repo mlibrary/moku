@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require "fauxpaas/filesystem"
 require "pathname"
@@ -37,7 +39,7 @@ module Fauxpaas
 
       describe "#read" do
         let(:file) { TMPPATH + "somefile.txt" }
-        let(:contents) { "some\ncontents\n\n\n\nmore"}
+        let(:contents) { "some\ncontents\n\n\n\nmore" }
         it "returns the contents of a file" do
           File.write(file, contents)
           expect(fs.read(file)).to eql(contents)
@@ -46,7 +48,7 @@ module Fauxpaas
 
       describe "#write" do
         let(:path) { TMPPATH + "somefile.txt" }
-        let(:contents) { "some\ncontents\n\n\n\nmore"}
+        let(:contents) { "some\ncontents\n\n\n\nmore" }
         it "writes a file" do
           fs.write(path, contents)
           expect(File.read(path)).to eql(contents)
@@ -58,10 +60,10 @@ module Fauxpaas
         let(:dirs) { [TMPPATH + "some_dir", TMPPATH + ".hidden_dir"] }
         before(:each) do
           files.each {|f| File.write(f, "dummy_contents") }
-          dirs.each {|d| FileUtils.mkpath d}
+          dirs.each {|d| FileUtils.mkpath d }
         end
         it "returns the entries in the dir as pathnames" do
-          expect(fs.children(TMPPATH)).to match_array( (files + dirs))
+          expect(fs.children(TMPPATH)).to match_array((files + dirs))
         end
       end
 
@@ -85,17 +87,17 @@ module Fauxpaas
         end
         it "is idempotent" do
           File.write(src_file_path, "contents")
-          expect {
+          expect do
             fs.ln_s(src_file_path, dest_path)
             fs.ln_s(src_file_path, dest_path)
-          }.to_not raise_error
+          end.to_not raise_error
         end
         it "is successful if dest is already a file" do
           File.write(src_file_path, "contents")
           File.write(dest_path, "other contents")
-          expect{
+          expect do
             fs.ln_s(src_file_path, dest_path)
-          }.to_not raise_error
+          end.to_not raise_error
         end
         it "creates a symlink when src does not exist" do
           fs.ln_s(src_file_path, dest_path)
@@ -116,10 +118,10 @@ module Fauxpaas
           expect(abc_dir.directory?).to be true
         end
         it "is idempotent" do
-          expect {
+          expect do
             fs.mkdir_p abc_dir
             fs.mkdir_p abc_dir
-          }.to_not raise_error
+          end.to_not raise_error
         end
       end
       describe "#remove" do
@@ -142,9 +144,9 @@ module Fauxpaas
           expect(dir_path.exist?).to be false
         end
         it "is idempotent" do
-          expect{
+          expect do
             fs.remove(file_path)
-          }.to_not raise_error
+          end.to_not raise_error
         end
       end
       describe "#rm_empty_tree" do
@@ -185,19 +187,16 @@ module Fauxpaas
           expect(inside_file_path.exist?).to be true
         end
         it "is idempotent" do
-          expect{
+          expect do
             fs.rm_empty_tree abc_dir
-          }.to_not raise_error
+          end.to_not raise_error
         end
         it "raises an ArgumentError when given a filepath" do
-          expect{
+          expect do
             fs.rm_empty_tree Pathname.new("/etc/passwd")
-          }.to raise_error(ArgumentError)
+          end.to raise_error(ArgumentError)
         end
       end
-
-
     end
-
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require "fauxpaas/file_instance_repo"
 require "fauxpaas/instance"
@@ -6,9 +8,8 @@ require "pathname"
 
 module Fauxpaas
   RSpec.describe FileInstanceRepo do
-
     let(:base_path) { Pathname.new "/base/path" }
-    let(:fs) { double(:fs, mkdir_p: nil)  }
+    let(:fs) { double(:fs, mkdir_p: nil) }
     let(:repo) { described_class.new(base_path, fs) }
     let(:path) { base_path + name + "instance.yml" }
 
@@ -26,7 +27,7 @@ module Fauxpaas
     let(:contents_in) do
       YAML.dump(
         "deployer_env" => deployer_env,
-        "default_branch" => default_branch,
+        "default_branch" => default_branch
       )
     end
 
@@ -51,11 +52,11 @@ module Fauxpaas
             "deployer_env" => deployer_env,
             "default_branch" => default_branch,
             "releases" => [
-              { 'src' => revision,
-                'user' => 'somebody',
-                'config' => '(none)',
-                'deploy' => '(none)',
-                'timestamp' => Time.now }
+              { "src"       => revision,
+                "user"      => "somebody",
+                "config"    => "(none)",
+                "deploy"    => "(none)",
+                "timestamp" => Time.now }
             ]
           )
         end
@@ -81,29 +82,30 @@ module Fauxpaas
       end
 
       context "with an instance that has been deployed" do
-          let(:releases) { [double('deploy1', to_hash: {'foo' => 'bar'}),
-                               double('deploy2', to_hash: {'baz' => 'quux'})] }
-          let(:instance) do 
-            Instance.new(name: name, 
-                         deployer_env: deployer_env, 
-                         default_branch: default_branch,
-                         releases: releases)
-          end
-            
-          let(:contents) do
-            YAML.dump(
-              "deployer_env" => deployer_env,
-              "default_branch" => default_branch,
-              "releases" => [ { "foo" => "bar" }, { "baz" => "quux" } ]
-            )
-          end
+        let(:releases) do
+          [double("deploy1", to_hash: { "foo" => "bar" }),
+           double("deploy2", to_hash: { "baz" => "quux" })]
+        end
+        let(:instance) do
+          Instance.new(name: name,
+            deployer_env: deployer_env,
+            default_branch: default_branch,
+            releases: releases)
+        end
 
-          it "saves the releases to a yaml file" do
-            expect(fs).to receive(:write).with(path, contents).and_return(nil)
-            repo.save(instance)
-          end
+        let(:contents) do
+          YAML.dump(
+            "deployer_env" => deployer_env,
+            "default_branch" => default_branch,
+            "releases" => [{ "foo" => "bar" }, { "baz" => "quux" }]
+          )
+        end
+
+        it "saves the releases to a yaml file" do
+          expect(fs).to receive(:write).with(path, contents).and_return(nil)
+          repo.save(instance)
+        end
       end
     end
-
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require "fauxpaas/capistrano_deployer"
 
@@ -12,7 +14,7 @@ module Fauxpaas
     let(:infrastructure_config_path) { "/myapp-staging/infrastructure.path" }
 
     class TestInstance
-      def initialize(*args)
+      def initialize(*_args)
         @releases = []
       end
 
@@ -38,7 +40,7 @@ module Fauxpaas
     class TestRelease < OpenStruct
       def initialize(rev)
         super()
-        self.src=rev
+        self.src = rev
       end
     end
 
@@ -48,7 +50,7 @@ module Fauxpaas
 
     describe "#deploy" do
       let(:commit) { "031d744fe4228d2440830d59d070a8598ac19da0" }
-      let(:cap_stderr) { "Branch master (at #{commit}) deployed as release 20171024181746 by fauxpaas"}
+      let(:cap_stderr) { "Branch master (at #{commit}) deployed as release 20171024181746 by fauxpaas" }
 
       context "when capistrano prints the revision message" do
         let(:kernel) { double(:kernel, capture3: ["", cap_stderr, success]) }
@@ -118,6 +120,5 @@ module Fauxpaas
         deployer.caches(instance)
       end
     end
-
   end
 end

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "fileutils"
 
-# We wrap the filesystem for easy mocking,
-# and to be clear about which methods we need.
 module Fauxpaas
+  # We wrap the filesystem for easy mocking,
+  # and to be clear about which methods we need.
   class Filesystem
 
     # @param [Pathname] dir

@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 require "pathname"
 require "open3"
 require "fauxpaas/release"
 
 module Fauxpaas
 
+  # Deploys using Capistrano
   class CapistranoDeployer
     def initialize(capfile_path, kernel = Open3)
       @capfile_path = Pathname.new capfile_path
@@ -11,31 +14,33 @@ module Fauxpaas
     end
 
     def deploy(instance, reference: nil, release: Release, infrastructure_config_path:)
-      stdout, stderr, status = run(instance, "deploy", [
+      _stdout, stderr, status = run(instance, "deploy", [
         "BRANCH=#{reference || instance.default_branch}",
         "INFRASTRUCTURE_PATH=#{infrastructure_config_path}"
       ])
 
       instance.log_release(release.new(find_revision(stderr))) if status.success?
 
-      return status
+      status
     end
 
     def rollback(instance, cache: nil)
-      stdout, stderr, status = run(instance, "deploy:rollback", [rollback_cache_option(cache)])
-      return status
+      _stdout, _stderr, status = run(instance, "deploy:rollback", [rollback_cache_option(cache)])
+      status
     end
 
     def caches(instance)
-      stdout, stderr, status = run(instance, "caches:list", [])
+      _stdout, stderr, status = run(instance, "caches:list", [])
       stderr
         .split(Fauxpaas.split_token + "\n")
         .drop(1)
-        .map{|dirs| dirs.split("\n")}
+        .map {|dirs| dirs.split("\n") }
         .first
+      status
     end
 
     private
+
     attr_reader :capfile_path, :kernel
 
     def run(instance, task, options)
@@ -58,9 +63,9 @@ module Fauxpaas
 
     def find_revision(stderr)
       ensure_match(stderr.split("\n")
-        .find(lambda { '' }) { |s| /deployed as release/ }
+        .find(-> { "" }) {|_s| /deployed as release/ }
         .match(/\(at ([0-9a-f]{40})\)/),
-      no_match: "Can't find revision in capistrano stderr")
+        no_match: "Can't find revision in capistrano stderr")
     end
 
     def ensure_match(match, no_match: "No match")

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 set :application, "test-norails"
 
 # We must use a public repo because our ssh key hasn't been added anywhere
@@ -9,10 +11,9 @@ set :assets_prefix, "assets"
 set :rbenv_custom_path, "/usr/local/rbenv"
 
 server "localhost",
-  roles: %w(app),
+  roles: ["app"],
   user: ENV["USER"],
   ssh_options: {
     # We use a passwordless key here for ease of use
     keys: [File.join(ENV["HOME"], ".ssh", "id_rsa-fauxpaas")]
   }
-

@@ -1,23 +1,29 @@
+# frozen_string_literal: true
+
 require "thor"
 require "fauxpaas"
 
 module Fauxpaas
   module CLI
 
+    # Main commands of the cli
     class Main < Thor
 
       option :reference,
         type: :string,
         aliases: ["-r", "--branch", "--commit"],
-        desc: "The branch or commit to deploy. " +
+        desc: "The branch or commit to deploy. " \
           "Use default_branch to display or set the default branch."
 
       desc "deploy <instance>",
-        "Deploys the instance's source; by default deploys master. Use --reference to deploy a specific revision"
+        "Deploys the instance's source; by default deploys master. " \
+        "Use --reference to deploy a specific revision"
       def deploy(instance_name)
         infrastructure_config_path = Fauxpaas.instance_root + instance_name + "infrastructure.yml"
         instance = Fauxpaas.instance_repo.find(instance_name)
-        Fauxpaas.deployer.deploy(instance, reference: options[:reference], infrastructure_config_path: infrastructure_config_path)
+        Fauxpaas.deployer.deploy(instance,
+          reference: options[:reference],
+          infrastructure_config_path: infrastructure_config_path)
         Fauxpaas.instance_repo.save(instance)
       end
 
@@ -38,7 +44,7 @@ module Fauxpaas
       option :cache,
         type: :string,
         aliases: "-c",
-        desc: "The specific cache to rollback to. Defaults to the latest." +
+        desc: "The specific cache to rollback to. Defaults to the latest." \
           "Use with care."
       desc "rollback <instance> [<cache>]",
         "Rollsback to the specified cache, or the most recent one."
@@ -58,7 +64,7 @@ module Fauxpaas
         "List release history for the instance"
       def releases(instance_name)
         instance = Fauxpaas.instance_repo.find(instance_name)
-        puts instance.releases.map { |r| r.to_s }.join("\n")
+        puts instance.releases.map(&:to_s).join("\n")
       end
     end
 
