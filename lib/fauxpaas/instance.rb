@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "pathname"
 
 module Fauxpaas
@@ -29,7 +31,6 @@ module Fauxpaas
     end
 
     alias_method :==, :eql?
-
 
   end
 

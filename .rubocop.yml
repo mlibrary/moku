@@ -10,6 +10,7 @@ Naming/FileName:
     - 'spec/**/*'
     - 'lib/*/version.rb'
     - 'bin/console'
+    - 'deploy/**/*'
 
 Style/Alias:
   EnforcedStyle: prefer_alias_method

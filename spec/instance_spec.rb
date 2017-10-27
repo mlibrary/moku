@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require "fauxpaas/instance"
 require "pathname"
 
 module Fauxpaas
   RSpec.describe Instance do
-
     let(:app) { "myapp" }
     let(:stage) { "mystage" }
     let(:name) { "#{app}-#{stage}" }
@@ -62,7 +63,7 @@ module Fauxpaas
 
     describe "#releases" do
       context "with an instance that was constructed with releases" do
-        let(:deploy) { double('deploy1') }
+        let(:deploy) { double("deploy1") }
         let(:instance) do
           described_class.new(
             name: name,
@@ -74,19 +75,17 @@ module Fauxpaas
           expect(instance.releases).to contain_exactly(deploy)
         end
         it "returns logged releases" do
-          another_deploy = double('another_deploy')
+          another_deploy = double("another_deploy")
           instance.log_release(another_deploy)
-          expect(instance.releases).to contain_exactly(deploy,another_deploy)
+          expect(instance.releases).to contain_exactly(deploy, another_deploy)
         end
       end
 
       it "returns logged releases" do
-        another_deploy = double('another_deploy')
+        another_deploy = double("another_deploy")
         instance.log_release(another_deploy)
         expect(instance.releases).to contain_exactly(another_deploy)
       end
-
     end
-
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/filesystem"
 
 module Fauxpaas
@@ -25,4 +27,3 @@ module Fauxpaas
   end
 
 end
-

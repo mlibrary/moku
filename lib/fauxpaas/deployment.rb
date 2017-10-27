@@ -1,4 +1,6 @@
-require 'digest/sha1'
+# frozen_string_literal: true
+
+require "digest/sha1"
 
 module Fauxpaas
   # Describes a single deployment for later logging
@@ -10,8 +12,8 @@ module Fauxpaas
   class Deployment
     attr_reader :user, :timestamp, :src, :dev_config, :deploy_config
 
-    def initialize(src,timestamp: Time.now, user: :FIXME,
-                   dev_config: '(none)', deploy_config: '(none)')
+    def initialize(src, timestamp: Time.now, user: :FIXME,
+      dev_config: "(none)", deploy_config: "(none)")
       @user = user
       @timestamp = timestamp
       @src = src
@@ -20,25 +22,24 @@ module Fauxpaas
     end
 
     def to_hash
-      { 'src' => src,
-        'user' => user,
-        'config' => dev_config,
-        'deploy' => deploy_config,
-        'timestamp' => timestamp }
+      { "src"       => src,
+        "user"      => user,
+        "config"    => dev_config,
+        "deploy"    => deploy_config,
+        "timestamp" => timestamp }
     end
 
     def self.from_hash(hash)
-      self.new(hash['src'],
-               timestamp: hash['timestamp'],
-               dev_config: hash['config'],
-               deploy_config: hash['deploy'],
-               user: hash['user'])
-
+      new(hash["src"],
+        timestamp: hash["timestamp"],
+        dev_config: hash["config"],
+        deploy_config: hash["deploy"],
+        user: hash["user"])
     end
 
     def to_s
-      "#{timestamp}: #{user} deployed #{src} #{dev_config} " +
-      "with #{deploy_config}"
+      "#{timestamp}: #{user} deployed #{src} #{dev_config} " \
+        "with #{deploy_config}"
     end
   end
 end

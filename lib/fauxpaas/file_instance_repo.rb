@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/instance"
 require "fauxpaas/filesystem"
 require "fauxpaas/release"
@@ -6,6 +8,7 @@ require "yaml"
 
 module Fauxpaas
 
+  # Repository for persisting instances to files
   class FileInstanceRepo
     def initialize(path, fs = Filesystem.new)
       @path = path
@@ -18,7 +21,7 @@ module Fauxpaas
         name: name,
         deployer_env: contents["deployer_env"],
         default_branch: contents["default_branch"],
-        releases: contents.fetch("releases",[]).map { |r| Release.from_hash(r) }
+        releases: contents.fetch("releases", []).map {|r| Release.from_hash(r) }
       )
     end
 
@@ -27,11 +30,12 @@ module Fauxpaas
       fs.write(instance_path(instance.name), YAML.dump(
         "deployer_env" => instance.deployer_env,
         "default_branch" => instance.default_branch,
-        "releases" => instance.releases.map { |d| d.to_hash }
+        "releases" => instance.releases.map(&:to_hash)
       ))
     end
 
     private
+
     attr_reader :path, :fs
 
     def instance_path(name)

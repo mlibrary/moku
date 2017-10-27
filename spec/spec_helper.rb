@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "simplecov"
 require "bundler/setup"
 require "fauxpaas"
@@ -13,4 +15,3 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
-
