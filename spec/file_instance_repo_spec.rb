@@ -10,7 +10,7 @@ module Fauxpaas
     let(:base_path) { Pathname.new "/base/path" }
     let(:fs) { double(:fs, mkdir_p: nil)  }
     let(:repo) { described_class.new(base_path, fs) }
-    let(:path) { base_path + "#{name}.yml" }
+    let(:path) { base_path + name + "instance.yml" }
 
     let(:name) { "myapp-mystage" }
     let(:deployer_env) { "something" }

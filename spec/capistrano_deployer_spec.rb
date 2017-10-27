@@ -9,6 +9,7 @@ module Fauxpaas
     let(:failure) { double(:failure, success?: false) }
     let(:path) { "/base/path" }
     let(:kernel) { double(:kernel, capture3: ["", "", success]) }
+    let(:infrastructure_config_path) { "/myapp-staging/infrastructure.path" }
 
     class TestInstance
       def initialize(*args)
@@ -17,12 +18,12 @@ module Fauxpaas
 
       attr_reader :releases
 
-      def name 
-        "myapp_staging" 
+      def name
+        "myapp_staging"
       end
 
-      def deployer_env 
-        "rails" 
+      def deployer_env
+        "rails"
       end
 
       def default_branch
@@ -55,28 +56,28 @@ module Fauxpaas
         it "invokes cap deploy" do
           expect(kernel).to receive(:capture3)
             .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy"))
-          deployer.deploy(instance)
+          deployer.deploy(instance, infrastructure_config_path: infrastructure_config_path)
         end
 
         it "sets BRANCH to instance.default_branch when no reference given" do
           expect(kernel).to receive(:capture3)
             .with(a_string_matching("BRANCH=#{instance.default_branch}"))
-          deployer.deploy(instance)
+          deployer.deploy(instance, infrastructure_config_path: infrastructure_config_path)
         end
 
         it "sets BRANCH to the given reference" do
           expect(kernel).to receive(:capture3)
             .with(a_string_matching("BRANCH=mybranch"))
-          deployer.deploy(instance, reference: "mybranch")
+          deployer.deploy(instance, reference: "mybranch", infrastructure_config_path: infrastructure_config_path)
         end
 
         it "logs the release" do
-          deployer.deploy(instance, release: TestRelease)
+          deployer.deploy(instance, release: TestRelease, infrastructure_config_path: infrastructure_config_path)
           expect(instance.releases).to contain_exactly(an_instance_of(TestRelease))
         end
 
         it "by default, logs a Release with the current commit" do
-          deployer.deploy(instance, release: TestRelease)
+          deployer.deploy(instance, release: TestRelease, infrastructure_config_path: infrastructure_config_path)
           expect(instance.releases.first.src).to eq(commit)
         end
       end
@@ -84,7 +85,7 @@ module Fauxpaas
       context "when the deployment fails" do
         let(:kernel) { double(:kernel, capture3: ["", "", failure]) }
         it "does not log the release" do
-          deployer.deploy(instance, release: TestRelease)
+          deployer.deploy(instance, release: TestRelease, infrastructure_config_path: infrastructure_config_path)
           expect(instance.releases.length).to eq(0)
         end
       end

@@ -71,3 +71,5 @@ namespace :deploy do
 
   after :log_revision, :show_revision
 end
+
+load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")

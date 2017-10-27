@@ -10,9 +10,10 @@ module Fauxpaas
       @kernel = kernel
     end
 
-    def deploy(instance, reference: nil, release: Release)
+    def deploy(instance, reference: nil, release: Release, infrastructure_config_path:)
       stdout, stderr, status = run(instance, "deploy", [
-        "BRANCH=#{reference || instance.default_branch}"
+        "BRANCH=#{reference || instance.default_branch}",
+        "INFRASTRUCTURE_PATH=#{infrastructure_config_path}"
       ])
 
       instance.log_release(release.new(find_revision(stderr))) if status.success?

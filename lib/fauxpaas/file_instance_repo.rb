@@ -13,7 +13,7 @@ module Fauxpaas
     end
 
     def find(name)
-      contents = YAML.load(fs.read(path + "#{name}.yml"))
+      contents = YAML.load(fs.read(instance_path(name)))
       Instance.new(
         name: name,
         deployer_env: contents["deployer_env"],
@@ -23,9 +23,8 @@ module Fauxpaas
     end
 
     def save(instance)
-      save_path = path + "#{instance.name}.yml"
-      fs.mkdir_p(save_path.dirname)
-      fs.write(save_path, YAML.dump(
+      fs.mkdir_p(instance_path(instance.name))
+      fs.write(instance_path(instance.name), YAML.dump(
         "deployer_env" => instance.deployer_env,
         "default_branch" => instance.default_branch,
         "releases" => instance.releases.map { |d| d.to_hash }
@@ -34,6 +33,10 @@ module Fauxpaas
 
     private
     attr_reader :path, :fs
+
+    def instance_path(name)
+      path + name + "instance.yml"
+    end
 
   end
 
