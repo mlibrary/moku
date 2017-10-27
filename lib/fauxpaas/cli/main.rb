@@ -52,6 +52,13 @@ module Fauxpaas
         instance = Fauxpaas.instance_repo.find(instance_name)
         puts Fauxpaas.deployer.caches(instance)
       end
+
+      desc "releases <instance>",
+        "List release history for the instance"
+      def releases(instance_name)
+        instance = Fauxpaas.instance_repo.find(instance_name)
+        puts instance.releases.map { |r| r.to_s }.join("\n")
+      end
     end
 
   end
