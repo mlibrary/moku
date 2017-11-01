@@ -44,6 +44,11 @@ module Fauxpaas
       end
     end
 
+    def expect_cap_cmd(task)
+      expect(kernel).to receive(:capture3)
+        .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} #{task}"))
+    end
+
     let(:instance) { TestInstance.new }
 
     let(:deployer) { described_class.new(path, kernel) }
@@ -56,8 +61,7 @@ module Fauxpaas
         let(:kernel) { double(:kernel, capture3: ["", cap_stderr, success]) }
 
         it "invokes cap deploy" do
-          expect(kernel).to receive(:capture3)
-            .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy"))
+          expect_cap_cmd("deploy")
           deployer.deploy(instance, infrastructure_config_path: infrastructure_config_path)
         end
 
@@ -97,8 +101,7 @@ module Fauxpaas
       let(:cache) { "20160614133327" }
 
       it "invokes cap rollback" do
-        expect(kernel).to receive(:capture3)
-          .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy:rollback"))
+        expect_cap_cmd("deploy:rollback")
         deployer.rollback(instance, cache: cache)
       end
       it "sets ROLLBACK_RELEASE to the given cache" do
@@ -115,9 +118,15 @@ module Fauxpaas
 
     describe "#caches" do
       it "invokes cap caches:list" do
-        expect(kernel).to receive(:capture3)
-          .with("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} caches:list")
+        expect_cap_cmd("caches:list")
         deployer.caches(instance)
+      end
+    end
+
+    describe "#restart" do
+      it "invokes cap systemd:restart" do
+        expect_cap_cmd("systemd:restart")
+        deployer.restart(instance)
       end
     end
   end

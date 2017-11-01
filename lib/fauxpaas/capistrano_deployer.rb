@@ -30,7 +30,7 @@ module Fauxpaas
     end
 
     def caches(instance)
-      _stdout, stderr, status = run(instance, "caches:list", [])
+      _stdout, stderr, status = run(instance, "caches:list")
       stderr
         .split(Fauxpaas.split_token + "\n")
         .drop(1)
@@ -39,11 +39,16 @@ module Fauxpaas
       status
     end
 
+    def restart(instance)
+      _stdout, stderr, status = run(instance, "systemd:restart")
+      status
+    end
+
     private
 
     attr_reader :capfile_path, :kernel
 
-    def run(instance, task, options)
+    def run(instance, task, options = [])
       kernel.capture3(
         "cap -f #{capfile_for(instance)} #{instance.name} #{task} #{options.join(" ")}".strip
       )
