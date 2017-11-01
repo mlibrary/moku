@@ -7,6 +7,7 @@ set :repo_url, "https://github.com/mlibrary/chipmunk.git"
 set :deploy_to, File.expand_path(File.join(File.dirname(__FILE__), "../../spec/sandbox/test-rails"))
 set :rails_env, "development"
 set :assets_prefix, "assets"
+set :systemd_services, ["app-puma@chipmunk.service", "resque-pool@chipmunk.service"]
 
 set :rbenv_custom_path, "/usr/local/rbenv"
 

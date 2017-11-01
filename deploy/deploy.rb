@@ -71,4 +71,15 @@ namespace :deploy do
   after :log_revision, :show_revision
 end
 
+namespace :systemd do
+  desc "Restart the application's systemd service"
+  task :restart do
+    fetch(:systemd_services, []).each do |service|
+      on roles(:app) do
+        execute :sudo, "/bin/systemctl", "restart", service
+      end
+    end
+  end
+end
+
 load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")
