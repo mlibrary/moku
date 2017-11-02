@@ -2,7 +2,6 @@
 
 require "simplecov"
 require "bundler/setup"
-require "fauxpaas"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

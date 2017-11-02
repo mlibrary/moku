@@ -2,6 +2,7 @@
 
 require "pathname"
 require "open3"
+require "fauxpaas/components"
 require "fauxpaas/release"
 
 module Fauxpaas
