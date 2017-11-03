@@ -1,6 +1,9 @@
-deployer_env: rails
-default_branch: master
-source: "https://github.com/mlibrary/chipmunk.git"
-rails_env: development
-assets_prefix: assets
-deploy_dir: null
+deploy:
+  deployer_env: rails.capfile
+  assets_prefix: assets
+  deploy_dir: null
+  rails_env: development
+source:
+  url: "https://github.com/mlibrary/chipmunk.git"
+  default_branch: master
+releases: []

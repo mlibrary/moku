@@ -1,6 +1,9 @@
-deployer_env: norails
-default_branch: master
-source: "https://github.com/dpn-admin/dpn-client.git"
-rails_env: production
-assets_prefix: assets
-deploy_dir: null
+deploy:
+  deployer_env: norails.capfile
+  rails_env: production
+  assets_prefix: assets
+  deploy_dir: null
+source:
+  url: "https://github.com/dpn-admin/dpn-client.git"
+  default_branch: master
+releases: []
