@@ -7,6 +7,10 @@ module Fauxpaas
 
     attr_reader :url, :reference
 
+    def eql?(other)
+      reference == other.reference &&
+        url == other.url
+    end
     def to_hash
       {
         url: url,
