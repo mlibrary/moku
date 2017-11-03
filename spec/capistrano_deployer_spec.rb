@@ -5,12 +5,11 @@ require "fauxpaas/capistrano_deployer"
 
 module Fauxpaas
   RSpec.describe CapistranoDeployer do
-    RSpec::Matchers.define_negated_matcher :a_string_not_matching, :a_string_matching
 
     let(:success) { double(:success, success?: true) }
     let(:failure) { double(:failure, success?: false) }
     let(:path) { "/base/path" }
-    let(:kernel) { double(:kernel, capture3: ["", "", success]) }
+    let(:runner) { double(:runner, run: ["", "", success]) }
     let(:infrastructure_config_path) { "/myapp-staging/infrastructure.path" }
 
     class TestInstance
@@ -62,30 +61,29 @@ module Fauxpaas
 
     let(:instance) { TestInstance.new }
 
-    let(:deployer) { described_class.new(path, kernel) }
+    let(:deployer) { described_class.new(path, runner) }
 
     describe "#deploy" do
       let(:commit) { "031d744fe4228d2440830d59d070a8598ac19da0" }
       let(:cap_stderr) { "Branch master (at #{commit}) deployed as release 20171024181746 by fauxpaas" }
 
       context "when capistrano prints the revision message" do
-        let(:kernel) { double(:kernel, capture3: ["", cap_stderr, success]) }
+        let(:runner) { double(:runner, run: ["", cap_stderr, success]) }
 
         it "invokes cap deploy" do
-          expect(kernel).to receive(:capture3)
-            .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy"))
+          expect(runner).to receive(:run).with(instance.name, "deploy", anything)
           deployer.deploy(instance, infrastructure_config_path: infrastructure_config_path)
         end
 
         it "sets BRANCH to instance.default_branch when no reference given" do
-          expect(kernel).to receive(:capture3)
-            .with(a_string_matching("BRANCH=#{instance.default_branch}"))
+          expect(runner).to receive(:run)
+            .with(anything, anything, a_hash_including(branch: instance.default_branch) )
           deployer.deploy(instance, infrastructure_config_path: infrastructure_config_path)
         end
 
         it "sets BRANCH to the given reference" do
-          expect(kernel).to receive(:capture3)
-            .with(a_string_matching("BRANCH=mybranch"))
+          expect(runner).to receive(:run)
+            .with(anything, anything, a_hash_including(branch: "mybranch"))
           deployer.deploy(instance, reference: "mybranch", infrastructure_config_path: infrastructure_config_path)
         end
 
@@ -101,7 +99,7 @@ module Fauxpaas
       end
 
       context "when the deployment fails" do
-        let(:kernel) { double(:kernel, capture3: ["", "", failure]) }
+        let(:runner) { double(:runner, run: ["", "", failure]) }
         it "does not log the release" do
           deployer.deploy(instance, release: TestRelease, infrastructure_config_path: infrastructure_config_path)
           expect(instance.releases.length).to eq(0)
@@ -113,26 +111,26 @@ module Fauxpaas
       let(:cache) { "20160614133327" }
 
       it "invokes cap rollback" do
-        expect(kernel).to receive(:capture3)
-          .with(a_string_matching("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} deploy:rollback"))
+        expect(runner).to receive(:run)
+          .with(instance.name, "deploy:rollback", anything)
         deployer.rollback(instance, cache: cache)
       end
       it "sets ROLLBACK_RELEASE to the given cache" do
-        expect(kernel).to receive(:capture3)
-          .with(a_string_matching("ROLLBACK_RELEASE=#{cache}"))
+        expect(runner).to receive(:run)
+          .with(anything, anything, a_hash_including(rollback_release: cache))
         deployer.rollback(instance, cache: cache)
       end
       it "does not set ROLLBACK_RELEASE when no cache given" do
-        expect(kernel).to receive(:capture3)
-          .with(a_string_not_matching("ROLLBACK_RELEASE"))
+        expect(runner).to receive(:run)
+          .with(anything, anything, a_hash_including(rollback_release: nil))
         deployer.rollback(instance)
       end
     end
 
     describe "#caches" do
       it "invokes cap caches:list" do
-        expect(kernel).to receive(:capture3)
-          .with("cap -f #{path}/#{instance.deployer_env}.capfile #{instance.name} caches:list")
+        expect(runner).to receive(:run)
+          .with(instance.name, "caches:list", {})
         deployer.caches(instance)
       end
     end
