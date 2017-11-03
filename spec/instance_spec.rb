@@ -2,6 +2,8 @@
 
 require_relative "./spec_helper"
 require "fauxpaas/instance"
+require "fauxpaas/deploy_config"
+require "fauxpaas/remote_archive"
 require "pathname"
 
 module Fauxpaas
@@ -14,8 +16,14 @@ module Fauxpaas
     let(:instance) do
       described_class.new(
         name: name,
-        deployer_env: deployer_env,
-        default_branch: somebranch
+        source: RemoteArchive.new("myrepo.git", default_branch: somebranch),
+        releases: [],
+        deploy_config: DeployConfig.new(
+          deployer_env: deployer_env,
+          deploy_dir: "/path/to/some/dir",
+          rails_env: "production",
+          assets_prefix: "assets",
+        )
       )
     end
 
@@ -46,8 +54,15 @@ module Fauxpaas
     describe "#default_branch" do
       it "defaults to master" do
         instance = described_class.new(
-          name: "asdf",
-          deployer_env: deployer_env
+          name: name,
+          source: RemoteArchive.new("myrepo.git"),
+          releases: [],
+          deploy_config: DeployConfig.new(
+            deployer_env: deployer_env,
+            deploy_dir: "/path/to/some/dir",
+            rails_env: "production",
+            assets_prefix: "assets",
+          )
         )
         expect(instance.default_branch).to eql("master")
       end
@@ -55,9 +70,8 @@ module Fauxpaas
         expect(instance.default_branch).to eql("somebranch")
       end
       it "can be set" do
-        expect { instance.default_branch = "newbranch" }
-          .to change { instance.default_branch }
-          .from(somebranch).to("newbranch")
+        instance.default_branch = "newbranch"
+        expect(instance.default_branch).to eql("newbranch")
       end
     end
 
@@ -67,8 +81,14 @@ module Fauxpaas
         let(:instance) do
           described_class.new(
             name: name,
-            deployer_env: deployer_env,
-            releases: [deploy]
+            source: RemoteArchive.new("myrepo.git", somebranch),
+            releases: [deploy],
+            deploy_config: DeployConfig.new(
+              deployer_env: deployer_env,
+              deploy_dir: "/path/to/some/dir",
+              rails_env: "production",
+              assets_prefix: "assets",
+            )
           )
         end
         it "returns the releases" do

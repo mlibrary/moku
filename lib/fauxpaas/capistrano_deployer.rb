@@ -17,7 +17,12 @@ module Fauxpaas
     def deploy(instance, reference: nil, release: Release, infrastructure_config_path:)
       _stdout, stderr, status = run(instance, "deploy", [
         "BRANCH=#{reference || instance.default_branch}",
-        "INFRASTRUCTURE_PATH=#{infrastructure_config_path}"
+        "INFRASTRUCTURE_PATH=#{infrastructure_config_path}",
+        "APPLICATION=#{instance.name}",
+        "DEPLOY_DIR=#{instance.deploy_dir}",
+        "RAILS_ENV=#{instance.rails_env}",
+        "ASSETS_PREFIX=#{instance.assets_prefix}",
+        "SOURCE_REPO=#{instance.source_repo}"
       ])
 
       instance.log_release(release.new(find_revision(stderr))) if status.success?

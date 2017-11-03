@@ -35,6 +35,22 @@ module Fauxpaas
       def log_release(release)
         @releases << release
       end
+
+      def deploy_dir
+        "/deploy/dir"
+      end
+
+      def rails_env
+        "production"
+      end
+
+      def assets_prefix
+        "assets"
+      end
+
+      def source_repo
+        "some_source"
+      end
     end
 
     class TestRelease < OpenStruct

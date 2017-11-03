@@ -1,3 +1,6 @@
 deployer_env: norails
 default_branch: master
-
+source: "https://github.com/dpn-admin/dpn-client.git"
+rails_env: production
+assets_prefix: assets
+deploy_dir: null

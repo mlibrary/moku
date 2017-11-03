@@ -9,6 +9,12 @@ set :ssh_options, user: "fauxpaas",
 
 set :split_token, File.read(File.join(File.dirname(__FILE__), "../.split_token"))
 
+set :application, ENV["APPLICATION"]
+set :repo_url, ENV["SOURCE_REPO"]
+set :deploy_to, ENV["DEPLOY_DIR"]
+set :rails_env, ENV["RAILS_ENV"]
+set :assets_prefix, ENV["ASSETS_PREFIX"]
+
 set :keep_releases, 5
 set :local_user, "fauxpaas"
 set :pty, false

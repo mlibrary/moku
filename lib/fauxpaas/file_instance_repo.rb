@@ -19,8 +19,16 @@ module Fauxpaas
       contents = YAML.load(fs.read(instance_path(name)))
       Instance.new(
         name: name,
-        deployer_env: contents["deployer_env"],
-        default_branch: contents["default_branch"],
+        source: RemoteArchive.new(
+          contents["source"]["url"],
+          default_branch: contents["source"]["default_branch"]
+        ),
+        deploy_config: DeployConfig.new(
+          deployer_env: contents["deploy"]["deployer_env"],
+          assets_prefix: contents["deploy"]["assets_prefix"],
+          deploy_dir: contents["deploy"]["deploy_dir"],
+          rails_env: contents["deploy"]["rails_env"]
+        ),
         releases: contents.fetch("releases", []).map {|r| Release.from_hash(r) }
       )
     end
@@ -28,8 +36,16 @@ module Fauxpaas
     def save(instance)
       fs.mkdir_p(instance_path(instance.name))
       fs.write(instance_path(instance.name), YAML.dump(
-        "deployer_env" => instance.deployer_env,
-        "default_branch" => instance.default_branch,
+        "deploy" => {
+          "deployer_env" => instance.deployer_env,
+          "assets_prefix" => instance.assets_prefix,
+          "deploy_dir" => instance.deploy_dir,
+          "rails_env" => instance.rails_env
+        },
+        "source" => {
+          "default_branch" => instance.default_branch,
+          "url" => instance.source_repo,
+        },
         "releases" => instance.releases.map(&:to_hash)
       ))
     end
