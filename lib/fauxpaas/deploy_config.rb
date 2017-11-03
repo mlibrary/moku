@@ -7,17 +7,19 @@ module Fauxpaas
       new(hash.symbolize_keys)
     end
 
-    def initialize(deployer_env:, deploy_dir:, rails_env:, assets_prefix:)
+    def initialize(appname:, deployer_env:, deploy_dir:, rails_env:, assets_prefix:)
+      @appname = appname
       @deployer_env = deployer_env
       @deploy_dir = deploy_dir
       @rails_env = rails_env
       @assets_prefix = assets_prefix
     end
 
-    attr_reader :deployer_env, :deploy_dir, :rails_env, :assets_prefix
+    attr_reader :appname, :deployer_env, :deploy_dir, :rails_env, :assets_prefix
 
     def to_hash
       @hash ||= {
+        appname: appname,
         deployer_env: deployer_env,
         deploy_dir: deploy_dir,
         rails_env: rails_env,

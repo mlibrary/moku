@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "./spec_helper"
+require_relative "./support/memory_filesystem"
+require_relative "./support/spoofed_git_runner"
 require "fauxpaas/instance"
-require "fauxpaas/deploy_config"
 require "fauxpaas/remote_archive"
+require "fauxpaas/deploy_archive"
+require "fauxpaas/infrastructure_archive"
+require "fauxpaas/release"
+require "fauxpaas/release_signature"
 require "pathname"
 
 module Fauxpaas
@@ -11,20 +16,90 @@ module Fauxpaas
     let(:app) { "myapp" }
     let(:stage) { "mystage" }
     let(:name) { "#{app}-#{stage}" }
-    let(:deployer_env) { double(:deployer_env) }
-    let(:somebranch) { "somebranch" }
+
+    let(:runner) { SpoofedGitRunner.new  }
+    let(:infra_content) {{a: 1, b: 2}}
+    let(:infra_archive) do
+      InfrastructureArchive.new(
+        RemoteArchive.new("infra.git", runner, default_branch: runner.branch),
+        fs: MemoryFilesystem.new({
+          Pathname.new(runner.tmpdir) + "infrastructure.yml" => YAML.dump(infra_content)
+        })
+      )
+    end
+    let(:deploy_content) do
+      {
+        "appname" => name,
+        "deployer_env" => "foo.capfile",
+        "rails_env" => "testing",
+        "assets_prefix" => "asssets",
+        "deploy_dir" => "/some/deploy/dir"
+      }
+    end
+    let(:deploy_archive) do
+      DeployArchive.new(
+        RemoteArchive.new("deploy.git", runner, default_branch: runner.branch),
+        fs: MemoryFilesystem.new({
+          Pathname.new(runner.tmpdir) + "deploy.yml" => YAML.dump(deploy_content)
+        })
+      )
+    end
+    let(:source_archive) { RemoteArchive.new("source.git", runner, default_branch: runner.branch) }
+    let(:a_release) { double(:a_release) }
+    let(:another_release) { double(:another_release) }
+
     let(:instance) do
       described_class.new(
         name: name,
-        source: RemoteArchive.new("myrepo.git", default_branch: somebranch),
-        releases: [],
-        deploy_config: DeployConfig.new(
-          deployer_env: deployer_env,
-          deploy_dir: "/path/to/some/dir",
-          rails_env: "production",
-          assets_prefix: "assets",
-        )
+        infrastructure_archive: infra_archive,
+        deploy_archive: deploy_archive,
+        source_archive: source_archive,
+        releases: [a_release]
       )
+    end
+
+    describe "#signature" do
+      context "when no commitish given" do
+        it "returns the latest release signature" do
+          expect(instance.signature).to eql(
+            ReleaseSignature.new(
+              infrastructure: infra_archive.latest,
+              deploy: deploy_archive.latest,
+              source: source_archive.latest
+            )
+          )
+        end
+      end
+      context "when commitish given" do
+        it "returns an appropriate signature" do
+          expect(instance.signature(runner.short)).to eql(
+            ReleaseSignature.new(
+              infrastructure: infra_archive.latest,
+              deploy: deploy_archive.latest,
+              source: source_archive.reference(runner.resolved_remote(runner.short))
+            )
+          )
+        end
+      end
+    end
+
+    describe "#release" do
+      let(:signature) do
+        ReleaseSignature.new(
+          infrastructure: infra_archive.latest,
+          deploy: deploy_archive.latest,
+          source: source_archive.latest
+        )
+      end
+      it "builds the release that corresponds to the signature" do
+        expect(instance.release(signature)).to eql(
+          Release.new(
+            source: signature.source,
+            infrastructure: infra_archive.infrastructure(signature.infrastructure),
+            deploy_config: deploy_archive.deploy_config(signature.deploy)
+          )
+        )
+      end
     end
 
     describe "#name" do
@@ -45,29 +120,9 @@ module Fauxpaas
       end
     end
 
-    describe "#deployer_env" do
-      it "returns the deployer_env" do
-        expect(instance.deployer_env).to eql(deployer_env)
-      end
-    end
-
     describe "#default_branch" do
-      it "defaults to master" do
-        instance = described_class.new(
-          name: name,
-          source: RemoteArchive.new("myrepo.git"),
-          releases: [],
-          deploy_config: DeployConfig.new(
-            deployer_env: deployer_env,
-            deploy_dir: "/path/to/some/dir",
-            rails_env: "production",
-            assets_prefix: "assets",
-          )
-        )
-        expect(instance.default_branch).to eql("master")
-      end
       it "returns the branch" do
-        expect(instance.default_branch).to eql("somebranch")
+        expect(instance.default_branch).to eql(runner.branch)
       end
       it "can be set" do
         instance.default_branch = "newbranch"
@@ -75,36 +130,10 @@ module Fauxpaas
       end
     end
 
-    describe "#releases" do
-      context "with an instance that was constructed with releases" do
-        let(:deploy) { double("deploy1") }
-        let(:instance) do
-          described_class.new(
-            name: name,
-            source: RemoteArchive.new("myrepo.git", somebranch),
-            releases: [deploy],
-            deploy_config: DeployConfig.new(
-              deployer_env: deployer_env,
-              deploy_dir: "/path/to/some/dir",
-              rails_env: "production",
-              assets_prefix: "assets",
-            )
-          )
-        end
-        it "returns the releases" do
-          expect(instance.releases).to contain_exactly(deploy)
-        end
-        it "returns logged releases" do
-          another_deploy = double("another_deploy")
-          instance.log_release(another_deploy)
-          expect(instance.releases).to contain_exactly(deploy, another_deploy)
-        end
-      end
-
+    describe "#releases #log_release" do
       it "returns logged releases" do
-        another_deploy = double("another_deploy")
-        instance.log_release(another_deploy)
-        expect(instance.releases).to contain_exactly(another_deploy)
+        instance.log_release(another_release)
+        expect(instance.releases).to contain_exactly(a_release, another_release)
       end
     end
   end

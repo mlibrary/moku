@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "fauxpaas/release_signature"
+require "fauxpaas/release"
 require "pathname"
 
 module Fauxpaas
@@ -7,37 +9,56 @@ module Fauxpaas
   # Represents a named instance within fauxpaas, as opposed
   # to installed on destination servers.
   class Instance
-    extend Forwardable
-    def initialize(name:, deploy_config:, source:, releases: [])
+    def initialize(name:, releases: [], infrastructure_archive:, deploy_archive:, source_archive:)
+      @name = name
       @app, @stage = name.split("-")
-      @deploy_config = deploy_config
-      @source = source
       @releases = releases
+      @infrastructure_archive = infrastructure_archive
+      @deploy_archive = deploy_archive
+      @source_archive = source_archive
     end
 
-    def_delegators :@deploy_config, :deployer_env, :deploy_dir, :rails_env, :assets_prefix
+    attr_reader :name, :app, :stage, :releases
+    attr_reader :source_archive, :deploy_archive, :infrastructure_archive
 
-    attr_reader :app, :stage, :releases
+    def signature(source_reference = nil)
+      if source_reference
+        ReleaseSignature.new(
+          source: source_archive.reference(source_reference),
+          infrastructure: infrastructure_archive.latest,
+          deploy: deploy_archive.latest
+        )
+      else
+        ReleaseSignature.new(
+          source: source_archive.latest,
+          infrastructure: infrastructure_archive.latest,
+          deploy: deploy_archive.latest
+        )
+      end
+    end
 
-    def source_repo
-      source.url
+    def release(sig)
+      Release.new(
+        source: sig.source,
+        infrastructure: infrastructure_archive.infrastructure(sig.infrastructure),
+        deploy_config: deploy_archive.deploy_config(sig.deploy)
+      )
     end
 
     def default_branch
-      source.default_branch
+      source_archive.default_branch
     end
 
     def default_branch=(value)
-      source.default_branch = value
-    end
-
-    def name
-      "#{app}-#{stage}"
+      source_archive.default_branch = value
     end
 
     def eql?(other)
       name == other.name &&
-        deployer_env == other.deployer_env
+        source_archive == other.source_archive &&
+        deploy_archive == other.deploy_archive &&
+        infrastructure_archive == other.infrastructure_archive &&
+        releases == other.releases
     end
     alias_method :==, :eql?
 
@@ -45,8 +66,6 @@ module Fauxpaas
       releases << release
     end
 
-    private
-    attr_accessor :source
 
   end
 

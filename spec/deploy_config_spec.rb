@@ -6,6 +6,7 @@ module Fauxpaas
   RSpec.describe DeployConfig do
     let(:options) do
       {
+        appname: "myapp-mystage",
         deployer_env: "foo",
         deploy_dir: Pathname.new("bar/baz"),
         rails_env: "staging",

@@ -12,6 +12,7 @@ module Fauxpaas
     let(:fs) { double(:fs) }
     let(:deploy_config) do
       DeployConfig.new(
+        appname: "myapp-mystage",
         deployer_env: "foo.capfile",
         assets_prefix: "assets",
         rails_env: "production",

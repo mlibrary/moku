@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
-require "fauxpaas/instance"
 require "fauxpaas/filesystem"
-require "fauxpaas/release"
+require "fauxpaas/instance"
+require "fauxpaas/archive"
+require "fauxpaas/local_archive"
+require "fauxpaas/remote_archive"
+require "fauxpaas/logged_release"
 require "pathname"
 require "yaml"
 
@@ -19,39 +22,24 @@ module Fauxpaas
       contents = YAML.load(fs.read(instance_path(name)))
       Instance.new(
         name: name,
-        source: RemoteArchive.new(
-          contents["source"]["url"],
-          default_branch: contents["source"]["default_branch"]
-        ),
-        deploy_config: DeployConfig.new(
-          deployer_env: contents["deploy"]["deployer_env"],
-          assets_prefix: contents["deploy"]["assets_prefix"],
-          deploy_dir: contents["deploy"]["deploy_dir"],
-          rails_env: contents["deploy"]["rails_env"]
-        ),
-        releases: contents.fetch("releases", []).map {|r| Release.from_hash(r) }
+        source_archive: Archive.from_hash(contents["source"]),
+        deploy_archive: Archive.from_hash(contents["deploy"]),
+        infrastructure_archive: Archive.from_hash(contents["infrastructure"]),
+        releases: contents.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
     end
 
     def save(instance)
       fs.mkdir_p(instance_path(instance.name))
       fs.write(instance_path(instance.name), YAML.dump(
-        "deploy" => {
-          "deployer_env" => instance.deployer_env,
-          "assets_prefix" => instance.assets_prefix,
-          "deploy_dir" => instance.deploy_dir,
-          "rails_env" => instance.rails_env
-        },
-        "source" => {
-          "default_branch" => instance.default_branch,
-          "url" => instance.source_repo,
-        },
+        "deploy" => instance.deploy_archive.to_hash,
+        "source" => instance.source_archive.to_hash,
+        "infrastructure" => instance.infrastructure_archive.to_hash,
         "releases" => instance.releases.map(&:to_hash)
       ))
     end
 
     private
-
     attr_reader :path, :fs
 
     def instance_path(name)
