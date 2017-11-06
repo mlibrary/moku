@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "fauxpaas/filesystem"
+require "pathname"
 
 module Fauxpaas
 
@@ -22,6 +23,14 @@ module Fauxpaas
 
     def read(path)
       @files[path]
+    end
+
+    def mktmpdir
+      yield tmpdir
+    end
+
+    def tmpdir
+      Pathname.new("/some/tmp/dir")
     end
 
   end
