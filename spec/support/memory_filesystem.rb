@@ -7,8 +7,8 @@ module Fauxpaas
 
   class MemoryFilesystem < Filesystem
 
-    def initialize
-      @files = {}
+    def initialize(files = {})
+      @files = files
     end
 
     def mkdir_p(path); end
