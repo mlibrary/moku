@@ -19,12 +19,16 @@ module Fauxpaas
         "Deploys the instance's source; by default deploys master. " \
         "Use --reference to deploy a specific revision"
       def deploy(instance_name)
-        infrastructure_config_path = Fauxpaas.instance_root + instance_name + "infrastructure.yml"
         instance = Fauxpaas.instance_repo.find(instance_name)
-        Fauxpaas.deployer.deploy(instance,
-          reference: options[:reference],
-          infrastructure_config_path: infrastructure_config_path)
-        Fauxpaas.instance_repo.save(instance)
+        signature = instance.signature(reference)
+        release = instance.release(signature)
+        if release.deploy
+          instance.log_release(LoggedRelease.new(signature)) if status.success?
+          Fauxpaas.instance_repo.save(instance)
+          puts "deploy successful"
+        else
+          puts "deploy unsuccessful"
+        end
       end
 
       desc "default_branch <instance> [<new_branch>]",
@@ -50,14 +54,14 @@ module Fauxpaas
         "Rollsback to the specified cache, or the most recent one."
       def rollback(instance_name)
         instance = Fauxpaas.instance_repo.find(instance_name)
-        Fauxpaas.deployer.rollback(instance, cache: options[:cache])
+        instance.rollback(options[:cache])
       end
 
       desc "caches <instance>",
         "List cached releases for the instance"
       def caches(instance_name)
         instance = Fauxpaas.instance_repo.find(instance_name)
-        puts Fauxpaas.deployer.caches(instance)
+        puts instance.caches
       end
 
       desc "releases <instance>",

@@ -2,7 +2,7 @@
 
 require "pathname"
 require "fauxpaas/file_instance_repo"
-require "fauxpaas/capistrano_deployer"
+require "fauxpaas/open3_capture"
 
 # Fake Platform As A Service
 module Fauxpaas
@@ -21,8 +21,12 @@ module Fauxpaas
       @instance_root ||= root + "deploy" + "instances"
     end
 
-    def deployer
-      @deployer ||= CapistranoDeployer.new(root + "deploy" + "capfiles")
+    def deployer_env_root
+      @deployer_env_root ||= root + "deploy" + "capfiles"
+    end
+
+    def system_runner
+      @system_runner ||= Open3Capture.new
     end
 
     def split_token

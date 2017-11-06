@@ -45,6 +45,28 @@ module Fauxpaas
       )
     end
 
+    def runner
+      @runner ||= deploy_archive
+        .deploy_config(deploy_archive.latest)
+        .runner
+    end
+
+    def caches
+      # it likely does not make sense for the instance to manipulate
+      # cap's raw output
+      _, stderr, status = runner.run(name, "caches:list", {})
+      stderr
+        .split(Fauxpaas.split_token + "\n")
+        .drop(1)
+        .map {|dirs| dirs.split("\n") }
+        .first
+    end
+
+    def rollback(cache = nil)
+      _, _, status = runner.run(name, "deploy:rollback", {rollback_release: cache})
+      status
+    end
+
     def default_branch
       source_archive.default_branch
     end

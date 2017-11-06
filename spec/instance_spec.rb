@@ -136,5 +136,67 @@ module Fauxpaas
         expect(instance.releases).to contain_exactly(a_release, another_release)
       end
     end
+
+    describe "#runner" do
+      it "returns a runner" do
+        expected_runner = deploy_archive
+          .deploy_config(deploy_archive.latest)
+          .runner
+        expect(instance.runner).to eql(expected_runner)
+      end
+    end
+
+    describe "#caches" do
+      let(:stderr) do
+        "#{Fauxpaas.split_token}\n" \
+          "onecache\ntwocache\nthreecache\n" \
+          "#{Fauxpaas.split_token}\n"
+      end
+      before(:each) do
+        allow(instance.runner).to receive(:run)
+          .and_return(["", stderr, :status])
+      end
+      it "uses name as the stage" do
+        expect(instance.runner).to receive(:run)
+          .with(instance.name, anything, anything)
+        instance.caches
+      end
+      it "runs the 'caches:list' task" do
+        expect(instance.runner).to receive(:run)
+          .with(anything, "caches:list", anything)
+        instance.caches
+      end
+      it "sets no options" do
+        expect(instance.runner).to receive(:run)
+          .with(anything, anything, {})
+        instance.caches
+      end
+      it "returns the caches" do
+        allow(instance.runner).to receive(:run)
+          .and_return(["", stderr, ""])
+        expect(instance.caches).to eql(["onecache", "twocache", "threecache"])
+      end
+    end
+
+    describe "#rollback" do
+      let(:cache) { "20160614133327" }
+
+      it "uses name as the stage" do
+        expect(instance.runner).to receive(:run)
+          .with(instance.name, anything, anything)
+        instance.rollback(cache)
+      end
+      it "runs the 'deploy:rollback' task" do
+        expect(instance.runner).to receive(:run)
+          .with(anything, "deploy:rollback", anything)
+        instance.rollback(cache)
+      end
+      it "sets :rollback_release" do
+        expect(instance.runner).to receive(:run)
+          .with(anything, anything, a_hash_including({rollback_release: cache }))
+        instance.rollback(cache)
+      end
+    end
+
   end
 end

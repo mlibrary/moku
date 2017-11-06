@@ -1,6 +1,7 @@
 require_relative "./spec_helper"
 require "active_support/core_ext/hash/keys"
 require "fauxpaas/deploy_config"
+require "fauxpaas/components"
 
 module Fauxpaas
   RSpec.describe DeployConfig do
@@ -14,6 +15,17 @@ module Fauxpaas
       }
     end
     let(:deploy_config) { described_class.new(options) }
+
+    describe "#runner" do
+      it "returns a runner" do
+        expect(deploy_config.runner).to eql(
+          CapRunner.new(
+            Fauxpaas.deployer_env_root + options[:deployer_env],
+            Fauxpaas.system_runner
+          )
+        )
+      end
+    end
 
     describe "#to_hash" do
       it "returns a hash with string keys" do
