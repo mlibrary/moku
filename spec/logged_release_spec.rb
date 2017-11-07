@@ -13,15 +13,15 @@ module Fauxpaas
       )
     end
     let(:user) { "foouser" }
-    let(:time) { Time.at(9999) }
+    let(:time) { Time.new(2017, 1, 31, 13, 44, 11) }
     let(:formatted_time) { time.strftime("%FT%T") }
     let(:logged_release) { described_class.new(user, time, sig) }
 
     describe "#to_s" do
       it "returns a formatted string" do
         expect(logged_release.to_s).to eql(
-          "#{formatted_time}: #{user} #{sig.source.reference} " \
-            "#{sig.infrastructure.reference} w/ #{sig.deploy.reference}")
+          "2017-01-31T13:44:11: foouser source_ref infra_ref w/ deploy_ref"
+        )
       end
     end
 
