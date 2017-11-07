@@ -3,24 +3,11 @@ require "fauxpaas/git_runner"
 module Fauxpaas
   class Archive
     def self.from_hash(hash)
-      registry.find {|candidate| candidate.handles?(hash["type"])}
-        .new(
-          hash["url"],
-          Object.const_get(hash["git_runner"]).new,
-          default_branch: hash["default_branch"]
-        )
-    end
-
-    def self.registry
-      @@registry ||= []
-    end
-
-    def self.register(candidate)
-      registry.unshift(candidate)
-    end
-
-    def self.handles?(type)
-      true
+      new(
+        hash["url"],
+        Object.const_get(hash["git_runner"]).new,
+        default_branch: hash["default_branch"]
+      )
     end
 
     def initialize(url, git_runner = GitRunner.new, default_branch: "master")
@@ -33,7 +20,10 @@ module Fauxpaas
     attr_accessor :default_branch
 
     def reference(commitish)
-      raise NotImplementedError
+      sha = git_runner.sha(url, "#{commitish}^{}")
+      sha ||= git_runner.sha(url, commitish)
+      sha ||= commitish
+      GitReference.new(url, sha)
     end
 
     def latest

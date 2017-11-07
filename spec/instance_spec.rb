@@ -4,7 +4,7 @@ require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
 require "fauxpaas/instance"
-require "fauxpaas/remote_archive"
+require "fauxpaas/archive"
 require "fauxpaas/deploy_archive"
 require "fauxpaas/infrastructure_archive"
 require "fauxpaas/release"
@@ -21,7 +21,7 @@ module Fauxpaas
     let(:infra_content) {{a: 1, b: 2}}
     let(:infra_archive) do
       InfrastructureArchive.new(
-        RemoteArchive.new("infra.git", runner, default_branch: runner.branch),
+        Archive.new("infra.git", runner, default_branch: runner.branch),
         fs: MemoryFilesystem.new({
           Pathname.new(runner.tmpdir) + "infrastructure.yml" => YAML.dump(infra_content)
         })
@@ -38,13 +38,13 @@ module Fauxpaas
     end
     let(:deploy_archive) do
       DeployArchive.new(
-        RemoteArchive.new("deploy.git", runner, default_branch: runner.branch),
+        Archive.new("deploy.git", runner, default_branch: runner.branch),
         fs: MemoryFilesystem.new({
           Pathname.new(runner.tmpdir) + "deploy.yml" => YAML.dump(deploy_content)
         })
       )
     end
-    let(:source_archive) { RemoteArchive.new("source.git", runner, default_branch: runner.branch) }
+    let(:source_archive) { Archive.new("source.git", runner, default_branch: runner.branch) }
     let(:a_release) { double(:a_release) }
     let(:another_release) { double(:another_release) }
 
@@ -76,7 +76,7 @@ module Fauxpaas
             ReleaseSignature.new(
               infrastructure: infra_archive.latest,
               deploy: deploy_archive.latest,
-              source: source_archive.reference(runner.resolved_remote(runner.short))
+              source: source_archive.reference(runner.short)
             )
           )
         end

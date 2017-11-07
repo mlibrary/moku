@@ -3,8 +3,6 @@
 require "fauxpaas/filesystem"
 require "fauxpaas/instance"
 require "fauxpaas/archive"
-require "fauxpaas/local_archive"
-require "fauxpaas/remote_archive"
 require "fauxpaas/logged_release"
 require "pathname"
 require "yaml"

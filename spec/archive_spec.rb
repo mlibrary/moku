@@ -1,10 +1,10 @@
 require_relative "./spec_helper"
-require "fauxpaas/components"
-require "fauxpaas/remote_archive"
 require_relative "./support/spoofed_git_runner"
+require "fauxpaas/components"
+require "fauxpaas/archive"
 
 module Fauxpaas
-  RSpec.describe RemoteArchive do
+  RSpec.describe Archive do
     let(:url) { "https://example.com/fake.git" }
     let(:runner) { SpoofedGitRunner.new }
     let(:archive) { described_class.new(url, runner, default_branch: runner.branch) }
@@ -12,22 +12,27 @@ module Fauxpaas
     describe "#reference" do
       it "resolves a branch to its latest commit" do
         expect(archive.reference(runner.branch)).to eql(
-          Fauxpaas::GitReference.new(url, runner.resolved_remote(runner.branch))
+          Fauxpaas::GitReference.new(url, runner.long_for(runner.branch))
         )
       end
       it "resolves a short commit unchanged" do
         expect(archive.reference(runner.short)).to eql(
-          Fauxpaas::GitReference.new(url, runner.resolved_remote(runner.short))
+          Fauxpaas::GitReference.new(url, runner.long_for(runner.short))
         )
       end
       it "resolves a long commit to itself" do
         expect(archive.reference(runner.long)).to eql(
-          Fauxpaas::GitReference.new(url, runner.resolved_remote(runner.long))
+          Fauxpaas::GitReference.new(url, runner.long_for(runner.long))
         )
       end
-      it "resolves a tag to its commit" do
+      it "resolves a dumb tag to its smart commit" do
         expect(archive.reference(runner.dumb_tag)).to eql(
-          Fauxpaas::GitReference.new(url, runner.resolved_remote(runner.smart_tag))
+          Fauxpaas::GitReference.new(url, runner.long_for(runner.smart_tag))
+        )
+      end
+      it "resolves a smart tag to its commit" do
+        expect(archive.reference(runner.smart_tag)).to eql(
+          Fauxpaas::GitReference.new(url, runner.long_for(runner.smart_tag))
         )
       end
     end
@@ -46,7 +51,7 @@ module Fauxpaas
     describe "#latest" do
       it "resolves the default_branch to its latest commit" do
         expect(archive.latest).to eql(
-          Fauxpaas::GitReference.new(url, runner.resolved_remote(runner.branch))
+          Fauxpaas::GitReference.new(url, runner.long_for(runner.branch))
         )
       end
     end

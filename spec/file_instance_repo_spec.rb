@@ -13,7 +13,7 @@ module Fauxpaas
   RSpec.describe FileInstanceRepo do
     let(:repo) { described_class.new("/instances", MemoryFilesystem.new) }
 
-    let(:deploy_archive) { RemoteArchive.new("https://example.com/me.git", SpoofedGitRunner.new) }
+    let(:deploy_archive) { Archive.new("https://example.com/me.git", SpoofedGitRunner.new) }
     let(:infra_archive) { double(:infra_archive) }
     let(:source_archive) { double(:source_archive) }
     let(:release) { double(:release) }
