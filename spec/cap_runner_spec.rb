@@ -5,8 +5,6 @@ require "fauxpaas/cap_runner"
 
 module Fauxpaas
   RSpec.describe CapRunner do
-    RSpec::Matchers.define_negated_matcher :a_string_not_matching, :a_string_matching
-
     let(:success) { double(:success, success?: true) }
     let(:stdout) { double(:stdout) }
     let(:stderr) { double(:stderr) }
