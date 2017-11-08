@@ -1,4 +1,5 @@
 require "fauxpaas/git_runner"
+require "fauxpaas/git_reference"
 
 module Fauxpaas
   class Archive
