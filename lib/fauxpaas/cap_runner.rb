@@ -4,14 +4,13 @@ require "fauxpaas/open3_capture"
 
 module Fauxpaas
   class CapRunner
-    def initialize(capfile_path, system_runner = Open3Capture.new)
-      @capfile_path = capfile_path
+    def initialize(system_runner = Open3Capture.new)
       @system_runner = system_runner
     end
 
-    attr_reader :capfile_path, :system_runner
+    attr_reader :system_runner
 
-    def run(stage, task, options)
+    def run(capfile_path, stage, task, options)
       system_runner.run(
         "cap -f #{capfile_path} #{stage} #{task} " \
           "#{capify_options(options).join(" ")}".strip
@@ -20,7 +19,6 @@ module Fauxpaas
 
     def eql?(other)
       other.is_a?(self.class) &&
-        capfile_path == other.capfile_path &&
         system_runner == other.system_runner
     end
 

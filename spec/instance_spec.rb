@@ -137,15 +137,6 @@ module Fauxpaas
       end
     end
 
-    describe "#runner" do
-      it "returns a runner" do
-        expected_runner = deploy_archive
-          .deploy_config(deploy_archive.latest)
-          .runner
-        expect(instance.runner).to eql(expected_runner)
-      end
-    end
-
     describe "#caches" do
       let(:stderr) do
         "#{Fauxpaas.split_token}\n" \

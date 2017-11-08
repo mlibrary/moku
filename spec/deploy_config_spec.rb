@@ -18,12 +18,7 @@ module Fauxpaas
 
     describe "#runner" do
       it "returns a runner" do
-        expect(deploy_config.runner).to eql(
-          CapRunner.new(
-            Fauxpaas.deployer_env_root + options[:deployer_env],
-            Fauxpaas.system_runner
-          )
-        )
+        expect(deploy_config.runner.respond_to?(:run)).to be true
       end
     end
 

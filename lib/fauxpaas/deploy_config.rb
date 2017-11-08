@@ -1,6 +1,6 @@
 require "active_support/core_ext/hash/keys"
 require "fauxpaas/components"
-require "fauxpaas/cap_runner"
+require "fauxpaas/cap"
 
 module Fauxpaas
   class DeployConfig
@@ -20,7 +20,7 @@ module Fauxpaas
     attr_reader :appname, :deployer_env, :deploy_dir, :rails_env, :assets_prefix
 
     def runner
-      CapRunner.new(Fauxpaas.deployer_env_root + deployer_env, Fauxpaas.system_runner)
+      Cap.new(Fauxpaas.deployer_env_root + deployer_env, Fauxpaas.backend_runner)
     end
 
     def to_hash
