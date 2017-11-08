@@ -143,28 +143,13 @@ module Fauxpaas
           "onecache\ntwocache\nthreecache\n" \
           "#{Fauxpaas.split_token}\n"
       end
+
       before(:each) do
         allow(instance.runner).to receive(:run)
           .and_return(["", stderr, :status])
       end
-      it "uses name as the stage" do
-        expect(instance.runner).to receive(:run)
-          .with(instance.name, anything, anything)
-        instance.caches
-      end
-      it "runs the 'caches:list' task" do
-        expect(instance.runner).to receive(:run)
-          .with(anything, "caches:list", anything)
-        instance.caches
-      end
-      it "sets no options" do
-        expect(instance.runner).to receive(:run)
-          .with(anything, anything, {})
-        instance.caches
-      end
+
       it "returns the caches" do
-        allow(instance.runner).to receive(:run)
-          .and_return(["", stderr, ""])
         expect(instance.caches).to eql(["onecache", "twocache", "threecache"])
       end
     end
