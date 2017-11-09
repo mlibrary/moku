@@ -40,7 +40,7 @@ module Fauxpaas
     attr_reader :capfile_path, :stage, :runner, :fs
 
     def run(task, options)
-      runner.run(capfile_path, stage, task, options)
+      runner.run(capfile_path, stage, task, options.merge(application: stage))
     end
 
   end

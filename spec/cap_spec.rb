@@ -48,6 +48,14 @@ module Fauxpaas
         cap.deploy(infrastructure, {foo: "bar"})
       end
 
+      it "sets :application to the stage" do
+        expect(backend_runner).to receive(:run)
+          .with(anything, anything, anything, a_hash_including(
+          application: stage,
+        ))
+        cap.deploy(infrastructure, {foo: "bar"})
+      end
+
       it "sets the passed options" do
         expect(backend_runner).to receive(:run)
           .with(anything, anything, anything, a_hash_including(
@@ -81,15 +89,17 @@ module Fauxpaas
         cap.caches
       end
 
-      it "runs the 'caches:list' task" do
+      it "sets :application to the stage" do
         expect(backend_runner).to receive(:run)
-          .with(anything, anything, "caches:list", anything)
+          .with(anything, anything, anything, a_hash_including(
+          application: stage,
+        ))
         cap.caches
       end
 
-      it "sets no options" do
+      it "runs the 'caches:list' task" do
         expect(backend_runner).to receive(:run)
-          .with(anything, anything, anything, {})
+          .with(anything, anything, "caches:list", anything)
         cap.caches
       end
 
@@ -113,6 +123,14 @@ module Fauxpaas
       it "uses name as the stage" do
         expect(backend_runner).to receive(:run)
           .with(anything, stage, anything, anything)
+        cap.rollback(cache)
+      end
+
+      it "sets :application to the stage" do
+        expect(backend_runner).to receive(:run)
+          .with(anything, anything, anything, a_hash_including(
+          application: stage,
+        ))
         cap.rollback(cache)
       end
 
