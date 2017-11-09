@@ -20,10 +20,10 @@ module Fauxpaas
         "Use --reference to deploy a specific revision"
       def deploy(instance_name)
         instance = Fauxpaas.instance_repo.find(instance_name)
-        signature = instance.signature(reference)
+        signature = instance.signature(options[:reference])
         release = instance.release(signature)
-        if release.deploy
-          instance.log_release(LoggedRelease.new(signature)) if status.success?
+        if release.deploy.success?
+          instance.log_release(LoggedRelease.new(signature))
           Fauxpaas.instance_repo.save(instance)
           puts "deploy successful"
         else
