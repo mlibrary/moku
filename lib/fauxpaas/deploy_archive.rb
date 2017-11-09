@@ -7,7 +7,7 @@ module Fauxpaas
   class DeployArchive < SimpleDelegator
     def initialize(archive, root_dir: Pathname.new(""), fs: Filesystem.new)
       @archive = archive
-      @root_dir = root_dir
+      @root_dir = Pathname.new(root_dir)
       @fs = fs
       __setobj__ @archive
     end
