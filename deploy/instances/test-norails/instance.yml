@@ -1,9 +1,15 @@
-deploy:
-  deployer_env: norails.capfile
-  rails_env: production
-  assets_prefix: assets
-  deploy_dir: null
 source:
   url: "https://github.com/dpn-admin/dpn-client.git"
+  git_runner: "Fauxpaas::RemoteGitRunner"
   default_branch: master
+deploy:
+  url: "."
+  git_runner: "Fauxpaas::LocalGitRunner"
+  default_branch: develop
+  root_dir: deploy/instances
+infrastructure:
+  url: "."
+  git_runner: "Fauxpaas::LocalGitRunner"
+  default_branch: develop
+  root_dir: deploy/instances
 releases: []
