@@ -5,7 +5,7 @@ require "pathname"
 
 module Fauxpaas
   RSpec.describe InfrastructureArchive do
-    let(:archive) { double(:archive) }
+    let(:archive) { double(:archive, to_hash: {a: "one", b: "two"}) }
     let(:reference) { double(:reference) }
     let(:path) { Pathname.new("some/path") }
     let(:tmpdir) { Pathname.new("/tmp/dir") }
@@ -23,6 +23,14 @@ module Fauxpaas
       it "builds an infrastructure object from the reference" do
         expect(infra_archive.infrastructure(reference))
           .to eql(Infrastructure.new(contents))
+      end
+    end
+
+    describe "#to_hash" do
+      it "returns the proper hash" do
+        expect(infra_archive.to_hash).to eql(
+          archive.to_hash.merge("root_dir" => path.to_s)
+        )
       end
     end
   end
