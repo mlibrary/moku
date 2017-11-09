@@ -1,4 +1,6 @@
 require "fauxpaas/git_runner"
+require "fauxpaas/remote_git_runner"
+require "fauxpaas/local_git_runner"
 require "fauxpaas/git_reference"
 
 module Fauxpaas
