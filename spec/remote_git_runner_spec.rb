@@ -1,11 +1,13 @@
 require_relative "./spec_helper"
+require_relative "./support/memory_filesystem"
 require "fauxpaas/components"
 require "fauxpaas/remote_git_runner"
 
 module Fauxpaas
   RSpec.describe RemoteGitRunner do
     let(:system_runner) { double(:system_runner, run: raw) }
-    let(:runner) { described_class.new(system_runner) }
+    let(:fs) { MemoryFilesystem.new }
+    let(:runner) { described_class.new(system_runner: system_runner, fs: fs) }
     let(:url) { "url" }
     let(:commitish) { "commitish" }
 
