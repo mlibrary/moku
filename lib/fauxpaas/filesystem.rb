@@ -78,5 +78,9 @@ module Fauxpaas
       Dir.mktmpdir {|dir| yield Pathname.new(dir)}
     end
 
+    def chdir(dir)
+      Dir.chdir(dir) { yield }
+    end
+
   end
 end

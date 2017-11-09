@@ -33,6 +33,10 @@ module Fauxpaas
       Pathname.new("/some/tmp/dir")
     end
 
+    def chdir(dir)
+      yield
+    end
+
   end
 
 end
