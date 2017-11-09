@@ -2,9 +2,9 @@
 
 namespace :infrastructure do
   task :setup do
-    set :infrastructure_local_path, ENV["INFRASTRUCTURE_PATH"]
+    set :infrastructure_local_path, ENV["INFRASTRUCTURE_CONFIG_PATH"]
     set :infrastructure_remote_path, -> { File.join(shared_path, File.basename(fetch(:infrastructure_local_path))) }
-    append :linked_files, File.basename(ENV["INFRASTRUCTURE_PATH"])
+    append :linked_files, fetch(:infrastructure_local_path)
   end
 
   desc "Upload infrastructure config"
