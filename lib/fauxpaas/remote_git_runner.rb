@@ -7,8 +7,8 @@ module Fauxpaas
       stdout
         .split("\n")
         .first
-        .split
-        .first
+        &.split
+        &.first
     end
   end
 end

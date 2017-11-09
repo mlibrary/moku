@@ -31,6 +31,11 @@ module Fauxpaas
         expect(runner.sha(url, commitish))
           .to eql("5753224412a302aeedfdd73e7b04d914c298c169")
       end
+
+      it "returns nil if the reference cannot be resolved" do
+        allow(system_runner).to receive(:run).and_return("\n")
+        expect(runner.sha(url, "12345")).to be_nil
+      end
     end
 
   end
