@@ -5,7 +5,7 @@ require "pathname"
 
 module Fauxpaas
   RSpec.describe DeployArchive do
-    let(:archive) { double(:archive) }
+    let(:archive) { double(:archive, to_hash: {a: "one", b: "two"}) }
     let(:reference) { double(:reference) }
     let(:path) { Pathname.new("some/path") }
     let(:tmpdir) { Pathname.new("/tmp/dir") }
@@ -32,6 +32,14 @@ module Fauxpaas
       it "builds a deploy_config object from the reference" do
         expect(deploy_archive.deploy_config(reference))
           .to eql(deploy_config)
+      end
+    end
+
+    describe "#to_hash" do
+      it "returns the proper hash" do
+        expect(deploy_archive.to_hash).to eql(
+          archive.to_hash.merge("root_dir" => path.to_s)
+        )
       end
     end
   end

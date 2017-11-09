@@ -20,6 +20,11 @@ module Fauxpaas
       end
     end
 
+    def to_hash
+      archive.to_hash
+        .merge("root_dir" => root_dir.to_s)
+    end
+
     private
     attr_reader :archive, :root_dir, :fs
   end
