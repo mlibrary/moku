@@ -32,55 +32,32 @@ module Fauxpaas
       described_class.new(
         deploy_config: deploy_config,
         infrastructure: infrastructure,
-        source: source,
-        fs: fs
+        source: source
       )
     end
 
     describe "#deploy" do
-      it "writes the infrastructure in a temporary dir" do
-        expect(fs).to receive(:write).with(
-          fs.tmpdir + "infrastructure.yml",
-          YAML.dump(infrastructure.to_hash)
-        )
-        release.deploy
-      end
-
-      it "uses the appname as the stage" do
-        expect(runner).to receive(:run).with("myapp-mystage", anything, anything)
-        release.deploy
-      end
-
-      it "runs the 'deploy' task" do
-        expect(runner).to receive(:run).with(anything, "deploy", anything)
-        release.deploy
-      end
-
-      it "sets :infrastructure_config_path" do
-        expect(runner).to receive(:run).with(anything, anything, a_hash_including(
-          infrastructure_config_path: (fs.tmpdir + "infrastructure.yml").to_s
-        ))
+      it "calls deploy with the infrastructure" do
+        expect(runner).to receive(:deploy)
+          .with(infrastructure, anything)
         release.deploy
       end
 
       it "sets :branch" do
-        expect(runner).to receive(:run).with(anything, anything, a_hash_including(
-          branch: source.reference
-        ))
+        expect(runner).to receive(:deploy)
+          .with(anything, a_hash_including(branch: source.reference))
         release.deploy
       end
 
       it "sets :source_repo" do
-        expect(runner).to receive(:run).with(anything, anything, a_hash_including(
-          source_repo: source.url
-        ))
+        expect(runner).to receive(:deploy)
+          .with(anything, a_hash_including(branch: source.reference))
         release.deploy
       end
 
       it "sets the deploy options" do
-        expect(runner).to receive(:run).with(anything, anything, a_hash_including(
-          deploy_config.to_hash
-        ))
+        expect(runner).to receive(:deploy)
+          .with(anything, a_hash_including(deploy_config.to_hash))
         release.deploy
       end
 
