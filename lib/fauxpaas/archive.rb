@@ -21,6 +21,7 @@ module Fauxpaas
     attr_accessor :default_branch
 
     def reference(commitish)
+      return latest if commitish.nil?
       sha = git_runner.sha(url, "#{commitish}^{}")
       sha ||= git_runner.sha(url, commitish)
       sha ||= commitish

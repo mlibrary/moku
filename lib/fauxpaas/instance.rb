@@ -22,19 +22,11 @@ module Fauxpaas
     attr_reader :source_archive, :deploy_archive, :infrastructure_archive
 
     def signature(source_reference = nil)
-      if source_reference
-        ReleaseSignature.new(
-          source: source_archive.reference(source_reference),
-          infrastructure: infrastructure_archive.latest,
-          deploy: deploy_archive.latest
-        )
-      else
-        ReleaseSignature.new(
-          source: source_archive.latest,
-          infrastructure: infrastructure_archive.latest,
-          deploy: deploy_archive.latest
-        )
-      end
+      ReleaseSignature.new(
+        source: source_archive.reference(source_reference),
+        infrastructure: infrastructure_archive.latest,
+        deploy: deploy_archive.latest
+      )
     end
 
     def release(sig)
