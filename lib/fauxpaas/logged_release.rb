@@ -1,5 +1,15 @@
+require "time"
+
 module Fauxpaas
   class LoggedRelease
+    def self.from_hash(hash)
+      new(
+        hash[:user],
+        Time.strptime(hash[:time], time_format),
+        hash[:signature]
+      )
+    end
+
     def initialize(user, time, signature)
       @user = user
       @time = time
@@ -23,8 +33,12 @@ module Fauxpaas
     private
     attr_reader :user, :time, :signature
 
+    def self.time_format
+      "%FT%T"
+    end
+
     def formatted_time
-      time.strftime("%FT%T")
+      time.strftime(LoggedRelease.time_format)
     end
 
   end

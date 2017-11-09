@@ -38,6 +38,13 @@ module Fauxpaas
       end
     end
 
+    describe "::from_hash" do
+      it "instantiates from a hash" do
+        expect(described_class.from_hash(logged_release.to_hash).to_hash)
+          .to eql(logged_release.to_hash)
+      end
+    end
+
   end
 
 end
