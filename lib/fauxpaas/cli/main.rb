@@ -54,14 +54,18 @@ module Fauxpaas
         "Rollsback to the specified cache, or the most recent one."
       def rollback(instance_name)
         instance = Fauxpaas.instance_repo.find(instance_name)
-        instance.rollback(options[:cache])
+        instance
+          .interrogator
+          .rollback(options[:cache])
       end
 
       desc "caches <instance>",
         "List cached releases for the instance"
       def caches(instance_name)
         instance = Fauxpaas.instance_repo.find(instance_name)
-        puts instance.caches
+        puts instance
+          .interrogator
+          .caches
       end
 
       desc "releases <instance>",

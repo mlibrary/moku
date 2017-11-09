@@ -20,7 +20,11 @@ module Fauxpaas
     attr_reader :appname, :deployer_env, :deploy_dir, :rails_env, :assets_prefix
 
     def runner
-      Cap.new(Fauxpaas.deployer_env_root + deployer_env, Fauxpaas.backend_runner)
+      Cap.new(
+        Fauxpaas.deployer_env_root + deployer_env,
+        appname,
+        Fauxpaas.backend_runner
+      )
     end
 
     def to_hash

@@ -17,9 +17,7 @@ module Fauxpaas
     let(:deploy_config) { described_class.new(options) }
 
     describe "#runner" do
-      it "returns a runner" do
-        expect(deploy_config.runner.respond_to?(:run)).to be true
-      end
+      it "returns a runner"
     end
 
     describe "#to_hash" do
