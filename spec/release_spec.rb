@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "./spec_helper"
-require_relative "./support/memory_filesystem"
 require "fauxpaas/release"
 require "fauxpaas/infrastructure"
 require "fauxpaas/deploy_config"
@@ -12,7 +11,6 @@ module Fauxpaas
   RSpec.describe Release do
     let(:success) { double(:success, success?: true) }
     let(:runner) { double(:runner, run: [nil, nil, success]) }
-    let(:fs) { MemoryFilesystem.new }
     let(:infrastructure) { Infrastructure.new({a: 1, b: "two"}) }
     let(:source) { GitReference.new("source.git", "1238019283019823019823091832") }
     let(:deploy_config) do
