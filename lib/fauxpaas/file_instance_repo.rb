@@ -38,7 +38,7 @@ module Fauxpaas
     end
 
     def save(instance)
-      fs.mkdir_p(instance_path(instance.name))
+      fs.mkdir_p(instance_path(instance.name).dirname)
       fs.write(instance_path(instance.name), YAML.dump(
         "deploy" => instance.deploy_archive.to_hash,
         "source" => instance.source_archive.to_hash,

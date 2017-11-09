@@ -19,5 +19,11 @@ module Fauxpaas
       tmp_repo.save(instance)
       expect(YAML.load(mem_fs.read("/instances/test-norails/instance.yml"))).to eql(contents_before)
     end
+
+    it "creates the directory to save in" do
+      expect(mem_fs).to receive(:mkdir_p).with(Pathname.new("/instances/test-norails"))
+      instance = static_repo.find("test-norails")
+      tmp_repo.save(instance)
+    end
   end
 end
