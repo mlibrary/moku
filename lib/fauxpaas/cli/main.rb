@@ -23,7 +23,7 @@ module Fauxpaas
         signature = instance.signature(options[:reference])
         release = instance.release(signature)
         if release.deploy.success?
-          instance.log_release(LoggedRelease.new(signature))
+          instance.log_release(LoggedRelease.new(ENV["USER"], Time.now, signature))
           Fauxpaas.instance_repo.save(instance)
           puts "deploy successful"
         else
