@@ -56,7 +56,7 @@ module Fauxpaas
         instance = Fauxpaas.instance_repo.find(instance_name)
         instance
           .interrogator
-          .rollback(options[:cache])
+          .rollback(instance.source_archive.latest, options[:cache])
       end
 
       desc "caches <instance>",

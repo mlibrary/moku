@@ -40,25 +40,11 @@ module Fauxpaas
           .with(infrastructure, anything)
         release.deploy
       end
-
-      it "sets :branch" do
+      it "calls deploy with the source" do
         expect(runner).to receive(:deploy)
-          .with(anything, a_hash_including(branch: source.reference))
+          .with(anything, source)
         release.deploy
       end
-
-      it "sets :source_repo" do
-        expect(runner).to receive(:deploy)
-          .with(anything, a_hash_including(branch: source.reference))
-        release.deploy
-      end
-
-      it "sets the deploy options" do
-        expect(runner).to receive(:deploy)
-          .with(anything, a_hash_including(deploy_config.to_hash))
-        release.deploy
-      end
-
     end
   end
 end

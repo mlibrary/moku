@@ -21,7 +21,7 @@ module Fauxpaas
 
     def runner
       Cap.new(
-        Fauxpaas.deployer_env_root + deployer_env,
+        to_hash.merge("deployer_env" => Fauxpaas.deployer_env_root + deployer_env),
         appname,
         Fauxpaas.backend_runner
       )

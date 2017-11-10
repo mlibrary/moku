@@ -15,7 +15,7 @@ module Fauxpaas
     def deploy
       deploy_config
         .runner
-        .deploy(infrastructure, deploy_options)
+        .deploy(infrastructure, source)
     end
 
 
@@ -25,11 +25,5 @@ module Fauxpaas
         infrastructure == other.infrastructure
     end
 
-    private
-
-    def deploy_options
-      deploy_config.to_hash
-        .merge(branch: source.reference.to_s, source_repo: source.url)
-    end
   end
 end
