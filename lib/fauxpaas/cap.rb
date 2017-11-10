@@ -10,7 +10,8 @@ module Fauxpaas
         application: options[:appname] || options[:application],
         deploy_dir: options[:deploy_dir],
         rails_env: options[:rails_env],
-        assets_prefix: options[:assets_prefix]
+        assets_prefix: options[:assets_prefix],
+        systemd_services: options.fetch(:systemd_services,[]).join(':')
       }
       @capfile_path = options[:deployer_env]
       @stage = stage
@@ -51,6 +52,11 @@ module Fauxpaas
           rollback_release: cache
         }
       )
+      status
+    end
+
+    def restart
+      stdout, stderr, status = run("systemd:restart", {})
       status
     end
 

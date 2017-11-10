@@ -73,3 +73,4 @@ namespace :deploy do
 end
 
 load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")
+load File.join(File.dirname(__FILE__), "cap", "restart.rb")

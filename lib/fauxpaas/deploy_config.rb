@@ -9,15 +9,16 @@ module Fauxpaas
       new(hash.symbolize_keys)
     end
 
-    def initialize(appname:, deployer_env:, deploy_dir:, rails_env:, assets_prefix:)
+    def initialize(appname:, deployer_env:, deploy_dir:, rails_env:, assets_prefix:, systemd_services: [])
       @appname = appname
       @deployer_env = deployer_env
       @deploy_dir = deploy_dir
       @rails_env = rails_env
       @assets_prefix = assets_prefix
+      @systemd_services = systemd_services
     end
 
-    attr_reader :appname, :deployer_env, :deploy_dir, :rails_env, :assets_prefix
+    attr_reader :appname, :deployer_env, :deploy_dir, :rails_env, :assets_prefix, :systemd_services
 
     def runner
       Cap.new(
@@ -33,7 +34,8 @@ module Fauxpaas
         deployer_env: deployer_env,
         deploy_dir: deploy_dir,
         rails_env: rails_env,
-        assets_prefix: assets_prefix
+        assets_prefix: assets_prefix,
+        systemd_services: systemd_services
       }.stringify_keys
     end
 
