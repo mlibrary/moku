@@ -6,7 +6,7 @@ module Fauxpaas
       new(
         hash[:user],
         Time.strptime(hash[:time], time_format),
-        hash[:signature]
+        ReleaseSignature.from_hash(hash[:signature])
       )
     end
 

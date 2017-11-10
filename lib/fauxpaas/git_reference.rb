@@ -1,5 +1,9 @@
 module Fauxpaas
   class GitReference
+    def self.from_hash(hash)
+      new(hash[:url], hash[:reference])
+    end
+
     def initialize(url, reference)
       @url = url
       @reference = reference

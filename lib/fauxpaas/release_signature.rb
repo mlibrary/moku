@@ -1,8 +1,17 @@
 module Fauxpaas
 
+  # Uniquely identifies an app at a point in time, including the machinery
+  # used to deploy it.
   class ReleaseSignature
-    # Uniquely identifies an app at a point in time, including the machinery
-    # used to deploy it.
+
+    def self.from_hash(hash)
+      new(
+        source: GitReference.from_hash(hash[:source]),
+        infrastructure: GitReference.from_hash(hash[:infrastructure]),
+        deploy: GitReference.from_hash(hash[:deploy]),
+      )
+    end
+
     # @param source [GitReference]
     # @param infrastructure [GitReference]
     # @param deploy [GitReference]
