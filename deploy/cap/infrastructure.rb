@@ -15,4 +15,4 @@ namespace :infrastructure do
   end
 end
 
-before "deploy:check:linked_files", "infrastructure:upload"
+before "deploy:updating", "infrastructure:upload"
