@@ -22,7 +22,7 @@ module Fauxpaas
 
       context "integration" do
         let(:runner) { described_class.new }
-        it "checks out the ref" do
+        it "checks out the ref", broken_in_travis: true do
           runner.safe_checkout(url, commit) do |dir|
             expect(`git -C #{dir} rev-parse HEAD`.strip)
               .to eql(commit)
