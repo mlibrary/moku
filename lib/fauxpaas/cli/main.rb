@@ -9,6 +9,13 @@ module Fauxpaas
     # Main commands of the cli
     class Main < Thor
 
+      class_option :verbose,
+        aliases: "-v",
+        type: :boolean,
+        desc: "Show output from system commands",
+        default: false,
+        required: false
+
       option :reference,
         type: :string,
         aliases: ["-r", "--branch", "--commit"],
@@ -19,22 +26,21 @@ module Fauxpaas
         "Deploys the instance's source; by default deploys master. " \
         "Use --reference to deploy a specific revision"
       def deploy(instance_name)
-        instance = Fauxpaas.instance_repo.find(instance_name)
+        setup(instance_name)
         signature = instance.signature(options[:reference])
         release = instance.release(signature)
-        if release.deploy.success?
+        status = release.deploy
+        if status.success?
           instance.log_release(LoggedRelease.new(ENV["USER"], Time.now, signature))
           Fauxpaas.instance_repo.save(instance)
-          puts "deploy successful"
-        else
-          puts "deploy unsuccessful"
         end
+        report(status, action: "deploy")
       end
 
       desc "default_branch <instance> [<new_branch>]",
         "Display or set the default branch for the instance"
       def default_branch(instance_name, new_branch = nil)
-        instance = Fauxpaas.instance_repo.find(instance_name)
+        setup(instance_name)
         if new_branch
           old_branch = instance.default_branch
           instance.default_branch = new_branch
@@ -49,16 +55,16 @@ module Fauxpaas
         "Initiate a rollback to the specified cache if specified, or the most " \
           "recent one otherwise. Use with care."
       def rollback(instance_name, cache = nil)
-        instance = Fauxpaas.instance_repo.find(instance_name)
-        instance
-          .interrogator
-          .rollback(instance.source_archive.latest, options[:cache])
+        setup(instance_name)
+        report(instance.interrogator
+          .rollback(instance.source_archive.latest, cache),
+          action: "rollback")
       end
 
       desc "caches <instance>",
         "List cached releases for the instance"
       def caches(instance_name)
-        instance = Fauxpaas.instance_repo.find(instance_name)
+        setup(instance_name)
         puts instance
           .interrogator
           .caches
@@ -67,18 +73,37 @@ module Fauxpaas
       desc "releases <instance>",
         "List release history for the instance"
       def releases(instance_name)
-        instance = Fauxpaas.instance_repo.find(instance_name)
+        setup(instance_name)
         puts instance.releases.map(&:to_s).join("\n")
       end
 
       desc "restart <instance>",
         "Restart the application for the instance"
       def restart(instance_name)
-        instance = Fauxpaas.instance_repo.find(instance_name)
-        instance
-          .interrogator
-          .restart
+        setup(instance_name)
+        report(instance.interrogator.restart,
+          action: "restart")
       end
+
+      private
+
+      attr_reader :instance
+
+      def setup(instance_name)
+        @instance = Fauxpaas.instance_repo.find(instance_name)
+        if options.fetch(:verbose, false)
+          Fauxpaas.system_runner = VerboseSystemRunner.new
+        end
+      end
+
+      def report(status, action: "action")
+        if status.success?
+          puts "#{action} successful"
+        else
+          puts "#{action} failed (run again with --verbose for more info)"
+        end
+      end
+
     end
 
   end
