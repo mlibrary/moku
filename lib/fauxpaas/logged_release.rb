@@ -1,13 +1,25 @@
+# frozen_string_literal: true
+
 require "time"
 
 module Fauxpaas
+
+  # A representation of a release within a log that includes additional
+  # metadata.
   class LoggedRelease
-    def self.from_hash(hash)
-      new(
-        hash[:user],
-        Time.strptime(hash[:time], time_format),
-        ReleaseSignature.from_hash(hash[:signature])
-      )
+
+    class << self
+      def from_hash(hash)
+        new(
+          hash[:user],
+          Time.strptime(hash[:time], time_format),
+          ReleaseSignature.from_hash(hash[:signature])
+        )
+      end
+
+      def time_format
+        "%FT%T"
+      end
     end
 
     attr_reader :signature
@@ -26,18 +38,15 @@ module Fauxpaas
 
     def to_hash
       {
-        user: user,
-        time: formatted_time,
+        user:      user,
+        time:      formatted_time,
         signature: signature.to_hash
       }
     end
 
     private
-    attr_reader :user, :time
 
-    def self.time_format
-      "%FT%T"
-    end
+    attr_reader :user, :time
 
     def formatted_time
       time.strftime(LoggedRelease.time_format)

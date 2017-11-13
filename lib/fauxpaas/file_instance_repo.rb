@@ -51,6 +51,7 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :path, :fs
 
     def instance_content(name)

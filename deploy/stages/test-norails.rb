@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 set :deploy_to, File.expand_path(File.join(File.dirname(__FILE__), "../../sandbox/test-norails"))
 
 set :rbenv_custom_path, "/usr/local/rbenv"

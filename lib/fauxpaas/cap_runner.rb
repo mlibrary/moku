@@ -3,6 +3,8 @@
 require "fauxpaas/open3_capture"
 
 module Fauxpaas
+
+  # Wraps capistrano commands
   class CapRunner
     def initialize(system_runner = Open3Capture.new)
       @system_runner = system_runner
@@ -23,9 +25,10 @@ module Fauxpaas
     end
 
     private
+
     def capify_options(opts)
       opts.keep_if {|_key, value| value }
-        .map {|key,value| "#{key.to_s.upcase}=#{value}" }
+        .map {|key, value| "#{key.to_s.upcase}=#{value}" }
     end
   end
 

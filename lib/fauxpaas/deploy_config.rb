@@ -1,8 +1,13 @@
+# frozen_string_literal: true
+
 require "active_support/core_ext/hash/keys"
 require "fauxpaas/components"
 require "fauxpaas/cap"
 
 module Fauxpaas
+
+  # The deploy configuration used in the deployment of the instance. I.e. _how_ the
+  # instance gets deployed.
   class DeployConfig
 
     def self.from_hash(hash)
@@ -30,11 +35,11 @@ module Fauxpaas
 
     def to_hash
       @hash ||= {
-        appname: appname,
-        deployer_env: deployer_env,
-        deploy_dir: deploy_dir,
-        rails_env: rails_env,
-        assets_prefix: assets_prefix,
+        appname:          appname,
+        deployer_env:     deployer_env,
+        deploy_dir:       deploy_dir,
+        rails_env:        rails_env,
+        assets_prefix:    assets_prefix,
         systemd_services: systemd_services
       }.stringify_keys
     end
@@ -43,7 +48,6 @@ module Fauxpaas
       to_hash == other.to_hash
     end
     alias_method :==, :eql?
-
 
   end
 end
