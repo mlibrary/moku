@@ -15,12 +15,13 @@ module Fauxpaas
         deploy_dir: "/some/dir",
         deployer_env: capfile_path,
         rails_env: "prod",
-        assets_prefix: "assets"
+        assets_prefix: "assets",
+        systemd_services: ["foo.service", "bar.service"]
       }
     end
     let(:cap) { described_class.new(options, stage, backend_runner, fs) }
 
-    RSpec.shared_examples "a cap task" do
+    RSpec.shared_examples "a cap task" do |task|
       it "passes the capfile_path" do
         expect(backend_runner).to receive(:run)
           .with(capfile_path, anything, anything, anything)
@@ -59,6 +60,11 @@ module Fauxpaas
         ))
         subject
       end
+      it "runs the '#{task}' task" do
+        expect(backend_runner).to receive(:run)
+          .with(anything, anything, task, anything)
+        subject
+      end
     end
 
     describe "#deploy" do
@@ -66,7 +72,7 @@ module Fauxpaas
       let(:source) { double(:source, url: "someurl", reference: "someref") }
       subject { cap.deploy(infrastructure, source) }
 
-      it_behaves_like "a cap task"
+      it_behaves_like "a cap task", "deploy"
 
       it "writes the infrastructure in a temporary dir" do
         allow(backend_runner).to receive(:run)
@@ -74,12 +80,6 @@ module Fauxpaas
           fs.tmpdir + "infrastructure.yml",
           YAML.dump(infrastructure.to_hash)
         )
-        subject
-      end
-
-      it "runs the 'deploy' task" do
-        expect(backend_runner).to receive(:run)
-          .with(anything, anything, "deploy", anything)
         subject
       end
 
@@ -106,13 +106,7 @@ module Fauxpaas
 
       subject { cap.caches }
 
-      it_behaves_like "a cap task"
-
-      it "runs the 'caches:list' task" do
-        expect(backend_runner).to receive(:run)
-          .with(anything, anything, "caches:list", anything)
-        subject
-      end
+      it_behaves_like "a cap task", "caches:list"
 
       it "returns a list of caches" do
         allow(backend_runner).to receive(:run)
@@ -128,17 +122,47 @@ module Fauxpaas
 
       subject { cap.rollback(source, cache) }
 
-      it_behaves_like "a cap task"
-
-      it "runs the 'deploy:rollback' task" do
-        expect(backend_runner).to receive(:run)
-          .with(anything, anything, "deploy:rollback", anything)
-        subject
-      end
+      it_behaves_like "a cap task", "deploy:rollback"
 
       it "sets :rollback_release" do
         expect(backend_runner).to receive(:run)
           .with(anything, anything, anything, a_hash_including({rollback_release: cache }))
+        subject
+      end
+    end
+
+    describe "#restart" do
+      subject { cap.restart }
+
+      it_behaves_like "a cap task", "systemd:restart"
+
+      it "sets :systemd_services" do
+        expect(backend_runner).to receive(:run)
+          .with(anything, anything, anything, 
+                a_hash_including({systemd_services: "foo.service:bar.service"}))
+        subject
+      end
+    end
+
+    context "when options does not include systemd_services" do
+      let(:options) do
+        {
+          appname: stage,
+          deploy_dir: "/some/dir",
+          deployer_env: capfile_path,
+          rails_env: "prod",
+          assets_prefix: "assets",
+        }
+      end
+
+      subject { cap.restart }
+
+      it_behaves_like "a cap task", "systemd:restart"
+
+      it "sets :systemd_services to the empty string" do
+        expect(backend_runner).to receive(:run)
+          .with(anything, anything, anything, 
+                a_hash_including({systemd_services: ""}))
         subject
       end
     end

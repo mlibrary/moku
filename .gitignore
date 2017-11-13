@@ -46,7 +46,7 @@ tags
 *.swo
 
 # testbed
-/spec/sandbox
+/sandbox
 
 # We're a gem
 Gemfile.lock

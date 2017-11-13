@@ -10,6 +10,8 @@ module Fauxpaas
       )
     end
 
+    attr_reader :signature
+
     def initialize(user, time, signature)
       @user = user
       @time = time
@@ -31,7 +33,7 @@ module Fauxpaas
     end
 
     private
-    attr_reader :user, :time, :signature
+    attr_reader :user, :time
 
     def self.time_format
       "%FT%T"

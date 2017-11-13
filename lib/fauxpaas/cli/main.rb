@@ -70,6 +70,15 @@ module Fauxpaas
         instance = Fauxpaas.instance_repo.find(instance_name)
         puts instance.releases.map(&:to_s).join("\n")
       end
+
+      desc "restart <instance>",
+        "Restart the application for the instance"
+      def restart(instance_name)
+        instance = Fauxpaas.instance_repo.find(instance_name)
+        instance
+          .interrogator
+          .restart
+      end
     end
 
   end

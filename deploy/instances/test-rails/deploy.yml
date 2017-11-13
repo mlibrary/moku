@@ -3,3 +3,6 @@ deployer_env: rails.capfile
 deploy_dir: null
 rails_env: development
 assets_prefix: assets
+systemd_services:
+  - app-puma@chipmunk.service
+  - resque-pool@chipmunk.service

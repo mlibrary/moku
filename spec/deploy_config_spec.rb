@@ -11,7 +11,8 @@ module Fauxpaas
         deployer_env: "foo",
         deploy_dir: Pathname.new("bar/baz"),
         rails_env: "staging",
-        assets_prefix: "notassets"
+        assets_prefix: "notassets",
+        systemd_services: ['foo.service', 'bar.service']
       }
     end
     let(:deploy_config) { described_class.new(options) }
