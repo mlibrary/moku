@@ -1,3 +1,15 @@
-deployer_env: norails
-default_branch: master
-
+source:
+  url: "https://github.com/dpn-admin/dpn-client.git"
+  git_runner: "Fauxpaas::RemoteGitRunner"
+  default_branch: master
+deploy:
+  url: "."
+  git_runner: "Fauxpaas::LocalGitRunner"
+  default_branch: HEAD
+  root_dir: deploy/instances/test-norails
+infrastructure:
+  url: "."
+  git_runner: "Fauxpaas::LocalGitRunner"
+  default_branch: HEAD
+  root_dir: deploy/instances/test-norails
+releases: []

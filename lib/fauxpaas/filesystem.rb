@@ -74,5 +74,13 @@ module Fauxpaas
       File.write(path, contents)
     end
 
+    def mktmpdir
+      Dir.mktmpdir {|dir| yield Pathname.new(dir)}
+    end
+
+    def chdir(dir)
+      Dir.chdir(dir) { yield }
+    end
+
   end
 end

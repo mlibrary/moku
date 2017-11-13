@@ -1,45 +1,29 @@
-# frozen_string_literal: true
-
-require "digest/sha1"
-
 module Fauxpaas
-  # Describes a single deployment for later logging
-  # * TIMESTAMP: When deployment process completed
-  # * USER: The user who initiated it
-  # * SRC: SHA of the source code deployed
-  # * CONFIG: SHA of the developer configuration deployed
-  # * DEPLOY: SHA of the deployment configuration used
   class Release
-    attr_reader :user, :timestamp, :src, :dev_config, :deploy_config
 
-    def initialize(src, timestamp: Time.now, user: :FIXME,
-      dev_config: "(none)", deploy_config: "(none)")
-      @user = user
-      @timestamp = timestamp
-      @src = src
-      @dev_config = dev_config
+    # @param deploy_config [DeployConfig]
+    # @param infrastructure [Infrastructure]
+    # @param Source [SourceReference]
+    def initialize(deploy_config:, infrastructure:, source:)
       @deploy_config = deploy_config
+      @infrastructure = infrastructure
+      @source = source
     end
 
-    def to_hash
-      { "src"       => src,
-        "user"      => user,
-        "config"    => dev_config,
-        "deploy"    => deploy_config,
-        "timestamp" => timestamp }
+    attr_reader :deploy_config, :infrastructure, :source
+
+    def deploy
+      deploy_config
+        .runner
+        .deploy(infrastructure, source)
     end
 
-    def self.from_hash(hash)
-      new(hash["src"],
-        timestamp: hash["timestamp"],
-        dev_config: hash["config"],
-        deploy_config: hash["deploy"],
-        user: hash["user"])
+
+    def eql?(other)
+      source == other.source &&
+        deploy_config == other.deploy_config &&
+        infrastructure == other.infrastructure
     end
 
-    def to_s
-      "#{timestamp}: #{user} deployed #{src} #{dev_config} " \
-        "with #{deploy_config}"
-    end
   end
 end

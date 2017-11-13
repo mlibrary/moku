@@ -9,12 +9,12 @@ set :ssh_options, user: "fauxpaas",
 
 set :split_token, File.read(File.join(File.dirname(__FILE__), "../.split_token"))
 
+set :application, ENV["APPLICATION"]
+
 set :keep_releases, 5
 set :local_user, "fauxpaas"
 set :pty, false
 
-# Choose which branch/revision to deploy if BRANCH env var is set.
-set :branch, ENV["BRANCH"]
 
 # We only link files that would be non-sensical to be release-specific.
 # This notably does not contain developer configuration.
@@ -61,14 +61,15 @@ namespace :caches do
 end
 
 namespace :deploy do
-  desc "Print the current deployed revision"
-  task :show_revision do
-    run_locally do
-      STDERR.puts revision_log_message
-    end
+  task :setup_vars do
+    set :repo_url, ENV["SOURCE_REPO"]
+    set :branch, ENV["BRANCH"]
+    set :deploy_to, fetch(:deploy_to) || ENV["DEPLOY_DIR"]
+    set :rails_env, ENV["RAILS_ENV"]
+    set :assets_prefix, ENV["ASSETS_PREFIX"]
   end
 
-  after :log_revision, :show_revision
+  before 'deploy:starting', 'deploy:setup_vars'
 end
 
 load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")

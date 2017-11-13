@@ -27,6 +27,19 @@ module Fauxpaas
             .to be false
         end
       end
+      describe "#chdir" do
+        it "changes directory" do
+          fs.chdir("/tmp") do
+            expect(`pwd`.strip).to eql("/tmp")
+          end
+        end
+
+        it "changes back afterwards" do
+          starting_dir = `pwd`.strip
+          fs.chdir("/tmp") {}
+          expect(`pwd`.strip).to eql(starting_dir)
+        end
+      end
     end
 
     describe "creation/deletion methods" do
