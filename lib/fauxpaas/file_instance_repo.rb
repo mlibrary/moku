@@ -19,7 +19,8 @@ module Fauxpaas
     end
 
     def find(name)
-      contents = YAML.load(fs.read(instance_path(name)))
+      contents = instance_content(name)
+      releases = releases_content(name)
       Instance.new(
         name: name,
         source_archive: Archive.from_hash(contents["source"]),
@@ -33,7 +34,7 @@ module Fauxpaas
           root_dir: contents["infrastructure"]["root_dir"],
           fs: fs
         ),
-        releases: contents.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
+        releases: releases.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
     end
 
@@ -42,7 +43,9 @@ module Fauxpaas
       fs.write(instance_path(instance.name), YAML.dump(
         "deploy" => instance.deploy_archive.to_hash,
         "source" => instance.source_archive.to_hash,
-        "infrastructure" => instance.infrastructure_archive.to_hash,
+        "infrastructure" => instance.infrastructure_archive.to_hash
+      ))
+      fs.write(releases_path(instance.name), YAML.dump(
         "releases" => instance.releases.map(&:to_hash)
       ))
     end
@@ -50,8 +53,24 @@ module Fauxpaas
     private
     attr_reader :path, :fs
 
+    def instance_content(name)
+      YAML.load(fs.read(instance_path(name)))
+    end
+
+    def releases_content(name)
+      if fs.exists?(releases_path(name))
+        YAML.load(fs.read(releases_path(name)))
+      else
+        { "releases" => [] }
+      end
+    end
+
     def instance_path(name)
       path + name + "instance.yml"
+    end
+
+    def releases_path(name)
+      path + name + "releases.yml"
     end
 
   end
