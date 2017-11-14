@@ -38,7 +38,7 @@ module Fauxpaas
       @split_token ||= File.read(root + ".split_token").chomp.freeze
     end
 
-    attr_writer :system_runner
+    attr_writer :system_runner, :instance_repo
 
   end
 
