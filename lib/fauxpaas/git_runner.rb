@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
 require "fauxpaas/open3_capture"
 require "fauxpaas/filesystem"
 require "pathname"
 
 module Fauxpaas
+
+  # Wraps git commands
   class GitRunner
     class UnknownReferenceError < RuntimeError; end
 
@@ -12,7 +16,7 @@ module Fauxpaas
     end
 
     # Checkout into a temporary directory, and yield the dir
-    def safe_checkout(url, commitish, &block)
+    def safe_checkout(url, commitish)
       fs.mktmpdir do |dir|
         cloned_dir = Pathname.new(dir) + "fauxpaas"
         system_runner.run("git clone #{url} #{cloned_dir}")
@@ -24,6 +28,7 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :system_runner, :fs
   end
 end

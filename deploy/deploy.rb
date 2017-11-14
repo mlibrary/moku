@@ -15,7 +15,6 @@ set :keep_releases, 5
 set :local_user, "fauxpaas"
 set :pty, false
 
-
 # We only link files that would be non-sensical to be release-specific.
 # This notably does not contain developer configuration.
 append :linked_dirs, "bundle", "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
@@ -35,7 +34,10 @@ set :bundle_jobs, 4                                             # default: nil
 set :rbenv_type, :system
 set :rbenv_map_bins, ["rake", "gem", "bundle", "ruby", "rails", "pry"]
 set :rbenv_custom_path, "/l/local/rbenv"
-set :rbenv_prefix, -> { "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec" }
+set :rbenv_prefix, lambda {
+  "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} " \
+    "#{fetch(:rbenv_path)}/bin/rbenv exec"
+}
 set :rbenv_roles, :all
 
 # Configure capistrano-rails
@@ -69,7 +71,7 @@ namespace :deploy do
     set :assets_prefix, ENV["ASSETS_PREFIX"]
   end
 
-  before 'deploy:starting', 'deploy:setup_vars'
+  before "deploy:starting", "deploy:setup_vars"
 end
 
 load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")

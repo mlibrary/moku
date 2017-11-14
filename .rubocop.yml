@@ -11,6 +11,7 @@ Naming/FileName:
     - 'lib/*/version.rb'
     - 'bin/console'
     - 'deploy/**/*'
+    - 'lib/*/components.rb'
 
 Style/Alias:
   EnforcedStyle: prefer_alias_method
@@ -116,7 +117,8 @@ Style/WhileUntilModifier:
   MaxLineLength: 100
 
 Lint/BlockAlignment:
-  EnforcedStyleAlignWith: start_of_line
+  EnforcedStyleAlignWith: start_of_block
+  #EnforcedStyleAlignWith: start_of_line
 
 Lint/EndAlignment:
   EnforcedStyleAlignWith: start_of_line
