@@ -6,7 +6,7 @@ module Fauxpaas
 
   # Wraps a runner to execute its output verbosely
   class VerboseSystemRunner
-    def initialize(runner: Open3Capture.new)
+    def initialize(runner: Fauxpaas.system_runner)
       @runner = runner
     end
 
