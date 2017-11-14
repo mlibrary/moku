@@ -1,15 +1,19 @@
-# frozen_string_literal: true
-
 require "active_support/core_ext/hash/keys"
 require "fauxpaas/components"
 require "fauxpaas/filesystem"
 
 module Fauxpaas
-
-  # Capistrano
   class Cap
     def initialize(options, stage, runner, fs = Filesystem.new)
-      @capfile_path, @common_options = parse_options(options)
+      options = options.symbolize_keys
+      @common_options ||= {
+        application: options[:appname] || options[:application],
+        deploy_dir: options[:deploy_dir],
+        rails_env: options[:rails_env],
+        assets_prefix: options[:assets_prefix],
+        systemd_services: options.fetch(:systemd_services,[]).join(':')
+      }
+      @capfile_path = options[:deployer_env]
       @stage = stage
       @runner = runner
       @fs = fs
@@ -19,16 +23,20 @@ module Fauxpaas
       fs.mktmpdir do |dir|
         infrastructure_path = Pathname.new(dir) + "infrastructure.yml"
         fs.write(infrastructure_path, YAML.dump(infrastructure.to_hash))
-        _, _, status = run("deploy",
-          infrastructure_config_path: infrastructure_path.to_s,
-          source_repo: source.url,
-          branch: source.reference.to_s)
+        _,_,status = run(
+          "deploy",
+          {
+            infrastructure_config_path: infrastructure_path.to_s,
+            source_repo: source.url,
+            branch: source.reference.to_s,
+          }
+        )
         status
       end
     end
 
     def caches
-      _, stderr, _status = run("caches:list", {})
+      _, stderr, status = run("caches:list", {})
       stderr
         .split(Fauxpaas.split_token + "\n")
         .drop(1)
@@ -37,34 +45,23 @@ module Fauxpaas
     end
 
     def rollback(source, cache)
-      _stdout, _stderr, status = run("deploy:rollback",
-        source_repo: source.url,
-        branch: source.reference.to_s,
-        rollback_release: cache)
+      stdout, stderr, status = run("deploy:rollback",
+        {
+          source_repo: source.url,
+          branch: source.reference.to_s,
+          rollback_release: cache
+        }
+      )
       status
     end
 
     def restart
-      _stdout, _stderr, status = run("systemd:restart", {})
+      stdout, stderr, status = run("systemd:restart", {})
       status
     end
 
     private
-
     attr_reader :capfile_path, :stage, :runner, :fs, :common_options
-
-    def parse_options(options)
-      opts = options.symbolize_keys
-      capfile_path = opts[:deployer_env]
-      common_options = {
-        application:      opts[:appname] || opts[:application],
-        deploy_dir:       opts[:deploy_dir],
-        rails_env:        opts[:rails_env],
-        assets_prefix:    opts[:assets_prefix],
-        systemd_services: opts.fetch(:systemd_services, []).join(":")
-      }
-      [capfile_path, common_options]
-    end
 
     def run(task, more_options)
       runner.run(capfile_path, stage, task, common_options.merge(more_options))

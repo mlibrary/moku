@@ -1,8 +1,4 @@
-# frozen_string_literal: true
-
 module Fauxpaas
-
-  # Fully identifies a commit or other reference within a git repository.
   class GitReference
     def self.from_hash(hash)
       new(hash[:url], hash[:reference])
@@ -19,10 +15,9 @@ module Fauxpaas
       reference == other.reference &&
         url == other.url
     end
-
     def to_hash
       {
-        url:       url,
+        url: url,
         reference: reference
       }
     end

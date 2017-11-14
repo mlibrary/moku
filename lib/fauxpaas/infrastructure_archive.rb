@@ -1,13 +1,9 @@
-# frozen_string_literal: true
-
 require "fauxpaas/infrastructure"
 require "fauxpaas/filesystem"
 require "pathname"
 require "yaml"
 
 module Fauxpaas
-
-  # Archive of the infrastructure configuration
   class InfrastructureArchive < SimpleDelegator
     def initialize(archive, root_dir: Pathname.new(""), fs: Filesystem.new)
       @archive = archive
@@ -29,7 +25,6 @@ module Fauxpaas
     end
 
     private
-
     attr_reader :archive, :root_dir, :fs
   end
 end

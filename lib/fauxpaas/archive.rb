@@ -1,14 +1,9 @@
-# frozen_string_literal: true
-
 require "fauxpaas/git_runner"
 require "fauxpaas/remote_git_runner"
 require "fauxpaas/local_git_runner"
 require "fauxpaas/git_reference"
 
 module Fauxpaas
-
-  # A version-control archive of some content.  Delegates to the git_runner
-  # for actual interaction with the backend vcs.
   class Archive
     def self.from_hash(hash)
       new(
@@ -39,7 +34,7 @@ module Fauxpaas
       reference(default_branch)
     end
 
-    def checkout(reference)
+    def checkout(reference, &block)
       git_runner.safe_checkout(reference.url, reference.reference) do |dir|
         yield dir
       end
@@ -52,14 +47,13 @@ module Fauxpaas
 
     def to_hash
       {
-        "url"            => url,
-        "git_runner"     => git_runner.class.to_s,
+        "url" => url,
+        "git_runner" => git_runner.class.to_s,
         "default_branch" => default_branch
       }
     end
 
     private
-
     attr_reader :git_runner
   end
 end

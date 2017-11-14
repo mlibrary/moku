@@ -1,9 +1,4 @@
-# frozen_string_literal: true
-
 module Fauxpaas
-
-  # Uniquely identifies a deployed instance at a point in time. All deployment
-  # operations first create a release, and then attempt to deploy it.
   class Release
 
     # @param deploy_config [DeployConfig]
@@ -22,6 +17,7 @@ module Fauxpaas
         .runner
         .deploy(infrastructure, source)
     end
+
 
     def eql?(other)
       source == other.source &&

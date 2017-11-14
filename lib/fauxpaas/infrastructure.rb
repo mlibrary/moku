@@ -1,11 +1,7 @@
-# frozen_string_literal: true
-
 require "pathname"
 require "active_support/core_ext/hash/keys"
 
 module Fauxpaas
-
-  # The infrastructure configuration needed by the instance
   class Infrastructure
     def self.from_hash(hash)
       new(hash)
@@ -25,7 +21,6 @@ module Fauxpaas
     alias_method :==, :eql?
 
     private
-
     attr_reader :options
   end
 end

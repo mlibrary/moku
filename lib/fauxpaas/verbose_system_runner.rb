@@ -1,10 +1,6 @@
-# frozen_string_literal: true
-
 require "fauxpaas/open3_capture"
 
 module Fauxpaas
-
-  # Wraps a runner to execute its output verbosely
   class VerboseSystemRunner
     def initialize(runner: Open3Capture.new)
       @runner = runner
@@ -12,11 +8,11 @@ module Fauxpaas
 
     def run(string)
       puts "Executing '#{string}'"
-      runner.run(string).tap {|output| report(output) }
+      runner.run(string).tap { |output| report(output) }
     end
 
     def report(output)
-      stdout, stderr, status = output
+      stdout,stderr,status = output
 
       puts "Command STDOUT"
       puts stdout
