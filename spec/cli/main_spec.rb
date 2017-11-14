@@ -36,11 +36,13 @@ module Fauxpaas
         instance_double(Release,
           deploy: mock_status)
       end
+      let(:mock_cap) { instance_double(Cap, restart: mock_status) }
 
       before(:each) do
         allow(mock_instance).to receive(:release).and_return(mock_release)
         allow(mock_instance).to receive(:signature)
         allow(mock_instance).to receive(:log_release)
+        allow(mock_instance).to receive(:interrogator).and_return(mock_cap)
       end
 
       it_behaves_like "a Fauxpaas thor command", "deploy"
@@ -63,6 +65,11 @@ module Fauxpaas
       it "reports success" do
         expect { cli.start(["deploy", instance_name]) }
           .to output(/deploy successful/).to_stdout
+      end
+
+      it "restarts the application" do
+        expect(mock_cap).to receive(:restart)
+        cli.start(["restart", instance_name])
       end
     end
 

@@ -31,11 +31,12 @@ module Fauxpaas
         signature = instance.signature(options[:reference])
         release = instance.release(signature)
         status = release.deploy
+        report(status, action: "deploy")
         if status.success?
           instance.log_release(LoggedRelease.new(ENV["USER"], Time.now, signature))
           Fauxpaas.instance_repo.save(instance)
+          restart(instance_name)
         end
-        report(status, action: "deploy")
       end
 
       desc "default_branch <instance> [<new_branch>]",
