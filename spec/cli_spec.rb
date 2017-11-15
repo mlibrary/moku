@@ -2,55 +2,79 @@
 
 require "fauxpaas/cli/main"
 
-require_relative "./support/mock_instance.rb"
-
 module Fauxpaas
   RSpec.describe CLI::Main do
-    include_context "with mocked instance repo and instance"
-
     after(:each) { Fauxpaas.system_runner = nil }
 
+    subject(:cli) { described_class }
     let(:instance_name) { "something" }
+
+    let(:mock_instance) { instance_double(Instance) }
+
+    let(:mock_instance_repo) do
+      instance_double(FileInstanceRepo,
+        save: true,
+        find: mock_instance)
+    end
+
+    let(:mock_status) { double(:status, success?: true) }
+
+    before(:each) do
+      Fauxpaas.instance_repo = mock_instance_repo
+    end
+
+    after(:each) do
+      Fauxpaas.instance_repo = nil
+    end
 
     shared_examples_for "a thor subcommand" do |command|
       it "does not set verbose output by default" do
-        described_class.start([command, instance_name])
+        cli.start([command, instance_name])
         expect(Fauxpaas.system_runner).not_to be_a_kind_of(VerboseSystemRunner)
       end
 
       it "can set verbose output" do
-        described_class.start([command, instance_name, "--verbose"])
+        cli.start([command, instance_name, "--verbose"])
         expect(Fauxpaas.system_runner).to be_a_kind_of(VerboseSystemRunner)
       end
 
       it "requires an instance" do
-        expect { described_class.start([command]) }
+        expect { cli.start([command]) }
           .to output(/no arguments/).to_stderr
       end
     end
 
     describe "#deploy" do
-      it_behaves_like "a thor subcommand", "deploy"
+      let(:mock_release) do
+        instance_double(Release,
+          deploy: mock_status)
+      end
 
-      subject { described_class.start(["deploy", instance_name]) }
+      before(:each) do
+        allow(mock_instance).to receive(:release).and_return(mock_release)
+        allow(mock_instance).to receive(:signature)
+        allow(mock_instance).to receive(:log_release)
+      end
+
+      it_behaves_like "a thor subcommand", "deploy"
 
       it "deploys an instance" do
         expect(mock_release).to receive(:deploy)
-        subject
+        cli.start(["deploy", instance_name])
       end
 
       it "logs the release" do
         expect(mock_instance).to receive(:log_release)
-        subject
+        cli.start(["deploy", instance_name])
       end
 
       it "saves the instance" do
         expect(mock_instance_repo).to receive(:save).with(mock_instance)
-        subject
+        cli.start(["deploy", instance_name])
       end
 
       it "reports success" do
-        expect { subject }
+        expect { cli.start(["deploy", instance_name]) }
           .to output(/deploy successful/).to_stdout
       end
     end
@@ -58,22 +82,25 @@ module Fauxpaas
     describe "#default_branch" do
       it_behaves_like "a thor subcommand", "default-branch"
 
-      let(:branch) { "newbranch" }
+      before(:each) do
+        allow(mock_instance).to receive(:default_branch)
+        allow(mock_instance).to receive(:default_branch=)
+      end
 
-      subject { described_class.start(["default-branch", instance_name, branch]) }
+      let(:branch) { "newbranch" }
 
       it "sets the default branch" do
         expect(mock_instance).to receive(:"default_branch=").with(branch)
-        subject
+        cli.start(["default-branch", instance_name, branch])
       end
 
       it "saves the instance" do
         expect(mock_instance_repo).to receive(:save).with(mock_instance)
-        subject
+        cli.start(["default-branch", instance_name, branch])
       end
 
       it "reports the change" do
-        expect { subject }
+        expect { cli.start(["default-branch", instance_name, branch]) }
           .to output(/Changed default branch from .* to #{branch}/).to_stdout
       end
     end
@@ -81,20 +108,33 @@ module Fauxpaas
     describe "#rollback" do
       it_behaves_like "a thor subcommand", "rollback"
 
-      subject { described_class.start(["rollback", instance_name]) }
+      let(:mock_cap) { instance_double(Cap, rollback: mock_status) }
+
+      let(:mock_source_archive) do
+        instance_double(Archive,
+          latest: instance_double(GitReference))
+      end
+
+      before(:each) do
+        allow(mock_instance).to receive(:interrogator)
+          .and_return(mock_cap)
+
+        allow(mock_instance).to receive(:source_archive)
+          .and_return(mock_source_archive)
+      end
 
       it "rolls back" do
         expect(mock_cap).to receive(:rollback)
-        subject
+        cli.start(["rollback", instance_name])
       end
 
       it "rolls back to a specified release" do
         expect(mock_cap).to receive(:rollback).with(anything, "oldrelease")
-        described_class.start(["rollback", instance_name, "oldrelease"])
+        cli.start(["rollback", instance_name, "oldrelease"])
       end
 
       it "reports success" do
-        expect { subject }
+        expect { cli.start(["rollback", instance_name]) }
           .to output(/rollback successful/).to_stdout
       end
     end
@@ -102,8 +142,15 @@ module Fauxpaas
     describe "#caches" do
       it_behaves_like "a thor subcommand", "caches"
 
+      let(:mock_cap) { instance_double(Cap, caches: "cachelist") }
+
+      before(:each) do
+        allow(mock_instance).to receive(:interrogator)
+          .and_return(mock_cap)
+      end
+
       it "prints the caches" do
-        expect { described_class.start(["caches", instance_name]) }
+        expect { cli.start(["caches", instance_name]) }
           .to output(/cachelist/).to_stdout
       end
     end
@@ -111,8 +158,13 @@ module Fauxpaas
     describe "#releases" do
       it_behaves_like "a thor subcommand", "releases"
 
+      before(:each) do
+        allow(mock_instance).to receive(:releases)
+          .and_return(["one", "two", "three"])
+      end
+
       it "prints the releases" do
-        expect { described_class.start(["releases", instance_name]) }
+        expect { cli.start(["releases", instance_name]) }
           .to output(/one\ntwo\nthree/).to_stdout
       end
     end
@@ -120,15 +172,20 @@ module Fauxpaas
     describe "#restart" do
       it_behaves_like "a thor subcommand", "restart"
 
-      subject { described_class.start(["restart", instance_name]) }
+      let(:mock_cap) { instance_double(Cap, restart: mock_status) }
+
+      before(:each) do
+        allow(mock_instance).to receive(:interrogator)
+          .and_return(mock_cap)
+      end
 
       it "restarts the application" do
         expect(mock_cap).to receive(:restart)
-        subject
+        cli.start(["restart", instance_name])
       end
 
       it "reports success" do
-        expect { subject }
+        expect { cli.start(["restart", instance_name]) }
           .to output(/restart successful/).to_stdout
       end
     end
