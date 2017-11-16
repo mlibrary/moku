@@ -144,6 +144,31 @@ module Fauxpaas
       end
     end
 
+    describe "#syslog_view" do
+      subject { cap.syslog_view }
+
+      it_behaves_like "a cap task", "syslog:view"
+    end
+
+    describe "#syslog_follow" do
+      subject { cap.syslog_follow }
+
+      it_behaves_like "a cap task", "syslog:follow"
+    end
+
+    describe "#syslog_grep" do
+      subject { cap.syslog_grep("pattern") }
+
+      it_behaves_like "a cap task", "syslog:grep"
+
+      it "sets :grep_pattern" do
+        expect(backend_runner).to receive(:run)
+          .with(anything, anything, anything, 
+                a_hash_including({grep_pattern: "pattern"}))
+        subject
+      end
+    end
+
     context "when options does not include systemd_services" do
       let(:options) do
         {

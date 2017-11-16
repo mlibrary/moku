@@ -2,6 +2,7 @@
 
 require "thor"
 require "fauxpaas"
+require "fauxpaas/cli/syslog"
 
 module Fauxpaas
   module CLI
@@ -85,6 +86,10 @@ module Fauxpaas
           action: "restart")
       end
 
+      desc "syslog SUBCOMMAND <instance> args...",
+        "Interact with system log contents for the instance"
+      subcommand "syslog", CLI::Syslog
+
       private
 
       attr_reader :instance
@@ -92,7 +97,7 @@ module Fauxpaas
       def setup(instance_name)
         @instance = Fauxpaas.instance_repo.find(instance_name)
         if options.fetch(:verbose, false)
-          Fauxpaas.system_runner = VerboseSystemRunner.new
+          Fauxpaas.system_runner = VerboseRunner.new
         end
       end
 
