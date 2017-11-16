@@ -49,6 +49,18 @@ module Fauxpaas
       status
     end
 
+    def syslog_view
+      run("syslog:view", {})
+    end
+
+    def syslog_follow
+      run("syslog:follow", {})
+    end
+
+    def syslog_grep(pattern)
+      run("syslog:grep", grep_pattern: pattern)
+    end
+
     private
 
     attr_reader :capfile_path, :stage, :runner, :fs, :common_options

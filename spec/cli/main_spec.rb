@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "fauxpaas/cli/main"
+require_relative "../support/mock_instance.rb"
 
 module Fauxpaas
   RSpec.describe CLI::Main do
@@ -9,33 +10,19 @@ module Fauxpaas
     subject(:cli) { described_class }
     let(:instance_name) { "something" }
 
-    let(:mock_instance) { instance_double(Instance) }
-
-    let(:mock_instance_repo) do
-      instance_double(FileInstanceRepo,
-        save: true,
-        find: mock_instance)
-    end
-
     let(:mock_status) { double(:status, success?: true) }
 
-    before(:each) do
-      Fauxpaas.instance_repo = mock_instance_repo
-    end
+    include_context "a mock instance"
 
-    after(:each) do
-      Fauxpaas.instance_repo = nil
-    end
-
-    shared_examples_for "a thor subcommand" do |command|
+    shared_examples_for "a Fauxpaas thor command" do |command|
       it "does not set verbose output by default" do
         cli.start([command, instance_name])
-        expect(Fauxpaas.system_runner).not_to be_a_kind_of(VerboseSystemRunner)
+        expect(Fauxpaas.system_runner).not_to be_a_kind_of(VerboseRunner)
       end
 
       it "can set verbose output" do
         cli.start([command, instance_name, "--verbose"])
-        expect(Fauxpaas.system_runner).to be_a_kind_of(VerboseSystemRunner)
+        expect(Fauxpaas.system_runner).to be_a_kind_of(VerboseRunner)
       end
 
       it "requires an instance" do
@@ -56,7 +43,7 @@ module Fauxpaas
         allow(mock_instance).to receive(:log_release)
       end
 
-      it_behaves_like "a thor subcommand", "deploy"
+      it_behaves_like "a Fauxpaas thor command", "deploy"
 
       it "deploys an instance" do
         expect(mock_release).to receive(:deploy)
@@ -80,7 +67,7 @@ module Fauxpaas
     end
 
     describe "#default_branch" do
-      it_behaves_like "a thor subcommand", "default-branch"
+      it_behaves_like "a Fauxpaas thor command", "default-branch"
 
       before(:each) do
         allow(mock_instance).to receive(:default_branch)
@@ -106,7 +93,7 @@ module Fauxpaas
     end
 
     describe "#rollback" do
-      it_behaves_like "a thor subcommand", "rollback"
+      it_behaves_like "a Fauxpaas thor command", "rollback"
 
       let(:mock_cap) { instance_double(Cap, rollback: mock_status) }
 
@@ -140,7 +127,7 @@ module Fauxpaas
     end
 
     describe "#caches" do
-      it_behaves_like "a thor subcommand", "caches"
+      it_behaves_like "a Fauxpaas thor command", "caches"
 
       let(:mock_cap) { instance_double(Cap, caches: "cachelist") }
 
@@ -156,7 +143,7 @@ module Fauxpaas
     end
 
     describe "#releases" do
-      it_behaves_like "a thor subcommand", "releases"
+      it_behaves_like "a Fauxpaas thor command", "releases"
 
       before(:each) do
         allow(mock_instance).to receive(:releases)
@@ -170,7 +157,7 @@ module Fauxpaas
     end
 
     describe "#restart" do
-      it_behaves_like "a thor subcommand", "restart"
+      it_behaves_like "a Fauxpaas thor command", "restart"
 
       let(:mock_cap) { instance_double(Cap, restart: mock_status) }
 
@@ -187,6 +174,13 @@ module Fauxpaas
       it "reports success" do
         expect { cli.start(["restart", instance_name]) }
           .to output(/restart successful/).to_stdout
+      end
+    end
+
+    describe "#syslog" do
+      it "requires a subcommand" do
+        expect { cli.start(["syslog"]) }
+          .to output(/Commands:/).to_stdout
       end
     end
   end

@@ -1,13 +1,14 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
-require "fauxpaas/verbose_system_runner"
+require "fauxpaas/verbose_runner"
 
 module Fauxpaas
-  RSpec.describe VerboseSystemRunner do
-
+  RSpec.describe VerboseRunner do
     describe "#run" do
       let(:mock_runner) do
         double(:runner,
-               run: ['stdout','stderr',double(:status)])
+          run: ["stdout", "stderr", double(:status)])
       end
 
       let(:command) { "/bin/something" }
