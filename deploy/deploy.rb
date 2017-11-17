@@ -48,6 +48,9 @@ set :assets_roles, [:web]                                     # this is default
 set :normalize_asset_timestamps, ["public/images", "public/javascripts", "public/stylesheets"]
 set :keep_assets, 2                                           # default: nil (disabled)
 
+# local stuff
+set :systemd_services, ENV.fetch("SYSTEMD_SERVICES", "").split(":")
+
 namespace :caches do
   desc "List caches"
   task :list do
@@ -76,3 +79,4 @@ end
 
 load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")
 load File.join(File.dirname(__FILE__), "cap", "restart.rb")
+load File.join(File.dirname(__FILE__), "cap", "syslog.rb")
