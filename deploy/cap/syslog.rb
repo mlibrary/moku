@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
 require "pry"
+require "shellwords"
 
 namespace :syslog do
-  def journalctl_cmd(initial: [:sudo, "/bin/journalctl"])
-    fetch(:systemd_services).reduce(initial) {|memo, obj| memo + ["-u", obj] }
-  end
-
-  def quote(arg)
-    '"' + arg.gsub(/(["\\])/, '\\1') + '"'
+  def journalctl_cmd(journalctl: [:sudo, "/bin/journalctl"])
+    journalctl + fetch(:systemd_services).map {|unit| ['-u', Shellwords.escape(unit)] }.flatten
   end
 
   desc "View the system log for the application's systemd service"
@@ -22,7 +19,7 @@ namespace :syslog do
   task :grep do
     set :grep_pattern, ENV.fetch("GREP_PATTERN", ".")
     on roles(:app) do
-      execute(*journalctl_cmd + ["|", :grep, quote(fetch(:grep_pattern))]) unless fetch(:systemd_services).empty?
+      execute(*journalctl_cmd + ["|", :grep, Shellwords.escape(fetch(:grep_pattern))]) unless fetch(:systemd_services).empty?
     end
   end
 
