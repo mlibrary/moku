@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "fauxpaas/open3_capture"
+require "shellwords"
 
 module Fauxpaas
 
@@ -28,8 +29,9 @@ module Fauxpaas
 
     def capify_options(opts)
       opts.keep_if {|_key, value| value }
-        .map {|key, value| "#{key.to_s.upcase}=#{value}" }
+        .map {|key, value| "#{key.to_s.upcase}=#{Shellwords.escape(value)}" }
     end
+
   end
 
 end

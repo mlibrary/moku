@@ -24,6 +24,20 @@ module Fauxpaas
           zip: "zop"
         })
       end
+
+      it "quotes environment variable values" do
+        expect(kernel).to receive(:run).with(
+          "cap -f #{capfile_path} " + 'myapp-mystage test:task FOO=with\\ spaces ' +
+          'BAR=with\\ double\\"\\ quotes BAZ=\\$horrible\\ \\`arg\\` ' +
+          'QUUX=with\\\\backslash'
+        )
+        runner.run(capfile_path, "myapp-mystage", "test:task", {
+          foo: "with spaces",
+          bar: 'with double" quotes',
+          baz: "$horrible `arg`",
+          quux: "with\\backslash" })
+      end
+
       it "returns stdout, stderr, status" do
         expect(runner.run(capfile_path, "myapp-mystage", "some:task", {}))
           .to eql([stdout, stderr, success])
