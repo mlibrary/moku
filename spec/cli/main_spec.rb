@@ -69,7 +69,16 @@ module Fauxpaas
 
       it "restarts the application" do
         expect(mock_cap).to receive(:restart)
-        cli.start(["restart", instance_name])
+        cli.start(["deploy", instance_name])
+      end
+
+      context "when it fails to deploy" do
+        let(:mock_status) { double(:status, success?: false) }
+
+        it "doesn't restart the application" do
+          expect(mock_cap).not_to receive(:restart)
+          cli.start(["deploy", instance_name])
+        end
       end
     end
 
