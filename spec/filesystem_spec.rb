@@ -68,6 +68,25 @@ module Fauxpaas
         end
       end
 
+      describe "#cp" do
+        let(:contents) { "some\ncontents\n\n\n\nmore" }
+        let(:original) { TMPPATH + "somefile.txt" }
+        let(:copy) { TMPPATH + "somecopy.txt" }
+        before(:each) do
+          File.write(original, contents)
+        end
+        it "preserves the original" do
+          fs.cp(original, copy)
+          expect(File.read(original)).to eql(contents)
+          expect(original.symlink?).to be false
+        end
+        it "makes a copy" do
+          fs.cp(original, copy)
+          expect(File.read(copy)).to eql(contents)
+          expect(copy.symlink?).to be false
+        end
+      end
+
       describe "#children" do
         let(:files) { [TMPPATH + "one_file.txt", TMPPATH + ".hidden.yml"] }
         let(:dirs) { [TMPPATH + "some_dir", TMPPATH + ".hidden_dir"] }
