@@ -13,6 +13,12 @@ module Fauxpaas
       FileUtils.cp(original, dest)
     end
 
+    # @param original [Pathname]
+    # @param dest [Pathanme]
+    def mv(original, dest)
+      FileUtils.mv(original, dest)
+    end
+
     # @param [Pathname] dir
     # @return [Array<Pathname>]
     def children(dir)
