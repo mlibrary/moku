@@ -29,6 +29,15 @@ module Fauxpaas
               .to eql(commit)
           end
         end
+        it "yields a WorkingDirectory" do
+          runner.safe_checkout(url, commit) do |dir|
+            expect(dir.files).to match_array(
+              `git -C #{dir} ls-files`
+                .split("\n")
+                .map{|f| Pathname.new(f)}
+            )
+          end
+        end
       end
 
     end
