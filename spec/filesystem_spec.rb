@@ -117,23 +117,6 @@ module Fauxpaas
         end
       end
 
-      describe "#rchildren" do
-        let(:file) { TMPPATH/"file.txt" }
-        let(:contents) { "some/\ncontents" }
-        let(:dir) { TMPPATH/"some_dir" }
-        let(:nested_file) { TMPPATH/dir/"nested.txt" }
-        let(:nested_contents) { "nestedcontents" }
-        before(:each) do
-          File.write(file, contents)
-          FileUtils.mkpath dir
-          File.write(nested_file, nested_contents)
-        end
-
-        it "lists all files and dirs recursively" do
-          expect(fs.rchildren(TMPPATH)).to contain_exactly(file, dir, nested_file)
-        end
-      end
-
       describe "#ln_s" do
         let(:src_file_path) { TMPPATH + "src.txt" }
         let(:src_dir_path) { TMPPATH + "src_dir" }

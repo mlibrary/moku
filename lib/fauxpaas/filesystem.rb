@@ -25,13 +25,6 @@ module Fauxpaas
       dir.children
     end
 
-    # @param [Pathname] dir
-    # @return [Array<Pathname>]
-    def rchildren(dir)
-      Dir.glob((dir/"**"/"*").to_s)
-        .map{|c| Pathname.new(c) }
-    end
-
     # @param [Pathname] path
     # @return [Time]
     def modify_time(path)
