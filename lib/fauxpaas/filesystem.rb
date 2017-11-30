@@ -15,7 +15,7 @@ module Fauxpaas
 
     # @param original [Pathname]
     # @param dest [Pathanme]
-    def quick_mv(original, dest)
+    def mv(original, dest)
       FileUtils.mv(original, dest)
     end
 

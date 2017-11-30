@@ -87,7 +87,7 @@ module Fauxpaas
         end
       end
 
-      describe "#quick_mv" do
+      describe "#mv" do
         let(:contents) { "some\ncontents\n\n\n\nmore" }
         let(:original) { TMPPATH + "somefile.txt" }
         let(:copy) { TMPPATH + "somecopy.txt" }
@@ -95,11 +95,11 @@ module Fauxpaas
           File.write(original, contents)
         end
         it "removes the original" do
-          fs.quick_mv(original, copy)
+          fs.mv(original, copy)
           expect(original.exist?).to be false
         end
         it "moves the file" do
-          fs.quick_mv(original, copy)
+          fs.mv(original, copy)
           expect(File.read(copy)).to eql(contents)
           expect(copy.symlink?).to be false
         end
