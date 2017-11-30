@@ -3,6 +3,7 @@
 require "fauxpaas/open3_capture"
 require "fauxpaas/filesystem"
 require "pathname"
+require "tmpdir"
 
 module Fauxpaas
 
