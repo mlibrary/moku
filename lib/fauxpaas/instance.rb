@@ -20,12 +20,12 @@ module Fauxpaas
     attr_reader :name, :app, :stage, :releases
     attr_reader :source_archive, :deploy_archive, :infrastructure_archive
 
-    def signature(sig_or_ref = nil)
-      release_builder.signature(sig_or_ref)
+    def signature(reference = nil)
+      release_builder.signature(reference)
     end
 
-    def release(sig_or_ref)
-      release_builder.release(sig_or_ref)
+    def release(signature)
+      release_builder.release(signature)
     end
 
     def interrogator

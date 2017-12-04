@@ -9,21 +9,19 @@ module Fauxpaas
       @source_archive = source_archive
     end
 
-    def signature(sig_or_ref = nil)
-      return sig_or_ref if sig_or_ref.is_a?(ReleaseSignature)
+    def signature(reference = nil)
       ReleaseSignature.new(
         deploy: deploy_archive.latest,
         infrastructure: infrastructure_archive.latest,
-        source: source_archive.reference(sig_or_ref)
+        source: source_archive.reference(reference)
       )
     end
 
-    def release(sig_or_ref)
-      sig = signature(sig_or_ref)
+    def release(signature)
       Release.new(
-        deploy_config: deploy_archive.deploy_config(sig.deploy),
-        infrastructure: infrastructure_archive.infrastructure(sig.infrastructure),
-        source: sig.source
+        deploy_config: deploy_archive.deploy_config(signature.deploy),
+        infrastructure: infrastructure_archive.infrastructure(signature.infrastructure),
+        source: signature.source
       )
     end
 
