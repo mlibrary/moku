@@ -7,6 +7,18 @@ module Fauxpaas
   # and to be clear about which methods we need.
   class Filesystem
 
+    # @param original [Pathname]
+    # @param dest [Pathanme]
+    def cp(original, dest)
+      FileUtils.cp(original, dest)
+    end
+
+    # @param original [Pathname]
+    # @param dest [Pathanme]
+    def mv(original, dest)
+      FileUtils.mv(original, dest)
+    end
+
     # @param [Pathname] dir
     # @return [Array<Pathname>]
     def children(dir)

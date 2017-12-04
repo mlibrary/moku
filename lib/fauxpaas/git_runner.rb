@@ -3,12 +3,32 @@
 require "fauxpaas/open3_capture"
 require "fauxpaas/filesystem"
 require "pathname"
+require "tmpdir"
 
 module Fauxpaas
 
   # Wraps git commands
   class GitRunner
     class UnknownReferenceError < RuntimeError; end
+    class WorkingDirectory < Pathname
+      def initialize(path, system_runner, fs)
+        super(path)
+        @system_runner = system_runner
+        @fs = fs
+      end
+
+      def files
+        @files ||= fs.chdir(path) do
+          stdout, _, _ = system_runner.run("git ls-files")
+          stdout
+            .split("\n")
+            .map{|file| Pathname.new(file) }
+        end
+      end
+
+      private
+      attr_reader :path, :system_runner, :fs
+    end
 
     def initialize(system_runner: Open3Capture.new, fs: Filesystem.new)
       @system_runner = system_runner
@@ -22,7 +42,7 @@ module Fauxpaas
         system_runner.run("git clone #{url} #{cloned_dir}")
         fs.chdir(cloned_dir) do
           system_runner.run("git checkout #{commitish}")
-          yield cloned_dir
+          yield WorkingDirectory.new(cloned_dir, system_runner, fs)
         end
       end
     end

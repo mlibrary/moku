@@ -1,12 +1,13 @@
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
-require "fauxpaas/components"
 require "fauxpaas/git_runner"
+require "pathname"
+require "tmpdir"
 
 module Fauxpaas
   RSpec.describe GitRunner do
     describe "#safe_checkout" do
-      let(:url) { Fauxpaas.root + ".git" }
+      let(:url) { Pathname.new(__FILE__).dirname/".."/".git" }
       let(:commit) { "00dd3a5a8dbb1c19809cfb1499829defd8e16e49" }
 
       context "fully mocked" do
@@ -26,6 +27,15 @@ module Fauxpaas
           runner.safe_checkout(url, commit) do |dir|
             expect(`git -C #{dir} rev-parse HEAD`.strip)
               .to eql(commit)
+          end
+        end
+        it "yields a WorkingDirectory" do
+          runner.safe_checkout(url, commit) do |dir|
+            expect(dir.files).to match_array(
+              `git -C #{dir} ls-files`
+                .split("\n")
+                .map{|f| Pathname.new(f)}
+            )
           end
         end
       end
