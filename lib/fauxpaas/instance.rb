@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require "fauxpaas/release_signature"
-require "fauxpaas/release"
+require "fauxpaas/release_builder"
 require "pathname"
 
 module Fauxpaas
@@ -22,21 +21,11 @@ module Fauxpaas
     attr_reader :source_archive, :deploy_archive, :infrastructure_archive
 
     def signature(sig_or_ref = nil)
-      return sig_or_ref if sig_or_ref.is_a?(ReleaseSignature)
-      ReleaseSignature.new(
-        source: source_archive.reference(sig_or_ref),
-        infrastructure: infrastructure_archive.latest,
-        deploy: deploy_archive.latest
-      )
+      release_builder.signature(sig_or_ref)
     end
 
     def release(sig_or_ref)
-      sig = signature(sig_or_ref)
-      Release.new(
-        source: sig.source,
-        infrastructure: infrastructure_archive.infrastructure(sig.infrastructure),
-        deploy_config: deploy_archive.deploy_config(sig.deploy)
-      )
+      release_builder.release(sig_or_ref)
     end
 
     def interrogator
@@ -64,6 +53,15 @@ module Fauxpaas
 
     def log_release(release)
       releases << release
+    end
+
+    private
+    def release_builder
+      ReleaseBuilder.new(
+        deploy_archive: deploy_archive,
+        infrastructure_archive: infrastructure_archive,
+        source_archive: source_archive
+      )
     end
 
   end
