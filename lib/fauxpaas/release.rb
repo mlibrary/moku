@@ -15,8 +15,6 @@ module Fauxpaas
       @source = source
     end
 
-    attr_reader :deploy_config, :infrastructure, :source
-
     def deploy
       deploy_config
         .runner
@@ -24,10 +22,13 @@ module Fauxpaas
     end
 
     def eql?(other)
-      source == other.source &&
-        deploy_config == other.deploy_config &&
-        infrastructure == other.infrastructure
+     instance_variables.index do |var|
+        instance_variable_get(var) != other.instance_variable_get(var)
+      end.nil?
     end
+
+    private
+    attr_reader :deploy_config, :infrastructure, :source
 
   end
 end
