@@ -42,15 +42,6 @@ module Fauxpaas
       source_archive.default_branch = value
     end
 
-    def eql?(other)
-      name == other.name &&
-        source_archive == other.source_archive &&
-        deploy_archive == other.deploy_archive &&
-        infrastructure_archive == other.infrastructure_archive &&
-        releases == other.releases
-    end
-    alias_method :==, :eql?
-
     def log_release(release)
       releases << release
     end
