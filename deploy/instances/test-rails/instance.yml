@@ -1,15 +1,12 @@
 ---
 deploy:
   url: "."
-  git_runner: Fauxpaas::LocalGitRunner
   default_branch: HEAD
   root_dir: deploy/instances/test-rails
 source:
   url: https://github.com/mlibrary/chipmunk.git
-  git_runner: Fauxpaas::RemoteGitRunner
   default_branch: master
 infrastructure:
   url: "."
-  git_runner: Fauxpaas::LocalGitRunner
   default_branch: HEAD
   root_dir: deploy/instances/test-rails

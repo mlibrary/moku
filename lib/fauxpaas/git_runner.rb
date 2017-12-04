@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "fauxpaas/open3_capture"
 require "fauxpaas/filesystem"
 require "pathname"
 require "tmpdir"
@@ -9,7 +8,6 @@ module Fauxpaas
 
   # Wraps git commands
   class GitRunner
-    class UnknownReferenceError < RuntimeError; end
     class WorkingDirectory < Pathname
       def initialize(path, system_runner, fs)
         super(path)
@@ -30,9 +28,19 @@ module Fauxpaas
       attr_reader :path, :system_runner, :fs
     end
 
-    def initialize(system_runner: Open3Capture.new, fs: Filesystem.new)
+    def initialize(system_runner:, fs: Filesystem.new, local_resolver:, remote_resolver:)
       @system_runner = system_runner
       @fs = fs
+      @local_resolver = local_resolver
+      @remote_resolver = remote_resolver
+    end
+
+    def sha(uri, commitish)
+      if fs.exists? uri
+        local_resolver.sha(uri, commitish)
+      else
+        remote_resolver.sha(uri, commitish)
+      end
     end
 
     # Checkout into a temporary directory, and yield the dir
@@ -48,7 +56,7 @@ module Fauxpaas
     end
 
     private
-
     attr_reader :system_runner, :fs
+
   end
 end

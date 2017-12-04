@@ -21,7 +21,7 @@ module Fauxpaas
     let(:infra_content) {{a: 1, b: 2}}
     let(:infra_archive) do
       InfrastructureArchive.new(
-        Archive.new("infra.git", runner, default_branch: runner.branch),
+        Archive.new("infra.git", default_branch: runner.branch),
         fs: MemoryFilesystem.new({
           Pathname.new(runner.tmpdir) + "infrastructure.yml" => YAML.dump(infra_content)
         })
@@ -38,13 +38,13 @@ module Fauxpaas
     end
     let(:deploy_archive) do
       DeployArchive.new(
-        Archive.new("deploy.git", runner, default_branch: runner.branch),
+        Archive.new("deploy.git", default_branch: runner.branch),
         fs: MemoryFilesystem.new({
           Pathname.new(runner.tmpdir) + "deploy.yml" => YAML.dump(deploy_content)
         })
       )
     end
-    let(:source_archive) { Archive.new("source.git", runner, default_branch: runner.branch) }
+    let(:source_archive) { Archive.new("source.git", default_branch: runner.branch) }
     let(:a_release) { double(:a_release) }
     let(:another_release) { double(:another_release) }
 
@@ -57,6 +57,8 @@ module Fauxpaas
         releases: [a_release]
       )
     end
+
+    before(:each) { Fauxpaas.git_runner = runner }
 
     describe "#signature" do
       context "when no commitish given" do
