@@ -8,7 +8,7 @@ module Fauxpaas
 
     # @param deploy_config [DeployConfig]
     # @param infrastructure [Infrastructure]
-    # @param Source [SourceReference]
+    # @param source [GitReference]
     def initialize(deploy_config:, infrastructure:, source:)
       @deploy_config = deploy_config
       @infrastructure = infrastructure
