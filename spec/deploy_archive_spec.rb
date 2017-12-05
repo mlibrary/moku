@@ -1,15 +1,11 @@
 require_relative "./spec_helper"
+require_relative "./support/spoofed_git_runner"
 require "fauxpaas/deploy_archive"
 require "fauxpaas/deploy_config"
 require "pathname"
 
 module Fauxpaas
   RSpec.describe DeployArchive do
-    let(:archive) { double(:archive, to_hash: {a: "one", b: "two"}) }
-    let(:reference) { double(:reference) }
-    let(:path) { Pathname.new("some/path") }
-    let(:tmpdir) { Pathname.new("/tmp/dir") }
-    let(:fs) { double(:fs) }
     let(:deploy_config) do
       DeployConfig.new(
         appname: "myapp-mystage",
@@ -20,27 +16,27 @@ module Fauxpaas
       )
     end
 
-    let(:deploy_archive) { described_class.new(archive, root_dir: path, fs: fs) }
+    let(:runner) { SpoofedGitRunner.new }
+    let(:url) { "https://example.com/fake.git" }
+    let(:tmpdir) { Pathname.new("/tmp") }
+    let(:root_dir) { Pathname.new("some/dir") }
+    let(:fs) { double(:fs) }
+
+    let(:deploy_archive) { described_class.new(url, runner.branch, root_dir, fs: fs) }
 
     before(:each) do
-      allow(archive).to receive(:checkout).with(reference).and_yield(tmpdir)
-      allow(fs).to receive(:read).with(tmpdir + path + "deploy.yml")
+      Fauxpaas.git_runner = runner
+      allow(runner).to receive(:safe_checkout).with(url, runner.branch)
+        .and_yield(tmpdir)
+      allow(fs).to receive(:read).with(tmpdir/root_dir/"deploy.yml")
         .and_return(YAML.dump(deploy_config.to_hash))
     end
 
     describe "#deploy_config" do
       it "builds a deploy_config object from the reference" do
-        expect(deploy_archive.deploy_config(reference))
-          .to eql(deploy_config)
+        expect(deploy_archive.deploy_config).to eql(deploy_config)
       end
     end
 
-    describe "#to_hash" do
-      it "returns the proper hash" do
-        expect(deploy_archive.to_hash).to eql(
-          archive.to_hash.merge("root_dir" => path.to_s)
-        )
-      end
-    end
   end
 end

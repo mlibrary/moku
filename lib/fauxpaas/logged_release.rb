@@ -31,9 +31,9 @@ module Fauxpaas
     end
 
     def to_s
-      "#{formatted_time}: #{user} #{signature.source.reference} " \
-        "#{signature.infrastructure.reference} " \
-        "w/ #{signature.deploy.reference}"
+      "#{formatted_time}: #{user} #{signature.source.commitish} " \
+        "#{signature.infrastructure.commitish} " \
+        "w/ #{signature.deploy.commitish}"
     end
 
     def to_hash

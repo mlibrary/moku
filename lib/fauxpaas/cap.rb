@@ -22,7 +22,7 @@ module Fauxpaas
         _, _, status = run("deploy",
           infrastructure_config_path: infrastructure_path.to_s,
           source_repo: source.url,
-          branch: source.reference.to_s)
+          branch: source.commitish.to_s)
         status
       end
     end
@@ -39,7 +39,7 @@ module Fauxpaas
     def rollback(source, cache)
       _stdout, _stderr, status = run("deploy:rollback",
         source_repo: source.url,
-        branch: source.reference.to_s,
+        branch: source.commitish.to_s,
         rollback_release: cache)
       status
     end

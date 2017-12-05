@@ -4,7 +4,7 @@ require_relative "./spec_helper"
 require "fauxpaas/release"
 require "fauxpaas/infrastructure"
 require "fauxpaas/deploy_config"
-require "fauxpaas/git_reference"
+require "fauxpaas/archive_reference"
 require "yaml"
 
 module Fauxpaas
@@ -12,7 +12,7 @@ module Fauxpaas
     let(:success) { double(:success, success?: true) }
     let(:runner) { double(:runner, run: [nil, nil, success]) }
     let(:infrastructure) { Infrastructure.new({a: 1, b: "two"}) }
-    let(:source) { GitReference.new("source.git", "1238019283019823019823091832") }
+    let(:source) { ArchiveReference.new("source.git", "1238019283019823019823091832") }
     let(:deploy_config) do
       DeployConfig.new(
         appname: "myapp-mystage",

@@ -2,7 +2,7 @@
 
 require "fauxpaas/filesystem"
 require "fauxpaas/instance"
-require "fauxpaas/archive"
+require "fauxpaas/archive_reference"
 require "fauxpaas/deploy_archive"
 require "fauxpaas/infrastructure_archive"
 require "fauxpaas/logged_release"
@@ -23,17 +23,9 @@ module Fauxpaas
       releases = releases_content(name)
       Instance.new(
         name: name,
-        source_archive: Archive.from_hash(contents["source"]),
-        deploy_archive: DeployArchive.new(
-          Archive.from_hash(contents["deploy"]),
-          root_dir: contents["deploy"]["root_dir"],
-          fs: fs
-        ),
-        infrastructure_archive: InfrastructureArchive.new(
-          Archive.from_hash(contents["infrastructure"]),
-          root_dir: contents["infrastructure"]["root_dir"],
-          fs: fs
-        ),
+        source_archive: ArchiveReference.from_hash(contents["source"]),
+        deploy_archive: DeployArchive.from_hash(contents["deploy"]),
+        infrastructure_archive: InfrastructureArchive.from_hash(contents["infrastructure"]),
         releases: releases.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
     end
