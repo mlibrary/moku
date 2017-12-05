@@ -1,12 +1,14 @@
 ---
 deploy:
   url: "."
-  default_branch: HEAD
+  commitish: HEAD
   root_dir: deploy/instances/test-norails
 source:
   url: https://github.com/dpn-admin/dpn-client.git
-  default_branch: master
-infrastructure:
-  url: "."
-  default_branch: HEAD
-  root_dir: deploy/instances/test-norails
+  commitish: master
+  root_dir: ""
+shared:
+  - url: "."
+    commitish: HEAD
+    root_dir: deploy/instances/test-norails
+unshared: []

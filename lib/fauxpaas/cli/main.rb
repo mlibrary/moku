@@ -59,7 +59,7 @@ module Fauxpaas
       def rollback(instance_name, cache = nil)
         setup(instance_name)
         report(instance.interrogator
-          .rollback(instance.source_archive.latest, cache),
+          .rollback(instance.source.latest, cache),
           action: "rollback")
       end
 

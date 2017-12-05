@@ -24,6 +24,9 @@ module Fauxpaas
 
     attr_reader :signature
 
+    # @param user [#to_s]
+    # @param time [Time]
+    # @param signature [ReleaseSignature]
     def initialize(user, time, signature)
       @user = user
       @time = time
@@ -31,9 +34,9 @@ module Fauxpaas
     end
 
     def to_s
-      "#{formatted_time}: #{user} #{signature.source.reference} " \
-        "#{signature.infrastructure.reference} " \
-        "w/ #{signature.deploy.reference}"
+      "#{formatted_time}: #{user} #{signature.source.commitish} " \
+        "#{signature.shared.map(&:commitish).join(" ")} " \
+        "w/ #{signature.deploy.commitish}"
     end
 
     def to_hash

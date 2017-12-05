@@ -4,9 +4,7 @@ require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
 require "fauxpaas/instance"
-require "fauxpaas/archive"
-require "fauxpaas/deploy_archive"
-require "fauxpaas/infrastructure_archive"
+require "fauxpaas/archive_reference"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
 require "fauxpaas/components/git_runner"
@@ -18,16 +16,6 @@ module Fauxpaas
     let(:stage) { "mystage" }
     let(:name) { "#{app}-#{stage}" }
 
-    let(:runner) { SpoofedGitRunner.new  }
-    let(:infra_content) {{a: 1, b: 2}}
-    let(:infra_archive) do
-      InfrastructureArchive.new(
-        Archive.new("infra.git", default_branch: runner.branch),
-        fs: MemoryFilesystem.new({
-          Pathname.new(runner.tmpdir) + "infrastructure.yml" => YAML.dump(infra_content)
-        })
-      )
-    end
     let(:deploy_content) do
       {
         "appname" => name,
@@ -37,38 +25,38 @@ module Fauxpaas
         "deploy_dir" => "/some/deploy/dir"
       }
     end
-    let(:deploy_archive) do
-      DeployArchive.new(
-        Archive.new("deploy.git", default_branch: runner.branch),
-        fs: MemoryFilesystem.new({
-          Pathname.new(runner.tmpdir) + "deploy.yml" => YAML.dump(deploy_content)
-        })
-      )
-    end
-    let(:source_archive) { Archive.new("source.git", default_branch: runner.branch) }
+    let(:shared) { [ArchiveReference.new("infra.git", runner.branch)] }
+    let(:unshared) { [] }
+    let(:deploy) { ArchiveReference.new("deploy.git", runner.branch) }
+    let(:source) { ArchiveReference.new("source.git", runner.branch) }
     let(:a_release) { double(:a_release) }
     let(:another_release) { double(:another_release) }
 
     let(:instance) do
       described_class.new(
         name: name,
-        infrastructure_archive: infra_archive,
-        deploy_archive: deploy_archive,
-        source_archive: source_archive,
+        shared: shared,
+        unshared: unshared,
+        deploy: deploy,
+        source: source,
         releases: [a_release]
       )
     end
 
-    before(:each) { Fauxpaas.git_runner = runner }
+    let(:runner) { SpoofedGitRunner.new  }
+    before(:each) do
+      Fauxpaas.git_runner = runner
+    end
 
     describe "#signature" do
       context "when no commitish given" do
         it "returns the latest release signature" do
           expect(instance.signature).to eql(
             ReleaseSignature.new(
-              infrastructure: infra_archive.latest,
-              deploy: deploy_archive.latest,
-              source: source_archive.latest
+              shared: shared.map(&:latest),
+              unshared: unshared.map(&:latest),
+              deploy: deploy.latest,
+              source: source.latest
             )
           )
         end
@@ -77,31 +65,13 @@ module Fauxpaas
         it "returns an appropriate signature" do
           expect(instance.signature(runner.short)).to eql(
             ReleaseSignature.new(
-              infrastructure: infra_archive.latest,
-              deploy: deploy_archive.latest,
-              source: source_archive.reference(runner.short)
+              shared: shared.map(&:latest),
+              unshared: unshared.map(&:latest),
+              deploy: deploy.latest,
+              source: source.at(runner.short)
             )
           )
         end
-      end
-    end
-
-    describe "#release" do
-      let(:signature) do
-        ReleaseSignature.new(
-          infrastructure: infra_archive.latest,
-          deploy: deploy_archive.latest,
-          source: source_archive.latest
-        )
-      end
-      it "builds the release that corresponds to the signature" do
-        expect(instance.release(signature)).to eql(
-          Release.new(
-            source: signature.source,
-            infrastructure: infra_archive.infrastructure(signature.infrastructure),
-            deploy_config: deploy_archive.deploy_config(signature.deploy)
-          )
-        )
       end
     end
 

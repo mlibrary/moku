@@ -77,6 +77,7 @@ namespace :deploy do
   before "deploy:starting", "deploy:setup_vars"
 end
 
-load File.join(File.dirname(__FILE__), "cap", "infrastructure.rb")
+load File.join(File.dirname(__FILE__), "cap", "shared.rb")
+load File.join(File.dirname(__FILE__), "cap", "unshared.rb")
 load File.join(File.dirname(__FILE__), "cap", "restart.rb")
 load File.join(File.dirname(__FILE__), "cap", "syslog.rb")

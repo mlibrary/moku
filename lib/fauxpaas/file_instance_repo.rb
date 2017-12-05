@@ -2,9 +2,7 @@
 
 require "fauxpaas/filesystem"
 require "fauxpaas/instance"
-require "fauxpaas/archive"
-require "fauxpaas/deploy_archive"
-require "fauxpaas/infrastructure_archive"
+require "fauxpaas/archive_reference"
 require "fauxpaas/logged_release"
 require "pathname"
 require "yaml"
@@ -23,17 +21,10 @@ module Fauxpaas
       releases = releases_content(name)
       Instance.new(
         name: name,
-        source_archive: Archive.from_hash(contents["source"]),
-        deploy_archive: DeployArchive.new(
-          Archive.from_hash(contents["deploy"]),
-          root_dir: contents["deploy"]["root_dir"],
-          fs: fs
-        ),
-        infrastructure_archive: InfrastructureArchive.new(
-          Archive.from_hash(contents["infrastructure"]),
-          root_dir: contents["infrastructure"]["root_dir"],
-          fs: fs
-        ),
+        source: ArchiveReference.from_hash(contents["source"]),
+        deploy: ArchiveReference.from_hash(contents["deploy"]),
+        shared: contents["shared"].map{|h| ArchiveReference.from_hash(h) },
+        unshared: contents["unshared"].map{|h| ArchiveReference.from_hash(h) },
         releases: releases.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
     end
@@ -41,9 +32,10 @@ module Fauxpaas
     def save(instance)
       fs.mkdir_p(instance_path(instance.name).dirname)
       fs.write(instance_path(instance.name), YAML.dump(
-        "deploy" => instance.deploy_archive.to_hash,
-        "source" => instance.source_archive.to_hash,
-        "infrastructure" => instance.infrastructure_archive.to_hash
+        "deploy" => instance.deploy.to_hash,
+        "source" => instance.source.to_hash,
+        "shared" => instance.shared.map(&:to_hash),
+        "unshared" => instance.unshared.map(&:to_hash)
       ))
       fs.write(releases_path(instance.name), YAML.dump(
         "releases" => instance.releases.map(&:to_hash)

@@ -1,15 +1,15 @@
 require_relative "./spec_helper"
 require "fauxpaas/logged_release"
 require "fauxpaas/release_signature"
-require "fauxpaas/git_reference"
+require "fauxpaas/archive_reference"
 
 module Fauxpaas
   RSpec.describe LoggedRelease do
     let(:sig) do
       ReleaseSignature.new(
-        source: GitReference.new("source_url", "source_ref"),
-        infrastructure: GitReference.new("infra_url", "infra_ref"),
-        deploy: GitReference.new("deploy_url", "deploy_ref")
+        source: ArchiveReference.new("source_url", "source_ref"),
+        shared: [ArchiveReference.new("infra_url", "infra_ref")],
+        deploy: ArchiveReference.new("deploy_url", "deploy_ref")
       )
     end
     let(:user) { "foouser" }

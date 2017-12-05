@@ -8,22 +8,25 @@ module Fauxpaas
 
     def self.from_hash(hash)
       new(
-        source: GitReference.from_hash(hash[:source]),
-        infrastructure: GitReference.from_hash(hash[:infrastructure]),
-        deploy: GitReference.from_hash(hash[:deploy])
+        source: ArchiveReference.from_hash(hash[:source]),
+        deploy: ArchiveReference.from_hash(hash[:deploy]),
+        shared: hash.fetch(:shared, []).map{|h| ArchiveReference.from_hash(h) },
+        unshared: hash.fetch(:unshared, []).map{|h| ArchiveReference.from_hash(h) }
       )
     end
 
-    # @param source [GitReference]
-    # @param infrastructure [GitReference]
-    # @param deploy [GitReference]
-    def initialize(source:, infrastructure:, deploy:)
+    # @param source [ArchiveReference]
+    # @param deploy [ArchiveReference]
+    # @param shared [Array<ArchiveReference>]
+    # @param unshared [Array<ArchiveReference>]
+    def initialize(source:, deploy:, shared: [], unshared: [])
       @source = source
-      @infrastructure = infrastructure
       @deploy = deploy
+      @shared = shared
+      @unshared = unshared
     end
 
-    attr_reader :source, :infrastructure, :deploy
+    attr_reader :source, :deploy, :shared, :unshared
 
     def eql?(other)
       to_hash == other.to_hash
@@ -32,8 +35,9 @@ module Fauxpaas
     def to_hash
       {
         source:         source.to_hash,
-        infrastructure: infrastructure.to_hash,
-        deploy:         deploy.to_hash
+        deploy:         deploy.to_hash,
+        shared:         shared.map(&:to_hash),
+        unshared:       unshared.map(&:to_hash)
       }
     end
   end

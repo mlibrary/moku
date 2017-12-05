@@ -1,4 +1,5 @@
 require "pathname"
+require "fauxpaas/working_directory"
 
 module Fauxpaas
   class SpoofedGitRunner
@@ -27,7 +28,7 @@ module Fauxpaas
     end
 
     def safe_checkout(url, commitish, &block)
-      yield tmpdir
+      yield WorkingDirectory.new(tmpdir, [])
     end
 
     def tmpdir

@@ -8,23 +8,22 @@ module Fauxpaas
 
   # Capistrano
   class Cap
-    def initialize(options, stage, runner, fs = Filesystem.new)
+    def initialize(options, stage, runner)
       @capfile_path, @common_options = parse_options(options)
       @stage = stage
       @runner = runner
-      @fs = fs
     end
 
-    def deploy(infrastructure, source)
-      fs.mktmpdir do |dir|
-        infrastructure_path = Pathname.new(dir) + "infrastructure.yml"
-        fs.write(infrastructure_path, YAML.dump(infrastructure.to_hash))
-        _, _, status = run("deploy",
-          infrastructure_config_path: infrastructure_path.to_s,
-          source_repo: source.url,
-          branch: source.reference.to_s)
-        status
-      end
+    # @param source [ArchiveReference]
+    # @param shared_path [Pathname]
+    # @param unshared_path [Pathname]
+    def deploy(source, shared_path, unshared_path)
+      _, _, status = run("deploy",
+        shared_config_path: shared_path.to_s,
+        unshared_config_path: unshared_path.to_s,
+        source_repo: source.url,
+        branch: source.commitish.to_s)
+      status
     end
 
     def caches
@@ -36,10 +35,12 @@ module Fauxpaas
         .first
     end
 
+    # @param source [ArchiveReference]
+    # @param cache [String]
     def rollback(source, cache)
       _stdout, _stderr, status = run("deploy:rollback",
         source_repo: source.url,
-        branch: source.reference.to_s,
+        branch: source.commitish.to_s,
         rollback_release: cache)
       status
     end
@@ -63,7 +64,7 @@ module Fauxpaas
 
     private
 
-    attr_reader :capfile_path, :stage, :runner, :fs, :common_options
+    attr_reader :capfile_path, :stage, :runner, :common_options
 
     def parse_options(options)
       opts = options.symbolize_keys
