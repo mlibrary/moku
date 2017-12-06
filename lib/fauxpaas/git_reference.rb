@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "fauxpaas/components/git_runner"
+require "pathname"
+
 module Fauxpaas
 
   # Fully identifies a commit or other reference within a git repository.

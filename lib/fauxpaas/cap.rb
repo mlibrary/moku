@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "active_support/core_ext/hash/keys"
-require "fauxpaas/components"
+require "fauxpaas/components/token"
 require "fauxpaas/filesystem"
 
 module Fauxpaas
