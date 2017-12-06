@@ -57,6 +57,7 @@ module Fauxpaas
 
     private
     attr_reader :system_runner, :fs
+    attr_reader :remote_resolver, :local_resolver
 
   end
 end

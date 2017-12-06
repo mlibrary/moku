@@ -9,9 +9,39 @@ require "tmpdir"
 
 module Fauxpaas
   RSpec.describe GitRunner do
+    let(:url) { Pathname.new(__FILE__).dirname/".."/".git" }
+    let(:commit) { "00dd3a5a8dbb1c19809cfb1499829defd8e16e49" }
+
+    describe "#sha" do
+      let(:local_resolver) { double(:local, sha: "localresult") }
+      let(:remote_resolver) { double(:remote, sha: "remoteresult") }
+      let(:fs) { MemoryFilesystem.new }
+      let(:runner) do
+        described_class.new(
+          system_runner: double(:system_runner, run: ""),
+          local_resolver: local_resolver,
+          remote_resolver: remote_resolver,
+          fs: fs
+        )
+      end
+      context "repo does not exist on local disk" do
+        before(:each) do
+          allow(fs).to receive(:exists?).with(url).and_return(false)
+        end
+        it "resolves the ref remotely" do
+          expect(runner.sha(url, commit)).to eql("remoteresult")
+        end
+      end
+      context "repo exists on local disk" do
+        before(:each) do
+          allow(fs).to receive(:exists?).with(url).and_return(true)
+        end
+        it "resolves the ref locally" do
+          expect(runner.sha(url, commit)).to eql("localresult")
+        end
+      end
+    end
     describe "#safe_checkout" do
-      let(:url) { Pathname.new(__FILE__).dirname/".."/".git" }
-      let(:commit) { "00dd3a5a8dbb1c19809cfb1499829defd8e16e49" }
 
       context "fully mocked" do
         let(:system_runner) { double(:system_runner, run: "") }
