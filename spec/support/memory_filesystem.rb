@@ -29,7 +29,11 @@ module Fauxpaas
     end
 
     def mktmpdir
-      yield tmpdir
+      if block_given?
+        yield tmpdir
+      else
+        tmpdir
+      end
     end
 
     def tmpdir

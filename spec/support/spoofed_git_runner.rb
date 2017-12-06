@@ -1,3 +1,5 @@
+require "pathname"
+
 module Fauxpaas
   class SpoofedGitRunner
     def initialize(sytem = nil); end
@@ -29,7 +31,7 @@ module Fauxpaas
     end
 
     def tmpdir
-      "/some/tmp/dir"
+      Pathname.new("/some/tmp/dir")
     end
 
   end

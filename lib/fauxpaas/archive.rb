@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-require "fauxpaas/git_runner"
-require "fauxpaas/remote_git_runner"
-require "fauxpaas/local_git_runner"
 require "fauxpaas/git_reference"
+require "fauxpaas/components"
 
 module Fauxpaas
 
@@ -13,14 +11,12 @@ module Fauxpaas
     def self.from_hash(hash)
       new(
         hash["url"],
-        Object.const_get(hash["git_runner"]).new,
         default_branch: hash["default_branch"]
       )
     end
 
-    def initialize(url, git_runner = GitRunner.new, default_branch: "master")
+    def initialize(url, default_branch: "master")
       @url = url
-      @git_runner = git_runner
       @default_branch = default_branch
     end
 
@@ -53,13 +49,15 @@ module Fauxpaas
     def to_hash
       {
         "url"            => url,
-        "git_runner"     => git_runner.class.to_s,
         "default_branch" => default_branch
       }
     end
 
     private
 
-    attr_reader :git_runner
+    def git_runner
+      Fauxpaas.git_runner
+    end
+
   end
 end

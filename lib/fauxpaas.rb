@@ -17,12 +17,10 @@ require "fauxpaas/infrastructure"
 require "fauxpaas/infrastructure_archive"
 require "fauxpaas/instance"
 require "fauxpaas/kernel_system"
-require "fauxpaas/local_git_runner"
 require "fauxpaas/logged_release"
 require "fauxpaas/open3_capture"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
-require "fauxpaas/remote_git_runner"
 require "fauxpaas/verbose_runner"
 
 # Fake Platform As A Service

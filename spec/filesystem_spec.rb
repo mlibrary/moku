@@ -50,6 +50,40 @@ module Fauxpaas
       end
       after(:all) { FileUtils.remove_entry_secure TMPPATH }
 
+      describe "#mktmpdir" do
+        context "when given a block" do
+          it "creates a new directory" do
+            before = Pathname.new("/tmp").children
+            fs.mktmpdir do |dir|
+              expect(before).to_not include(dir)
+            end
+          end
+          it "yields the temporary dir" do
+            fs.mktmpdir do |dir|
+              expect(dir.parent).to eql(Pathname.new("/tmp"))
+            end
+          end
+          it "deletes it when the block completes" do
+            x = double(:dir, exist?: "not set")
+            fs.mktmpdir {|dir| x = dir}
+            expect(x.exist?).to be false
+          end
+        end
+        context "when no block given" do
+          it "creates a new directory" do
+            before = Pathname.new("/tmp").children
+            dir = fs.mktmpdir
+            expect(before).to_not include(dir)
+          end
+          it "returns a temporary directory" do
+            expect(fs.mktmpdir).to be_a Pathname
+          end
+          it "does not delete the directory" do
+            expect(fs.mktmpdir.exist?).to be true
+          end
+        end
+      end
+
       describe "#read" do
         let(:file) { TMPPATH + "somefile.txt" }
         let(:contents) { "some\ncontents\n\n\n\nmore" }

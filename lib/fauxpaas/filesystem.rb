@@ -87,7 +87,11 @@ module Fauxpaas
     end
 
     def mktmpdir
-      Dir.mktmpdir {|dir| yield Pathname.new(dir) }
+      if block_given?
+        Dir.mktmpdir {|dir| yield Pathname.new(dir) }
+      else
+        Pathname.new(Dir.mktmpdir)
+      end
     end
 
     def chdir(dir)

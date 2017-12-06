@@ -7,7 +7,9 @@ module Fauxpaas
   RSpec.describe Archive do
     let(:url) { "https://example.com/fake.git" }
     let(:runner) { SpoofedGitRunner.new }
-    let(:archive) { described_class.new(url, runner, default_branch: runner.branch) }
+    let(:archive) { described_class.new(url, default_branch: runner.branch) }
+
+    before(:each) { Fauxpaas.git_runner = runner }
 
     describe "#reference" do
       it "resolves a branch to its latest commit" do
@@ -39,11 +41,11 @@ module Fauxpaas
 
     describe "#default_branch" do
       it "defaults to master" do
-        expect(described_class.new(url, runner).default_branch).to eql("master")
+        expect(described_class.new(url).default_branch).to eql("master")
       end
 
       it "can be set" do
-        expect(described_class.new(url, runner, default_branch: "foo").default_branch)
+        expect(described_class.new(url, default_branch: "foo").default_branch)
           .to eql("foo")
       end
     end
