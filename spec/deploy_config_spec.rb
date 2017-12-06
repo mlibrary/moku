@@ -1,7 +1,6 @@
 require_relative "./spec_helper"
 require "active_support/core_ext/hash/keys"
 require "fauxpaas/deploy_config"
-require "fauxpaas/components"
 
 module Fauxpaas
   RSpec.describe DeployConfig do

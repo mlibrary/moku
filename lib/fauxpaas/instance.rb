@@ -21,7 +21,11 @@ module Fauxpaas
     attr_reader :source_archive, :deploy_archive, :infrastructure_archive
 
     def signature(reference = nil)
-      release_builder.signature(reference)
+      ReleaseSignature.new(
+        deploy: deploy_archive.latest,
+        infrastructure: infrastructure_archive.latest,
+        source: source_archive.at(reference)
+      )
     end
 
     def release(signature)
@@ -35,11 +39,11 @@ module Fauxpaas
     end
 
     def default_branch
-      source_archive.default_branch
+      source_archive.commitish
     end
 
     def default_branch=(value)
-      source_archive.default_branch = value
+      @source_archive = source_archive.at(value)
     end
 
     def log_release(release)

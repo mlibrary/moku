@@ -1,6 +1,6 @@
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
-require "fauxpaas/components"
+require "fauxpaas/components/token"
 require "fauxpaas/cap"
 
 module Fauxpaas
@@ -69,7 +69,7 @@ module Fauxpaas
 
     describe "#deploy" do
       let(:infrastructure) { double(:infrastructure, to_hash: {infra: 5}) }
-      let(:source) { double(:source, url: "someurl", reference: "someref") }
+      let(:source) { double(:source, url: "someurl", commitish: "someref") }
       subject { cap.deploy(infrastructure, source) }
 
       it_behaves_like "a cap task", "deploy"
@@ -117,7 +117,7 @@ module Fauxpaas
 
 
     describe "#rollback" do
-      let(:source) { double(:source, url: "someurl", reference: "someref") }
+      let(:source) { double(:source, url: "someurl", commitish: "someref") }
       let(:cache) { "20160614133327" }
 
       subject { cap.rollback(source, cache) }
@@ -138,7 +138,7 @@ module Fauxpaas
 
       it "sets :systemd_services" do
         expect(backend_runner).to receive(:run)
-          .with(anything, anything, anything, 
+          .with(anything, anything, anything,
                 a_hash_including({systemd_services: "foo.service:bar.service"}))
         subject
       end
@@ -163,7 +163,7 @@ module Fauxpaas
 
       it "sets :grep_pattern" do
         expect(backend_runner).to receive(:run)
-          .with(anything, anything, anything, 
+          .with(anything, anything, anything,
                 a_hash_including({grep_pattern: "pattern"}))
         subject
       end
@@ -186,7 +186,7 @@ module Fauxpaas
 
       it "sets :systemd_services to the empty string" do
         expect(backend_runner).to receive(:run)
-          .with(anything, anything, anything, 
+          .with(anything, anything, anything,
                 a_hash_including({systemd_services: ""}))
         subject
       end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "fauxpaas/cli/main"
+require "fauxpaas/components/system_runner"
+require "fauxpaas/archive_reference"
 require_relative "../support/mock_instance.rb"
 
 module Fauxpaas
@@ -114,8 +116,8 @@ module Fauxpaas
       let(:mock_cap) { instance_double(Cap, rollback: mock_status) }
 
       let(:mock_source_archive) do
-        instance_double(Archive,
-          latest: instance_double(GitReference))
+        instance_double(ArchiveReference,
+          latest: instance_double(ArchiveReference))
       end
 
       before(:each) do

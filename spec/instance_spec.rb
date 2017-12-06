@@ -4,11 +4,12 @@ require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
 require "fauxpaas/instance"
-require "fauxpaas/archive"
+require "fauxpaas/archive_reference"
 require "fauxpaas/deploy_archive"
 require "fauxpaas/infrastructure_archive"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
+require "fauxpaas/components/git_runner"
 require "pathname"
 
 module Fauxpaas
@@ -18,13 +19,11 @@ module Fauxpaas
     let(:name) { "#{app}-#{stage}" }
 
     let(:runner) { SpoofedGitRunner.new  }
+    before(:each) { Fauxpaas.git_runner = runner }
     let(:infra_content) {{a: 1, b: 2}}
     let(:infra_archive) do
-      InfrastructureArchive.new(
-        Archive.new("infra.git", default_branch: runner.branch),
-        fs: MemoryFilesystem.new({
-          Pathname.new(runner.tmpdir) + "infrastructure.yml" => YAML.dump(infra_content)
-        })
+      InfrastructureArchive.new("infra.git", runner.branch, Pathname.new(""), fs: MemoryFilesystem.new({
+        Pathname.new(runner.tmpdir) + "infrastructure.yml" => YAML.dump(infra_content)})
       )
     end
     let(:deploy_content) do
@@ -37,14 +36,11 @@ module Fauxpaas
       }
     end
     let(:deploy_archive) do
-      DeployArchive.new(
-        Archive.new("deploy.git", default_branch: runner.branch),
-        fs: MemoryFilesystem.new({
-          Pathname.new(runner.tmpdir) + "deploy.yml" => YAML.dump(deploy_content)
-        })
+      DeployArchive.new("deploy.git", runner.branch, Pathname.new(""), fs: MemoryFilesystem.new({
+        runner.tmpdir/"deploy.yml" => YAML.dump(deploy_content)})
       )
     end
-    let(:source_archive) { Archive.new("source.git", default_branch: runner.branch) }
+    let(:source_archive) { ArchiveReference.new("source.git", runner.branch) }
     let(:a_release) { double(:a_release) }
     let(:another_release) { double(:another_release) }
 
@@ -78,7 +74,7 @@ module Fauxpaas
             ReleaseSignature.new(
               infrastructure: infra_archive.latest,
               deploy: deploy_archive.latest,
-              source: source_archive.reference(runner.short)
+              source: source_archive.at(runner.short)
             )
           )
         end

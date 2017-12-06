@@ -1,35 +1,27 @@
 # frozen_string_literal: true
 
-require "fauxpaas/infrastructure"
 require "fauxpaas/filesystem"
-require "pathname"
+require "fauxpaas/infrastructure"
+require "fauxpaas/archive_reference"
 require "yaml"
 
 module Fauxpaas
 
   # Archive of the infrastructure configuration
-  class InfrastructureArchive < SimpleDelegator
-    def initialize(archive, root_dir: Pathname.new(""), fs: Filesystem.new)
-      @archive = archive
-      @root_dir = Pathname.new(root_dir)
+  class InfrastructureArchive < ArchiveReference
+    def initialize(url, commitish, root_dir, fs: Filesystem.new)
+      super(url, commitish, root_dir)
       @fs = fs
-      __setobj__ @archive
     end
 
-    def infrastructure(reference)
-      archive.checkout(reference) do |dir|
-        path = Pathname.new(dir) + root_dir + "infrastructure.yml"
-        Infrastructure.from_hash(YAML.load(fs.read(path)))
+    def infrastructure
+      checkout do |dir|
+        contents = YAML.load(fs.read(dir/"infrastructure.yml"))
+        Infrastructure.from_hash(contents)
       end
     end
 
-    def to_hash
-      archive.to_hash
-        .merge("root_dir" => root_dir.to_s)
-    end
-
     private
-
-    attr_reader :archive, :root_dir, :fs
+    attr_reader :fs
   end
 end

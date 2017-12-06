@@ -4,23 +4,29 @@ releases:
   :time: '2017-11-13T11:31:36'
   :signature:
     :source:
-      :url: https://github.com/dpn-admin/dpn-client.git
-      :reference: 031d744fe4228d2440830d59d070a8598ac19da0
+      url: https://github.com/dpn-admin/dpn-client.git
+      commitish: 031d744fe4228d2440830d59d070a8598ac19da0
+      root_dir: ""
     :infrastructure:
-      :url: "."
-      :reference: d8354414fdd500469c984733c08daf57a066bcfb
+      url: "."
+      commitish: d8354414fdd500469c984733c08daf57a066bcfb
+      root_dir: ""
     :deploy:
-      :url: "."
-      :reference: d8354414fdd500469c984733c08daf57a066bcfb
+      url: "."
+      commitish: d8354414fdd500469c984733c08daf57a066bcfb
+      root_dir: ""
 - :user: bhock
   :time: '2017-11-13T11:32:00'
   :signature:
     :source:
-      :url: https://github.com/dpn-admin/dpn-client.git
-      :reference: 031d744fe4228d2440830d59d070a8598ac19da0
+      url: https://github.com/dpn-admin/dpn-client.git
+      commitish: 031d744fe4228d2440830d59d070a8598ac19da0
+      root_dir: ""
     :infrastructure:
-      :url: "."
-      :reference: d8354414fdd500469c984733c08daf57a066bcfb
+      url: "."
+      commitish: d8354414fdd500469c984733c08daf57a066bcfb
+      root_dir: ""
     :deploy:
-      :url: "."
-      :reference: d8354414fdd500469c984733c08daf57a066bcfb
+      url: "."
+      commitish: d8354414fdd500469c984733c08daf57a066bcfb
+      root_dir: ""

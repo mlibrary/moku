@@ -8,15 +8,15 @@ module Fauxpaas
 
     def self.from_hash(hash)
       new(
-        source: GitReference.from_hash(hash[:source]),
-        infrastructure: GitReference.from_hash(hash[:infrastructure]),
-        deploy: GitReference.from_hash(hash[:deploy])
+        source: ArchiveReference.from_hash(hash[:source]),
+        infrastructure: ArchiveReference.from_hash(hash[:infrastructure]),
+        deploy: ArchiveReference.from_hash(hash[:deploy])
       )
     end
 
-    # @param source [GitReference]
-    # @param infrastructure [GitReference]
-    # @param deploy [GitReference]
+    # @param source [ArchiveReference]
+    # @param infrastructure [ArchiveReference]
+    # @param deploy [ArchiveReference]
     def initialize(source:, infrastructure:, deploy:)
       @source = source
       @infrastructure = infrastructure

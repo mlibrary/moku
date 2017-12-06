@@ -1,37 +1,33 @@
 require_relative "./spec_helper"
+require_relative "./support/spoofed_git_runner"
 require "fauxpaas/infrastructure_archive"
 require "fauxpaas/infrastructure"
 require "pathname"
 
 module Fauxpaas
   RSpec.describe InfrastructureArchive do
-    let(:archive) { double(:archive, to_hash: {a: "one", b: "two"}) }
-    let(:reference) { double(:reference) }
-    let(:path) { Pathname.new("some/path") }
-    let(:tmpdir) { Pathname.new("/tmp/dir") }
+    let(:infrastructure) { Infrastructure.new({a: 1, b: "two"}) }
+    let(:runner) { SpoofedGitRunner.new }
+    let(:url) { "https://example.com/fake.git" }
+    let(:tmpdir) { Pathname.new("/tmp") }
+    let(:root_dir) { Pathname.new("some/dir") }
     let(:fs) { double(:fs) }
-    let(:contents) {{ a: 1, b: "two" } }
-    let(:infra_archive) { described_class.new(archive, root_dir: path, fs: fs) }
+
+    let(:infrastructure_archive) { described_class.new(url, runner.branch, root_dir, fs: fs) }
 
     before(:each) do
-      allow(archive).to receive(:checkout).with(reference).and_yield(tmpdir)
-      allow(fs).to receive(:read).with(tmpdir + path + "infrastructure.yml")
-        .and_return(YAML.dump(contents))
+      Fauxpaas.git_runner = runner
+      allow(runner).to receive(:safe_checkout).with(url, runner.branch)
+        .and_yield(tmpdir)
+      allow(fs).to receive(:read).with(tmpdir/root_dir/"infrastructure.yml")
+        .and_return(YAML.dump(infrastructure.to_hash))
     end
 
     describe "#infrastructure" do
       it "builds an infrastructure object from the reference" do
-        expect(infra_archive.infrastructure(reference))
-          .to eql(Infrastructure.new(contents))
+        expect(infrastructure_archive.infrastructure).to eql(infrastructure)
       end
     end
 
-    describe "#to_hash" do
-      it "returns the proper hash" do
-        expect(infra_archive.to_hash).to eql(
-          archive.to_hash.merge("root_dir" => path.to_s)
-        )
-      end
-    end
   end
 end
