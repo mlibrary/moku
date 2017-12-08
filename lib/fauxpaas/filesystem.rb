@@ -1,11 +1,17 @@
 # frozen_string_literal: true
 
 require "fileutils"
+require "tmpdir"
 
 module Fauxpaas
   # We wrap the filesystem for easy mocking,
   # and to be clear about which methods we need.
   class Filesystem
+
+    # @param path [Pathname]
+    def directory?(path)
+      path.directory?
+    end
 
     # @param original [Pathname]
     # @param dest [Pathanme]
