@@ -29,7 +29,7 @@ module Fauxpaas
       def deploy(instance_name)
         setup(instance_name)
         signature = instance.signature(options[:reference])
-        release = instance.release(signature)
+        release = ReleaseBuilder.new(signature).build
         status = release.deploy
         report(status, action: "deploy")
         if status.success?

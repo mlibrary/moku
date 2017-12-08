@@ -3,6 +3,7 @@
 require "fauxpaas/cli/main"
 require "fauxpaas/components/system_runner"
 require "fauxpaas/archive_reference"
+require "fauxpaas/release_builder"
 require_relative "../support/mock_instance.rb"
 
 module Fauxpaas
@@ -40,8 +41,10 @@ module Fauxpaas
       end
       let(:mock_cap) { instance_double(Cap, restart: mock_status) }
 
+      let(:release_builder) { double(:release_builder) }
       before(:each) do
-        allow(mock_instance).to receive(:release).and_return(mock_release)
+        allow(ReleaseBuilder).to receive(:new).and_return(release_builder)
+        allow(release_builder).to receive(:build).and_return(mock_release)
         allow(mock_instance).to receive(:signature)
         allow(mock_instance).to receive(:log_release)
         allow(mock_instance).to receive(:interrogator).and_return(mock_cap)

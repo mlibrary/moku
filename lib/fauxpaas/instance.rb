@@ -41,12 +41,6 @@ module Fauxpaas
       )
     end
 
-    # @param signature [ReleaseSignature]
-    # @return [Release]
-    def release(signature)
-      ReleaseBuilder.new(signature).build
-    end
-
     # @return [Cap] A deployer
     def interrogator(fs = Filesystem.new)
       deploy_config(fs).runner
