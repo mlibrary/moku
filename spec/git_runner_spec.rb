@@ -68,7 +68,11 @@ module Fauxpaas
         end
       end
 
-      context "integration" do
+      # Tests that perform a git checkout are broken in travis, so we skip them
+      # by applying this label. Please do not skip tests other than those that
+      # perform a _real_ git checkout (which should only happen in GitRunner or
+      # its dependencies).
+      context "integration", broken_in_travis: true do
         let(:runner) do
           described_class.new(
             local_resolver: LocalGitResolver.new(Open3Capture.new),
@@ -76,7 +80,7 @@ module Fauxpaas
             system_runner: Open3Capture.new
           )
         end
-        it "checks out the ref", broken_in_travis: true do
+        it "checks out the ref" do
           runner.safe_checkout(url, commit) do |working_dir|
             expect(`git -C #{working_dir.dir} rev-parse HEAD`.strip)
               .to eql(commit)
