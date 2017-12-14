@@ -1,7 +1,8 @@
 require_relative "./spec_helper"
 require_relative "./support/spoofed_git_runner"
-require "fauxpaas/components"
+require "fauxpaas/components/git_runner"
 require "fauxpaas/archive"
+require "pathname"
 
 module Fauxpaas
   RSpec.describe Archive do

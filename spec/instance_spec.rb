@@ -9,6 +9,7 @@ require "fauxpaas/deploy_archive"
 require "fauxpaas/infrastructure_archive"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
+require "fauxpaas/components/git_runner"
 require "pathname"
 
 module Fauxpaas

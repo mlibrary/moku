@@ -1,6 +1,6 @@
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
-require "fauxpaas/components"
+require "fauxpaas/components/token"
 require "fauxpaas/cap"
 
 module Fauxpaas

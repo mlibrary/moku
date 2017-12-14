@@ -3,7 +3,7 @@
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
-require "fauxpaas/components"
+require "fauxpaas/components/paths"
 require "fauxpaas/file_instance_repo"
 require "yaml"
 

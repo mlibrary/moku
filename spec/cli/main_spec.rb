@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require "fauxpaas/cli/main"
+require "fauxpaas/components/system_runner"
+require "fauxpaas/archive"
+require "fauxpaas/git_reference"
 require_relative "../support/mock_instance.rb"
 
 module Fauxpaas
