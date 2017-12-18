@@ -74,6 +74,20 @@ module Fauxpaas
       end
     end
 
+    describe "#interrogator" do
+      let(:contents) { {"foo" => "bar"} }
+      let(:interrogator) { double(:interrogator) }
+      let(:deploy_config) { double(:deploy_config, runner: interrogator) }
+      let(:fs) { MemoryFilesystem.new({ runner.tmpdir/"deploy.yml" => YAML.dump(contents) }) }
+      before(:each) do
+        allow(DeployConfig).to receive(:from_hash).with(contents)
+          .and_return(deploy_config)
+      end
+      it "returns a deployer for the latest version of the instance" do
+        expect(instance.interrogator(fs)).to eql(interrogator)
+      end
+    end
+
     describe "#name" do
       it "returns the name" do
         expect(instance.name).to eql(name)
