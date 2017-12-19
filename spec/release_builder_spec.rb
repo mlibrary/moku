@@ -4,7 +4,6 @@ require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
 require "fauxpaas/release_builder"
-require "fauxpaas/archive_reference"
 require "fauxpaas/deploy_config"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
@@ -13,8 +12,21 @@ require "pathname"
 require "yaml"
 
 module Fauxpaas
+  class FakeWorkingDir
+    def initialize(dir, files)
+      @dir = dir
+      @files = files
+    end
+    attr_reader :dir
+    def relative_files; @files; end
+  end
+
   RSpec.describe ReleaseBuilder do
-    let(:infra_content) {{a: 1, b: 2}}
+    let(:source) { double(:source) }
+    let(:unshared) { double(:unshared) }
+    let(:shared) { double(:shared) }
+    let(:deploy) { double(:deploy) }
+    let(:runner) { SpoofedGitRunner.new  }
     let(:deploy_content) do
       {
         "appname" => "myapp-mystage",
@@ -27,31 +39,33 @@ module Fauxpaas
     let(:fs) do
       MemoryFilesystem.new({
         runner.tmpdir/"deploy.yml"         => YAML.dump(deploy_content),
-        runner.tmpdir/"infrastructure.yml" => YAML.dump(infra_content)
+        runner.tmpdir/"infrastructure.yml" => YAML.dump({a: 1, b: 2}),
+        runner.tmpdir/"my_shared.yml" => YAML.dump("blahblah"),
       })
-    end
-    let(:shared_archives) { [ArchiveReference.new("infra.git", runner.branch)] }
-    let(:unshared_archives) { [] }
-    let(:deploy_archive) { ArchiveReference.new("deploy.git", runner.branch) }
-    let(:source_archive) { ArchiveReference.new("source.git", runner.branch) }
-
-    let(:signature) do
-      ReleaseSignature.new(
-        shared: shared_archives,
-        unshared: unshared_archives,
-        deploy: deploy_archive,
-        source: source_archive
-      )
     end
 
     let(:builder) { described_class.new(signature, fs: fs) }
-    let(:runner) { SpoofedGitRunner.new  }
-    before(:each) { Fauxpaas.git_runner = runner }
+
+    before(:each) do
+      Fauxpaas.git_runner = runner
+      allow(unshared).to receive(:checkout)
+        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("infrastructure.yml")]))
+      allow(shared).to receive(:checkout)
+        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("myshared.yml")]))
+      allow(deploy).to receive(:checkout)
+        .and_yield(FakeWorkingDir.new(fs.tmpdir, [runner.tmpdir/"deploy.yml"]))
+    end
 
     describe "#release" do
       context "with empty shared, unshared" do
-        let(:shared_archives) { [] }
-        let(:unshared_archives) { [] }
+        let(:signature) do
+          ReleaseSignature.new(
+            shared: [],
+            unshared: [],
+            deploy: deploy,
+            source: source
+          )
+        end
         it "creates the shared dir" do
           allow(fs).to receive(:mkdir_p).and_call_original
           expect(fs).to receive(:mkdir_p).with(fs.tmpdir/"shared")
@@ -63,15 +77,28 @@ module Fauxpaas
           builder.build
         end
       end
-      it "builds the release that corresponds to the signature" do
-        expect(builder.build).to eql(
-          Release.new(
-            source: signature.source,
-            shared_path: fs.tmpdir/"shared",
-            unshared_path: fs.tmpdir/"unshared",
-            deploy_config: DeployConfig.from_hash(deploy_content)
+
+      context "with non-empty shared, unshared" do
+        let(:signature) do
+          ReleaseSignature.new(
+            shared: [shared],
+            unshared: [unshared],
+            deploy: deploy,
+            source: source
           )
-        )
+        end
+
+        it "builds the release that corresponds to the signature" do
+          release = builder.build
+          expect(release).to eql(
+            Release.new(
+              source: signature.source,
+              shared_path: fs.tmpdir/"shared",
+              unshared_path: fs.tmpdir/"unshared",
+              deploy_config: DeployConfig.from_hash(deploy_content)
+            )
+          )
+        end
       end
     end
 
