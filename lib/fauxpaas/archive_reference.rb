@@ -44,14 +44,17 @@ module Fauxpaas
 
     attr_reader :url, :commitish
 
-    # Get a reference to the latest commit for the commitish,
-    # which may be the commitish itself.
+    # Get a reference to the latest commit for the commitish.
+    # The definition of the "latest commit" is reflexive for any
+    # commitish that is not a branch--i.e., the latest commit of
+    # a specific tag or SHA is the corresponding SHA itself.
     # @return [ArchiveReference]
     def latest
       self.class.at(url, commitish, root_dir)
     end
 
     # Get a resolved reference to the commitish.
+    # When given nil, this will defer to #latest
     # @param commitish [String]
     # @return [ArchiveReference]
     def at(new_commitish)
