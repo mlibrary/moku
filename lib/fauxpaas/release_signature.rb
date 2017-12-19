@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "fauxpaas/archive_reference"
+
 module Fauxpaas
 
   # Uniquely identifies an app at a point in time, including the machinery
@@ -19,7 +21,7 @@ module Fauxpaas
     # @param deploy [ArchiveReference]
     # @param shared [Array<ArchiveReference>]
     # @param unshared [Array<ArchiveReference>]
-    def initialize(source:, deploy:, shared: [], unshared: [])
+    def initialize(source:, deploy:, shared:, unshared:)
       @source = source
       @deploy = deploy
       @shared = shared

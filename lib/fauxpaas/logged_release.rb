@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "fauxpaas/release_signature"
 require "time"
 
 module Fauxpaas
@@ -34,9 +35,9 @@ module Fauxpaas
     end
 
     def to_s
-      "#{formatted_time}: #{user} #{signature.source.commitish} " \
-        "#{signature.shared.map(&:commitish).join(" ")} " \
-        "w/ #{signature.deploy.commitish}"
+      "#{formatted_time}: #{user} #{signature.source.commitish} w/ #{signature.deploy.commitish}\n" \
+        "  #{signature.unshared.map(&:commitish).join(" ")}\n" \
+        "  #{signature.shared.map(&:commitish).join(" ")}"
     end
 
     def to_hash
