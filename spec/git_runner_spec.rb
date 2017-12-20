@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require "fauxpaas/git_runner"
@@ -89,13 +91,11 @@ module Fauxpaas
         it "yields a working_directory" do
           runner.safe_checkout(url, commit) do |working_dir|
             expected = [".gitignore", "Gemfile"]
-              .map{|file| Pathname.new(file) }
+              .map {|file| Pathname.new(file) }
             expect(working_dir.relative_files).to match_array(expected)
           end
         end
       end
-
     end
   end
 end
-

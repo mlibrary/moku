@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/open3_capture"
 
 module Fauxpaas

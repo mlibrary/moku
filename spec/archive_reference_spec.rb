@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require_relative "./support/spoofed_git_runner"
 require "fauxpaas/archive_reference"
@@ -42,14 +44,13 @@ module Fauxpaas
 
     describe "#checkout" do
       let(:cloned_dir) { Pathname.new("/tmp/foo/fauxpaas") }
-      let(:relative_files) {[Pathname.new("out.txt"), root_dir, root_dir/"in.txt"]}
-      let(:real_files) { relative_files.map{|f| cloned_dir/f } }
+      let(:relative_files) { [Pathname.new("out.txt"), root_dir, root_dir/"in.txt"] }
+      let(:real_files) { relative_files.map {|f| cloned_dir/f } }
       let(:wd) do
         double(:wd,
           dir: cloned_dir,
           relative_files: relative_files,
-          real_files: real_files
-        )
+          real_files: real_files)
       end
       before(:each) { allow(runner).to receive(:safe_checkout).and_yield(wd) }
       it "yields a WorkingDirectory with correct relative_paths" do

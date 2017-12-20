@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require "active_support/core_ext/hash/keys"
 require "fauxpaas/deploy_config"
@@ -6,12 +8,12 @@ module Fauxpaas
   RSpec.describe DeployConfig do
     let(:options) do
       {
-        appname: "myapp-mystage",
-        deployer_env: "foo",
-        deploy_dir: Pathname.new("bar/baz"),
-        rails_env: "staging",
-        assets_prefix: "notassets",
-        systemd_services: ['foo.service', 'bar.service']
+        appname:          "myapp-mystage",
+        deployer_env:     "foo",
+        deploy_dir:       Pathname.new("bar/baz"),
+        rails_env:        "staging",
+        assets_prefix:    "notassets",
+        systemd_services: ["foo.service", "bar.service"]
       }
     end
     let(:deploy_config) { described_class.new(options) }

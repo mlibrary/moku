@@ -18,7 +18,9 @@ module Fauxpaas
       @files = files
     end
     attr_reader :dir
-    def relative_files; @files; end
+    def relative_files
+      @files
+    end
   end
 
   RSpec.describe ReleaseBuilder do
@@ -26,22 +28,22 @@ module Fauxpaas
     let(:unshared) { double(:unshared) }
     let(:shared) { double(:shared) }
     let(:deploy) { double(:deploy) }
-    let(:runner) { SpoofedGitRunner.new  }
+    let(:runner) { SpoofedGitRunner.new }
     let(:deploy_content) do
       {
-        "appname" => "myapp-mystage",
-        "deployer_env" => "foo.capfile",
-        "rails_env" => "testing",
+        "appname"       => "myapp-mystage",
+        "deployer_env"  => "foo.capfile",
+        "rails_env"     => "testing",
         "assets_prefix" => "asssets",
-        "deploy_dir" => "/some/deploy/dir"
+        "deploy_dir"    => "/some/deploy/dir"
       }
     end
     let(:fs) do
-      MemoryFilesystem.new({
+      MemoryFilesystem.new(
         runner.tmpdir/"deploy.yml"         => YAML.dump(deploy_content),
-        runner.tmpdir/"infrastructure.yml" => YAML.dump({a: 1, b: 2}),
-        runner.tmpdir/"my_shared.yml" => YAML.dump("blahblah"),
-      })
+        runner.tmpdir/"infrastructure.yml" => YAML.dump(a: 1, b: 2),
+        runner.tmpdir/"my_shared.yml" => YAML.dump("blahblah")
+)
     end
 
     let(:builder) { described_class.new(signature, fs: fs) }
@@ -101,6 +103,5 @@ module Fauxpaas
         end
       end
     end
-
   end
 end

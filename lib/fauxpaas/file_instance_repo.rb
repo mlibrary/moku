@@ -23,8 +23,8 @@ module Fauxpaas
         name: name,
         source: ArchiveReference.from_hash(contents["source"]),
         deploy: ArchiveReference.from_hash(contents["deploy"]),
-        shared: contents["shared"].map{|h| ArchiveReference.from_hash(h) },
-        unshared: contents["unshared"].map{|h| ArchiveReference.from_hash(h) },
+        shared: contents["shared"].map {|h| ArchiveReference.from_hash(h) },
+        unshared: contents["unshared"].map {|h| ArchiveReference.from_hash(h) },
         releases: releases.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
     end

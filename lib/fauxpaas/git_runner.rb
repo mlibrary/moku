@@ -47,15 +47,16 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :system_runner, :fs
     attr_reader :remote_resolver, :local_resolver
 
     def working_dir(dir)
       files = fs.chdir(dir) do
-        stdout, _, _ = system_runner.run("git ls-files")
+        stdout, = system_runner.run("git ls-files")
         stdout
           .split("\n")
-          .map{|file| Pathname.new(file) }
+          .map {|file| Pathname.new(file) }
       end
       WorkingDirectory.new(dir, files)
     end

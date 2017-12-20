@@ -44,7 +44,7 @@ module Fauxpaas
 
         it "changes back afterwards" do
           starting_dir = `pwd`.strip
-          fs.chdir("/tmp") {}
+          fs.chdir("/tmp"){}
           expect(`pwd`.strip).to eql(starting_dir)
         end
       end
@@ -73,7 +73,7 @@ module Fauxpaas
           end
           it "deletes it when the block completes" do
             x = double(:dir, exist?: "not set")
-            fs.mktmpdir {|dir| x = dir}
+            fs.mktmpdir {|dir| x = dir }
             expect(x.exist?).to be false
           end
         end

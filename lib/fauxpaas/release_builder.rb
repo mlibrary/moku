@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/release_signature"
 require "fauxpaas/release"
 require "fauxpaas/filesystem"
@@ -25,6 +27,7 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :signature, :fs
 
     def deploy_config
@@ -50,7 +53,7 @@ module Fauxpaas
       reference.checkout do |working_dir|
         working_dir
           .relative_files
-          .select {|path| !fs.directory?(path) }
+          .reject {|path| fs.directory?(path) }
           .map {|file| [working_dir.dir/file, base/file] }
           .each do |src, dest|
             fs.mkdir_p(dest.dirname)

@@ -12,8 +12,8 @@ module Fauxpaas
       new(
         source: ArchiveReference.from_hash(hash[:source]),
         deploy: ArchiveReference.from_hash(hash[:deploy]),
-        shared: hash.fetch(:shared, []).map{|h| ArchiveReference.from_hash(h) },
-        unshared: hash.fetch(:unshared, []).map{|h| ArchiveReference.from_hash(h) }
+        shared: hash.fetch(:shared, []).map {|h| ArchiveReference.from_hash(h) },
+        unshared: hash.fetch(:unshared, []).map {|h| ArchiveReference.from_hash(h) }
       )
     end
 
@@ -36,10 +36,10 @@ module Fauxpaas
 
     def to_hash
       {
-        source:         source.to_hash,
-        deploy:         deploy.to_hash,
-        shared:         shared.map(&:to_hash),
-        unshared:       unshared.map(&:to_hash)
+        source:   source.to_hash,
+        deploy:   deploy.to_hash,
+        shared:   shared.map(&:to_hash),
+        unshared: unshared.map(&:to_hash)
       }
     end
   end

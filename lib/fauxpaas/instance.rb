@@ -29,7 +29,6 @@ module Fauxpaas
     attr_reader :source, :deploy
     attr_reader :shared, :unshared, :releases
 
-
     # @param commitish [String]
     # @return [ReleaseSignature]
     def signature(commitish = nil)

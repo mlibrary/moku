@@ -14,14 +14,14 @@ module Fauxpaas
     let(:tmp_repo) { described_class.new("/instances", mem_fs) }
 
     it "can save and find instances" do
-      contents_before = YAML.load(File.read(Fauxpaas.instance_root + "test-norails" + "instance.yml"))
+      contents_before = YAML.load(File.read(Fauxpaas.instance_root/"test-norails"/"instance.yml"))
       instance = static_repo.find("test-norails")
       tmp_repo.save(instance)
       expect(YAML.load(mem_fs.read("/instances/test-norails/instance.yml"))).to eql(contents_before)
     end
 
     it "can save and find instances" do
-      contents_before = YAML.load(File.read(Fauxpaas.instance_root + "test-norails" + "releases.yml"))
+      contents_before = YAML.load(File.read(Fauxpaas.instance_root/"test-norails"/"releases.yml"))
       instance = static_repo.find("test-norails")
       tmp_repo.save(instance)
       expect(YAML.load(mem_fs.read("/instances/test-norails/releases.yml"))).to eql(contents_before)

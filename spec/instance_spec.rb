@@ -17,11 +17,11 @@ module Fauxpaas
 
     let(:deploy_content) do
       {
-        "appname" => name,
-        "deployer_env" => "foo.capfile",
-        "rails_env" => "testing",
+        "appname"       => name,
+        "deployer_env"  => "foo.capfile",
+        "rails_env"     => "testing",
         "assets_prefix" => "asssets",
-        "deploy_dir" => "/some/deploy/dir"
+        "deploy_dir"    => "/some/deploy/dir"
       }
     end
     let(:shared) { [ArchiveReference.new("infra.git", runner.branch)] }
@@ -42,7 +42,7 @@ module Fauxpaas
       )
     end
 
-    let(:runner) { SpoofedGitRunner.new  }
+    let(:runner) { SpoofedGitRunner.new }
     before(:each) do
       Fauxpaas.git_runner = runner
     end
@@ -75,10 +75,10 @@ module Fauxpaas
     end
 
     describe "#interrogator" do
-      let(:contents) { {"foo" => "bar"} }
+      let(:contents) { { "foo" => "bar" } }
       let(:interrogator) { double(:interrogator) }
       let(:deploy_config) { double(:deploy_config, runner: interrogator) }
-      let(:fs) { MemoryFilesystem.new({ runner.tmpdir/"deploy.yml" => YAML.dump(contents) }) }
+      let(:fs) { MemoryFilesystem.new(runner.tmpdir/"deploy.yml" => YAML.dump(contents)) }
       before(:each) do
         allow(DeployConfig).to receive(:from_hash).with(contents)
           .and_return(deploy_config)
@@ -122,6 +122,5 @@ module Fauxpaas
         expect(instance.releases).to contain_exactly(a_release, another_release)
       end
     end
-
   end
 end

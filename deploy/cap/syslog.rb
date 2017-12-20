@@ -5,7 +5,7 @@ require "shellwords"
 
 namespace :syslog do
   def journalctl_cmd(journalctl: [:sudo, "/bin/journalctl"])
-    journalctl + fetch(:systemd_services).map {|unit| ['-u', Shellwords.escape(unit)] }.flatten
+    journalctl + fetch(:systemd_services).map {|unit| ["-u", Shellwords.escape(unit)] }.flatten
   end
 
   desc "View the system log for the application's systemd service"
@@ -19,7 +19,9 @@ namespace :syslog do
   task :grep do
     set :grep_pattern, ENV.fetch("GREP_PATTERN", ".")
     on roles(:app) do
-      execute(*journalctl_cmd + ["|", :grep, Shellwords.escape(fetch(:grep_pattern))]) unless fetch(:systemd_services).empty?
+      unless fetch(:systemd_services).empty?
+        execute(*journalctl_cmd + ["|", :grep, Shellwords.escape(fetch(:grep_pattern))])
+      end
     end
   end
 

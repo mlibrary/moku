@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/file_instance_repo"
 
 module Fauxpaas

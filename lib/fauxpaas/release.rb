@@ -30,6 +30,7 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :shared_path, :unshared_path, :source
     attr_reader :deploy_config
 

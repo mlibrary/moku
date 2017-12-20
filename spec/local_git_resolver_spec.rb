@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require "fauxpaas/local_git_resolver"
@@ -23,6 +25,5 @@ module Fauxpaas
         expect(runner.sha(url, commitish)).to eql(expected)
       end
     end
-
   end
 end

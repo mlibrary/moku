@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/components/system_runner"
 require "fauxpaas/git_runner"
 require "fauxpaas/local_git_resolver"

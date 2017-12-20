@@ -18,6 +18,7 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :system_runner
   end
 end

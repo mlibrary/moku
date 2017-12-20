@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/cap_runner"
 require "fauxpaas/components/system_runner"
 

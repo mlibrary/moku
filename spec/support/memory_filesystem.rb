@@ -9,12 +9,12 @@ module Fauxpaas
 
     def initialize(files = {})
       @files = {}
-      files.keys.each do |key|
+      files.each_key do |key|
         @files[key.to_s] = files[key]
       end
     end
 
-    def directory?(path)
+    def directory?(_path)
       false
     end
 
@@ -48,7 +48,7 @@ module Fauxpaas
       Pathname.new("/some/tmp/dir")
     end
 
-    def chdir(dir)
+    def chdir(_dir)
       yield
     end
 

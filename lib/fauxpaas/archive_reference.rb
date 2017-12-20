@@ -89,6 +89,7 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :root_dir
 
   end

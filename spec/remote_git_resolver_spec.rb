@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require "fauxpaas/remote_git_resolver"
@@ -38,6 +40,5 @@ module Fauxpaas
         expect(runner.sha(url, "12345")).to be_nil
       end
     end
-
   end
 end

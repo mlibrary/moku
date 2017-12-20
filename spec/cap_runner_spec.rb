@@ -18,24 +18,23 @@ module Fauxpaas
         expect(kernel).to receive(:run).with(
           "cap -f #{capfile_path} myapp-mystage test:task FOO=foo BAR=5 ZIP=zop"
         )
-        runner.run(capfile_path, "myapp-mystage", "test:task", {
+        runner.run(capfile_path, "myapp-mystage", "test:task",
           foo: "foo",
           bar: 5,
-          zip: "zop"
-        })
+          zip: "zop")
       end
 
       it "quotes environment variable values" do
         expect(kernel).to receive(:run).with(
-          "cap -f #{capfile_path} " + 'myapp-mystage test:task FOO=with\\ spaces ' +
-          'BAR=with\\ double\\"\\ quotes BAZ=\\$horrible\\ \\`arg\\` ' +
+          "cap -f #{capfile_path} " + 'myapp-mystage test:task FOO=with\\ spaces ' \
+          'BAR=with\\ double\\"\\ quotes BAZ=\\$horrible\\ \\`arg\\` ' \
           'QUUX=with\\\\backslash'
         )
-        runner.run(capfile_path, "myapp-mystage", "test:task", {
+        runner.run(capfile_path, "myapp-mystage", "test:task",
           foo: "with spaces",
           bar: 'with double" quotes',
           baz: "$horrible `arg`",
-          quux: "with\\backslash" })
+          quux: "with\\backslash")
       end
 
       it "returns stdout, stderr, status" do
@@ -43,7 +42,5 @@ module Fauxpaas
           .to eql([stdout, stderr, success])
       end
     end
-
   end
 end
-
