@@ -8,51 +8,66 @@ module Fauxpaas
   # Represents a named instance within fauxpaas, as opposed
   # to installed on destination servers.
   class Instance
-    def initialize(name:, releases: [], infrastructure_archive:, deploy_archive:, source_archive:)
+
+    # @param name [String] Of the format appname-stagename
+    # @param source [ArchiveReference]
+    # @param deploy [ArchiveReference]
+    # @param shared [Array<ArchiveReference>]
+    # @param unshared [Array<ArchiveReference>]
+    # @param releases [Array<LoggedRelease>]
+    def initialize(name:, source:, deploy:, shared: [], unshared: [], releases: [])
       @name = name
       @app, @stage = name.split("-")
+      @source = source
+      @deploy = deploy
+      @shared = shared
+      @unshared = unshared
       @releases = releases
-      @infrastructure_archive = infrastructure_archive
-      @deploy_archive = deploy_archive
-      @source_archive = source_archive
     end
 
-    attr_reader :name, :app, :stage, :releases
-    attr_reader :source_archive, :deploy_archive, :infrastructure_archive
+    attr_reader :name, :app, :stage
+    attr_reader :source, :deploy
+    attr_reader :shared, :unshared, :releases
 
-    def signature(reference = nil)
-      release_builder.signature(reference)
+
+    # @param commitish [String]
+    # @return [ReleaseSignature]
+    def signature(commitish = nil)
+      ReleaseSignature.new(
+        deploy: deploy.latest,
+        source: source.at(commitish),
+        shared: shared.map(&:latest),
+        unshared: unshared.map(&:latest)
+      )
     end
 
-    def release(signature)
-      release_builder.release(signature)
+    # @return [Cap] A deployer
+    def interrogator(fs = Filesystem.new)
+      deploy_config(fs).runner
     end
 
-    def interrogator
-      deploy_archive
-        .deploy_config(deploy_archive.latest)
-        .runner
-    end
-
+    # @return [String]
     def default_branch
-      source_archive.default_branch
+      source.commitish
     end
 
+    # @param value [String]
     def default_branch=(value)
-      source_archive.default_branch = value
+      @source = source.at(value)
     end
 
+    # @param release [LoggedRelease]
     def log_release(release)
       releases << release
     end
 
     private
-    def release_builder
-      ReleaseBuilder.new(
-        deploy_archive: deploy_archive,
-        infrastructure_archive: infrastructure_archive,
-        source_archive: source_archive
-      )
+
+    def deploy_config(fs)
+      @deploy_config ||= deploy.latest.checkout do |working_dir|
+        contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
+        DeployConfig.from_hash(contents)
+      end
     end
 
   end

@@ -29,7 +29,7 @@ module Fauxpaas
       def deploy(instance_name)
         setup(instance_name)
         signature = instance.signature(options[:reference])
-        release = instance.release(signature)
+        release = ReleaseBuilder.new(signature).build
         status = release.deploy
         report(status, action: "deploy")
         if status.success?
@@ -59,7 +59,7 @@ module Fauxpaas
       def rollback(instance_name, cache = nil)
         setup(instance_name)
         report(instance.interrogator
-          .rollback(instance.source_archive.latest, cache),
+          .rollback(instance.source.latest, cache),
           action: "rollback")
       end
 

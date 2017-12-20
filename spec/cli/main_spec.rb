@@ -2,8 +2,8 @@
 
 require "fauxpaas/cli/main"
 require "fauxpaas/components/system_runner"
-require "fauxpaas/archive"
-require "fauxpaas/git_reference"
+require "fauxpaas/archive_reference"
+require "fauxpaas/release_builder"
 require_relative "../support/mock_instance.rb"
 
 module Fauxpaas
@@ -41,8 +41,10 @@ module Fauxpaas
       end
       let(:mock_cap) { instance_double(Cap, restart: mock_status) }
 
+      let(:release_builder) { double(:release_builder) }
       before(:each) do
-        allow(mock_instance).to receive(:release).and_return(mock_release)
+        allow(ReleaseBuilder).to receive(:new).and_return(release_builder)
+        allow(release_builder).to receive(:build).and_return(mock_release)
         allow(mock_instance).to receive(:signature)
         allow(mock_instance).to receive(:log_release)
         allow(mock_instance).to receive(:interrogator).and_return(mock_cap)
@@ -116,17 +118,17 @@ module Fauxpaas
 
       let(:mock_cap) { instance_double(Cap, rollback: mock_status) }
 
-      let(:mock_source_archive) do
-        instance_double(Archive,
-          latest: instance_double(GitReference))
+      let(:mock_source) do
+        instance_double(ArchiveReference,
+          latest: instance_double(ArchiveReference))
       end
 
       before(:each) do
         allow(mock_instance).to receive(:interrogator)
           .and_return(mock_cap)
 
-        allow(mock_instance).to receive(:source_archive)
-          .and_return(mock_source_archive)
+        allow(mock_instance).to receive(:source)
+          .and_return(mock_source)
       end
 
       it "rolls back" do

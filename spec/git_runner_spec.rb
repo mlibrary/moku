@@ -41,8 +41,8 @@ module Fauxpaas
         end
       end
     end
-    describe "#safe_checkout" do
 
+    describe "#safe_checkout" do
       context "fully mocked" do
         let(:system_runner) { double(:system_runner, run: "") }
         let(:fs) { MemoryFilesystem.new }
@@ -54,14 +54,25 @@ module Fauxpaas
             fs: fs
           )
         end
-        it "yields a tmp dir" do
-          runner.safe_checkout(url, commit) do |dir|
-            expect(dir).to eql(fs.tmpdir + "fauxpaas")
+        it "yields a working_directory with paths of the contents" do
+          allow(system_runner).to receive(:run)
+            .with(a_string_matching("git ls-files"))
+            .and_return(["one.txt\ntwo.txt\n"])
+          runner.safe_checkout(url, commit) do |working_dir|
+            expect(working_dir.dir).to eql(fs.tmpdir/"fauxpaas")
+            expect(working_dir.real_files).to match_array([
+              fs.tmpdir/"fauxpaas"/"one.txt",
+              fs.tmpdir/"fauxpaas"/"two.txt"
+            ])
           end
         end
       end
 
-      context "integration" do
+      # Tests that perform a git checkout are broken in travis, so we skip them
+      # by applying this label. Please do not skip tests other than those that
+      # perform a _real_ git checkout (which should only happen in GitRunner or
+      # its dependencies).
+      context "integration", broken_in_travis: true do
         let(:runner) do
           described_class.new(
             local_resolver: LocalGitResolver.new(Open3Capture.new),
@@ -69,19 +80,17 @@ module Fauxpaas
             system_runner: Open3Capture.new
           )
         end
-        it "checks out the ref", broken_in_travis: true do
-          runner.safe_checkout(url, commit) do |dir|
-            expect(`git -C #{dir} rev-parse HEAD`.strip)
+        it "checks out the ref" do
+          runner.safe_checkout(url, commit) do |working_dir|
+            expect(`git -C #{working_dir.dir} rev-parse HEAD`.strip)
               .to eql(commit)
           end
         end
-        it "yields a WorkingDirectory" do
-          runner.safe_checkout(url, commit) do |dir|
-            expect(dir.files).to match_array(
-              `git -C #{dir} ls-files`
-                .split("\n")
-                .map{|f| Pathname.new(f)}
-            )
+        it "yields a working_directory" do
+          runner.safe_checkout(url, commit) do |working_dir|
+            expected = [".gitignore", "Gemfile"]
+              .map{|file| Pathname.new(file) }
+            expect(working_dir.relative_files).to match_array(expected)
           end
         end
       end

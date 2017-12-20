@@ -10,6 +10,14 @@ module Fauxpaas
     let(:fs) { described_class.new }
 
     describe "stat methods" do
+      describe "#directory?" do
+        it "is true for dirs" do
+          expect(fs.directory?(Pathname.pwd)).to be true
+        end
+        it "is false for non-dirs" do
+          expect(fs.directory?(Pathname.new(__FILE__))).to be false
+        end
+      end
       describe "#modify_time" do
         it "returns mtime as a Time object" do
           expect(fs.modify_time(Pathname.new("/tmp"))).to be < Time.now

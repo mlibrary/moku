@@ -1,27 +1,81 @@
 require_relative "./spec_helper"
 require "fauxpaas/logged_release"
 require "fauxpaas/release_signature"
-require "fauxpaas/git_reference"
 
 module Fauxpaas
   RSpec.describe LoggedRelease do
-    let(:sig) do
-      ReleaseSignature.new(
-        source: GitReference.new("source_url", "source_ref"),
-        infrastructure: GitReference.new("infra_url", "infra_ref"),
-        deploy: GitReference.new("deploy_url", "deploy_ref")
-      )
-    end
+    let(:source_url) { "source_url" }
+    let(:source_ref) { "source_ref" }
+    let(:source) { double(:source,
+      url: source_url,
+      commitish: source_ref,
+      to_hash: { url: source_url, commitish: source_ref })
+    }
+
+    let(:shared_url) { "shared_url" }
+    let(:shared_ref) { "shared_ref" }
+    let(:shared) { double(:shared,
+      url: shared_url,
+      commitish: shared_ref,
+      to_hash: { url: shared_url, commitish: shared_ref })
+    }
+
+    let(:unshared_url) { "unshared_url" }
+    let(:unshared_ref) { "unshared_ref" }
+    let(:unshared) { double(:unshared,
+      url: unshared_url,
+      commitish: unshared_ref,
+      to_hash: { url: unshared_url, commitish: unshared_ref })
+    }
+
+    let(:deploy_url) { "deploy_url" }
+    let(:deploy_ref) { "deploy_ref" }
+    let(:deploy) { double(:deploy,
+      url: deploy_url,
+      commitish: deploy_ref,
+      to_hash: { url: deploy_url, commitish: deploy_ref })
+    }
+
     let(:user) { "foouser" }
     let(:time) { Time.new(2017, 1, 31, 13, 44, 11) }
     let(:formatted_time) { time.strftime("%FT%T") }
     let(:logged_release) { described_class.new(user, time, sig) }
 
+    let(:all_shared) { [shared] }
+    let(:all_unshared) { [unshared] }
+
+    let(:sig) do
+      ReleaseSignature.new(
+        source: source,
+        shared: all_shared,
+        unshared: all_unshared,
+        deploy: deploy
+      )
+    end
+
+
     describe "#to_s" do
-      it "returns a formatted string" do
-        expect(logged_release.to_s).to eql(
-          "2017-01-31T13:44:11: foouser source_ref infra_ref w/ deploy_ref"
-        )
+      context "with single shared,unshared" do
+      let(:all_shared) { [shared] }
+      let(:all_unshared) { [unshared] }
+        it "returns a formatted string" do
+          expect(logged_release.to_s).to eql(
+            "2017-01-31T13:44:11: foouser source_ref w/ deploy_ref\n" \
+            "  unshared_ref\n" \
+            "  shared_ref"
+          )
+        end
+      end
+      context "with multiple shared,unshared" do
+        let(:all_shared) { [shared, shared] }
+        let(:all_unshared) { [unshared, unshared] }
+        it "returns a formatted string" do
+          expect(logged_release.to_s).to eql(
+            "2017-01-31T13:44:11: foouser source_ref w/ deploy_ref\n" \
+            "  unshared_ref unshared_ref\n" \
+            "  shared_ref shared_ref"
+          )
+        end
       end
     end
 
@@ -39,6 +93,10 @@ module Fauxpaas
     end
 
     describe "::from_hash" do
+      before(:each) do
+        allow(ReleaseSignature).to receive(:from_hash).with(sig.to_hash)
+          .and_return(sig)
+      end
       it "instantiates from a hash" do
         expect(described_class.from_hash(logged_release.to_hash).to_hash)
           .to eql(logged_release.to_hash)

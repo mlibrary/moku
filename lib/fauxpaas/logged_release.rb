@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "fauxpaas/release_signature"
 require "time"
 
 module Fauxpaas
@@ -24,6 +25,9 @@ module Fauxpaas
 
     attr_reader :signature
 
+    # @param user [#to_s]
+    # @param time [Time]
+    # @param signature [ReleaseSignature]
     def initialize(user, time, signature)
       @user = user
       @time = time
@@ -31,9 +35,9 @@ module Fauxpaas
     end
 
     def to_s
-      "#{formatted_time}: #{user} #{signature.source.reference} " \
-        "#{signature.infrastructure.reference} " \
-        "w/ #{signature.deploy.reference}"
+      "#{formatted_time}: #{user} #{signature.source.commitish} w/ #{signature.deploy.commitish}\n" \
+        "  #{signature.unshared.map(&:commitish).join(" ")}\n" \
+        "  #{signature.shared.map(&:commitish).join(" ")}"
     end
 
     def to_hash

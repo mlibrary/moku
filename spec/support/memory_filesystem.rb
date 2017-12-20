@@ -5,7 +5,7 @@ require "pathname"
 
 module Fauxpaas
 
-  class MemoryFilesystem < Filesystem
+  class MemoryFilesystem
 
     def initialize(files = {})
       @files = {}
@@ -14,7 +14,15 @@ module Fauxpaas
       end
     end
 
+    def directory?(path)
+      false
+    end
+
     def mkdir_p(path); end
+
+    def cp(original, dest)
+      write(dest, read(original))
+    end
 
     def write(path, contents)
       @files[path.to_s] = contents
