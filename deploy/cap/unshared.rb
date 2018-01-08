@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
+require "pathname"
+
 namespace :unshared do
   task :setup do
     set :unshared_local_path, ENV["UNSHARED_CONFIG_PATH"]
-    set :unshared_remote_path, lambda {
-      File.join(release_path, File.basename(fetch(:unshared_local_path)))
-    }
   end
 
-  desc "Upload infrastructure config"
-  task upload: [:setup] do
+  desc "Upload unshared config"
+  task :upload => [:setup] do
     on roles(:all) do
-      upload! fetch(:unshared_local_path), fetch(:unshared_remote_path), recursive: true
+      Pathname.new(fetch(:unshared_local_path)).children.each do |path|
+        upload! path.to_s, fetch(:release_path), recursive: path.directory?
+      end
     end
   end
 end

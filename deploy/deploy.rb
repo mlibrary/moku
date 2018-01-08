@@ -2,8 +2,12 @@
 
 lock "~> 3.9.1"
 
-set :ssh_options, user: "fauxpaas",
-  keys: ["our_key_here"],
+set :repo_url, ENV["SOURCE_REPO"]
+set :branch, ENV["BRANCH"]
+set :deploy_to, ENV["DEPLOY_DIR"] || fetch(:deploy_to)
+set :rails_env, ENV["RAILS_ENV"]
+set :assets_prefix, ENV["ASSETS_PREFIX"]
+set :ssh_options, user: fetch(:stage),
   forward_agent: false,
   auth_methods: ["publickey"]
 
@@ -12,7 +16,7 @@ set :split_token, File.read(File.join(File.dirname(__FILE__), "../.split_token")
 set :application, ENV["APPLICATION"]
 
 set :keep_releases, 5
-set :local_user, "fauxpaas"
+set :local_user, "faux"
 set :pty, false
 
 # We only link files that would be non-sensical to be release-specific.
@@ -65,19 +69,9 @@ namespace :caches do
   end
 end
 
-namespace :deploy do
-  task :setup_vars do
-    set :repo_url, ENV["SOURCE_REPO"]
-    set :branch, ENV["BRANCH"]
-    set :deploy_to, fetch(:deploy_to) || ENV["DEPLOY_DIR"]
-    set :rails_env, ENV["RAILS_ENV"]
-    set :assets_prefix, ENV["ASSETS_PREFIX"]
-  end
-
-  before "deploy:starting", "deploy:setup_vars"
-end
-
 load File.join(File.dirname(__FILE__), "cap", "shared.rb")
 load File.join(File.dirname(__FILE__), "cap", "unshared.rb")
 load File.join(File.dirname(__FILE__), "cap", "restart.rb")
 load File.join(File.dirname(__FILE__), "cap", "syslog.rb")
+load File.join(File.dirname(__FILE__), "cap", "commands.rb")
+
