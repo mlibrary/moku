@@ -1,0 +1,14 @@
+---
+deploy:
+  url: "git@github.com:mlibrary/faux-deploy"
+  commitish: test-norails
+  root_dir: ""
+source:
+  url: https://github.com/dpn-admin/dpn-client.git
+  commitish: master
+  root_dir: ""
+shared:
+  - url: "git@github.com:mlibrary/faux-infrastructure"
+    commitish: test-norails
+    root_dir: ""
+unshared: []
