@@ -2,13 +2,10 @@
 deploy:
   url: "git@github.com:mlibrary/faux-deploy"
   commitish: test-rails
-  root_dir: ""
 source:
   url: https://github.com/mlibrary/chipmunk.git
   commitish: master
-  root_dir: ""
 shared:
   - url: "git@github.com:mlibrary/faux-infrastructure"
     commitish: test-rails
-    root_dir: ""
 unshared: []
