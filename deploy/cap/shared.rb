@@ -23,6 +23,13 @@ namespace :shared do
       end
     end
   end
+
+  desc "Conditionally invoke the task for deploys but not rollbacks"
+  task :try do
+    if ENV["SHARED_CONFIG_PATH"]
+      invoke "shared:upload"
+    end
+  end
 end
 
-before "deploy:check:linked_files", "shared:upload"
+before "deploy:check:linked_files", "shared:try"
