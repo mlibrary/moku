@@ -1,5 +1,0 @@
-appname: test-norails
-deployer_env: norails.capfile
-deploy_dir: null
-rails_env: production
-assets_prefix: assets

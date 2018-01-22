@@ -59,20 +59,24 @@ where the instance will be deployed.
 ```
 faux
  |- permissions.yml             global whitelist
- |- instances
- |  |- myapp                    app dir
- |  |  |- permissions.yml       app whitelist
- |  |  |- prod                  stage dir
+ |- data
+ |  |- instances
+ |  |  |- myapp-prod            app dir
  |  |  |  |- permissions.yml    stage whitelist
  |  |  |  |- instance.yml
- |  |  |  |- releases.yml       release history
- |  |  |- test                  we call myapp-test a "named instance"
- |  |- yourapp
+ |  |  |  |- hosts.rb           file describing hosts
+ |  |  |- myapp-test
+ |  |  |- yourapp-prod
+ |  |- stages
+ |  |  |- myapp-prod.rb
+ |  |  |- myapp-test.rb
+ |- releases
+ |  |- myapp-prod.yml           release history
  |- deploy (git)                branch-per-instance
  |  |- deploy.yml               deploy config
  |- infrastructure (git)        branch-per-instance
  |  |- infrastructure.yml       infrastructure config
-faux-app                        this code
+lib                             this code
 ```
 
 ## Authorization and Authentication
@@ -131,12 +135,12 @@ The process is as follows:
 1. Copy the source code
 1. Copy the developer configuration
 1. Copy the infrastructure configuration
-1. Run before_build hooks
+1. Run before\_build hooks
 1. Build the application
-1. Run after_build hooks
+1. Run after\_build hooks
 1. Set this release as the current release
 1. Log the successful deployment
-1. Run after_release hooks
+1. Run after\_release hooks
 
 Should any step fail, the process ends and the subsequent steps are skipped.
 
@@ -146,8 +150,6 @@ _Note: Failed deployments still consume one of the cache slots._
 ## History
 
 We keep a log of every successful deployment.
-
-> TIMESTAMP: USER deployed SRC CONFIG INFRA with DEPLOY
 
 * TIMESTAMP: When deployment process completed
 * USER: The user who initiated it
@@ -171,12 +173,22 @@ We keep a log of every successful deployment.
  |- yourotherfile.txt           will be installed to /yourotherfile.txt
 ```
 
-The files `after_build.yml` and `after_release.yml` are not installed with the application.
+The structure of `after_build.yml` and `after_release.yml` is as follows:
+
+```yaml
+---
+- bin: somebin.sh # The command to run
+  opts: 1 2 -v    # Options to the bin
+  roles:          # Host roles on which to run the command (set)
+    - db
+    - app
+    - web
+```
 
 # Examples
 
 The included examples can be used for end-to-end testing:
 
 * test-norails
-* test -rails
+* test-rails
 

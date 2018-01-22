@@ -1,0 +1,11 @@
+---
+deploy:
+  url: "git@github.com:mlibrary/faux-deploy"
+  commitish: test-rails
+source:
+  url: https://github.com/mlibrary/chipmunk.git
+  commitish: master
+shared:
+  - url: "git@github.com:mlibrary/faux-infrastructure"
+    commitish: test-rails
+unshared: []

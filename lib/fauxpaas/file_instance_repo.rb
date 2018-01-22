@@ -11,8 +11,9 @@ module Fauxpaas
 
   # Repository for persisting instances to files
   class FileInstanceRepo
-    def initialize(path, fs = Filesystem.new)
-      @path = Pathname.new(path)
+    def initialize(instances_path, releases_path, fs = Filesystem.new)
+      @instances_path = Pathname.new(instances_path)
+      @releases_path = Pathname.new(releases_path)
       @fs = fs
     end
 
@@ -30,40 +31,49 @@ module Fauxpaas
     end
 
     def save(instance)
-      fs.mkdir_p(instance_path(instance.name).dirname)
-      fs.write(instance_path(instance.name), YAML.dump(
+      write_instance(instance)
+      write_releases(instance.name, instance.releases)
+    end
+
+    private
+
+    attr_reader :instances_path, :releases_path, :fs
+
+    def write_instance(instance)
+      fs.mkdir_p(path_to_instance(instance.name).dirname)
+      fs.write(path_to_instance(instance.name), YAML.dump(
         "deploy" => instance.deploy.to_hash,
         "source" => instance.source.to_hash,
         "shared" => instance.shared.map(&:to_hash),
         "unshared" => instance.unshared.map(&:to_hash)
       ))
-      fs.write(releases_path(instance.name), YAML.dump(
-        "releases" => instance.releases.map(&:to_hash)
+    end
+
+    def write_releases(name, releases)
+      fs.mkdir_p(path_to_release(name).dirname)
+      fs.write(path_to_release(name), YAML.dump(
+        "releases" => releases.map(&:to_hash)
       ))
     end
 
-    private
-
-    attr_reader :path, :fs
-
     def instance_content(name)
-      YAML.load(fs.read(instance_path(name)))
+      YAML.load(fs.read(path_to_instance(name)))
     end
 
     def releases_content(name)
-      if fs.exists?(releases_path(name))
-        YAML.load(fs.read(releases_path(name)))
+      if fs.exists?(path_to_release(name))
+        YAML.load(fs.read(path_to_release(name)))
       else
         { "releases" => [] }
       end
     end
 
-    def instance_path(name)
-      path + name + "instance.yml"
+    def path_to_instance(name)
+      instances_path/name/"instance.yml"
     end
 
-    def releases_path(name)
-      path + name + "releases.yml"
+    def path_to_release(name)
+      releases_path/"#{name}.yml"
     end
 
   end

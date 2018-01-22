@@ -1,6 +1,6 @@
 # Change cap's default paths
 set :deploy_config_path, File.expand_path("deploy/deploy.rb")
-set :stage_config_path, File.expand_path("deploy/stages")
+set :stage_config_path, File.expand_path("data/stages")
 
 # Load DSL and set up stages
 require "capistrano/setup"
