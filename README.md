@@ -173,6 +173,18 @@ We keep a log of every successful deployment.
  |- yourotherfile.txt           will be installed to /yourotherfile.txt
 ```
 
+The structure of `after_build.yml` and `after_release.yml` is as follows:
+
+```yaml
+---
+- bin: somebin.sh # The command to run
+  opts: 1 2 -v    # Options to the bin
+  roles:          # Host roles on which to run the command (set)
+    - db
+    - app
+    - web
+```
+
 # Examples
 
 The included examples can be used for end-to-end testing:
