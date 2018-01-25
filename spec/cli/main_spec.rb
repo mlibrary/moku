@@ -198,11 +198,5 @@ module Fauxpaas
       end
     end
 
-    describe "#syslog" do
-      it "requires a subcommand" do
-        expect { cli.start(["syslog"]) }
-          .to output(/Commands:/).to_stdout
-      end
-    end
   end
 end
