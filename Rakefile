@@ -10,14 +10,10 @@ RSpec::Core::RakeTask.new("spec:unit") do |task|
 end
 
 desc "Run integration tests"
-RSpec::Core::RakeTask.new("spec:integration") do |task|
-  task.pattern = "./spec/**/*_spec.rb"
-  task.rspec_opts = "--tag integration"
-end
-
-desc "Run all tests"
-RSpec::Core::RakeTask.new("spec:all") do |task|
-  task.pattern = "./spec/**/*_spec.rb"
+task "spec:integration" do
+  puts "This seems to break rspec"
+  puts "Specify the filename explicitly for now:"
+  puts "bundle exec rspec spec/integration_spec.rb"
 end
 
 desc "Run unit tests [default]"

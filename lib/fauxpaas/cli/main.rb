@@ -29,7 +29,7 @@ module Fauxpaas
       def deploy(instance_name)
         setup(instance_name)
         signature = instance.signature(options[:reference])
-        release = ReleaseBuilder.new(signature).build
+        release = ReleaseBuilder.new(Fauxpaas.filesystem).build(signature)
         status = release.deploy
         report(status, action: "deploy")
         if status.success?
@@ -96,10 +96,18 @@ module Fauxpaas
       attr_reader :instance
 
       def setup(instance_name)
-        @instance = Fauxpaas.instance_repo.find(instance_name)
+        Fauxpaas.load_settings!
+        Fauxpaas.initialize!
+
+        # We're forced to invoke this in this fashion so that
+        # our tests can still supply a test Fauxpaas.config
         if options.fetch(:verbose, false)
-          Fauxpaas.system_runner = VerboseRunner.new
+          old_runner = Fauxpaas.config.system_runner
+          Fauxpaas.config.register(:system_runner) do
+            VerboseRunner.new(old_runner)
+          end
         end
+        @instance = Fauxpaas.instance_repo.find(instance_name)
       end
 
       def report(status, action: "action")

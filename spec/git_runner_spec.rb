@@ -79,7 +79,8 @@ module Fauxpaas
           described_class.new(
             local_resolver: LocalGitResolver.new(Open3Capture.new),
             remote_resolver: RemoteGitResolver.new(Open3Capture.new),
-            system_runner: Open3Capture.new
+            system_runner: Open3Capture.new,
+            fs: Filesystem.new
           )
         end
         it "checks out the ref" do

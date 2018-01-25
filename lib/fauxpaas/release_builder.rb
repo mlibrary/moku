@@ -9,41 +9,41 @@ module Fauxpaas
   # Build a release from a signature
   class ReleaseBuilder
 
-    # @param signature [ReleaseSignature]
     # @param fs [Filesystem]
-    def initialize(signature, fs: Filesystem.new)
-      @signature = signature
+    def initialize(fs)
       @fs = fs
     end
 
+    # @param signature [ReleaseSignature]
     # @return [Release]
-    def build
+    def build(signature)
+      dir = fs.mktmpdir
       Release.new(
-        shared_path: extract_shared!,
-        unshared_path: extract_unshared!,
-        deploy_config: deploy_config,
+        shared_path: extract_shared!(signature, dir/"shared"),
+        unshared_path: extract_unshared!(signature, dir/"unshared"),
+        deploy_config: deploy_config(signature),
         source: signature.source
       )
     end
 
     private
 
-    attr_reader :signature, :fs
+    attr_reader :fs
 
-    def deploy_config
+    def deploy_config(signature)
       @deploy_config ||= signature.deploy.checkout do |working_dir|
         contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
         DeployConfig.from_hash(contents)
       end
     end
 
-    def extract_shared!
+    def extract_shared!(signature, shared_path)
       fs.mkdir_p(shared_path)
       signature.shared.each {|ref| add_reference(ref, shared_path) }
       shared_path
     end
 
-    def extract_unshared!
+    def extract_unshared!(signature, unshared_path)
       fs.mkdir_p(unshared_path)
       signature.unshared.each {|ref| add_reference(ref, unshared_path) }
       unshared_path
@@ -60,18 +60,6 @@ module Fauxpaas
             fs.cp(src, dest)
           end
       end
-    end
-
-    def shared_path
-      release_dir/"shared"
-    end
-
-    def unshared_path
-      release_dir/"unshared"
-    end
-
-    def release_dir
-      @release_dir ||= fs.mktmpdir
     end
 
   end

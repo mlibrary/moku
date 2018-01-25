@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../spec_helper"
 require "fauxpaas/cli/main"
-require "fauxpaas/components/system_runner"
 require "fauxpaas/archive_reference"
 require "fauxpaas/release_builder"
 require "ostruct"
@@ -26,7 +26,6 @@ module Fauxpaas
     end
 
     let(:cli) { described_class }
-    let(:instance_repo) { double(:repo) }
       let(:instance) do
         double(
           :instance,
@@ -40,11 +39,9 @@ module Fauxpaas
       end
 
     before(:each) do
-      Fauxpaas.system_runner = nil
-      Fauxpaas.instance_repo = instance_repo
-      allow(instance_repo).to receive(:find).with(instance.name)
+      allow(Fauxpaas.instance_repo).to receive(:find).with(instance.name)
         .and_return(instance)
-      allow(instance_repo).to receive(:save)
+      allow(Fauxpaas.instance_repo).to receive(:save)
     end
 
     describe "#deploy" do
@@ -52,9 +49,9 @@ module Fauxpaas
       let(:release) { double(:release, deploy: status) }
       let(:release_builder) { double(:release_builder) }
       before(:each) do
-        allow(ReleaseBuilder).to receive(:new)
-          .with(instance.signature).and_return(release_builder)
-        allow(release_builder).to receive(:build).and_return(release)
+        allow(ReleaseBuilder).to receive(:new).and_return(release_builder)
+        allow(release_builder).to receive(:build)
+          .with(instance.signature).and_return(release)
       end
 
       context "when it succeeds" do
@@ -73,7 +70,7 @@ module Fauxpaas
         end
 
         it "saves the instance" do
-          expect(instance_repo).to receive(:save).with(instance)
+          expect(Fauxpaas.instance_repo).to receive(:save).with(instance)
           cli.start(["deploy", instance.name])
         end
 
@@ -122,7 +119,7 @@ module Fauxpaas
       it "saves the instance" do
         new_instance = instance.dup
         new_instance.default_branch = new_branch
-        expect(instance_repo).to receive(:save).with(new_instance)
+        expect(Fauxpaas.instance_repo).to receive(:save).with(new_instance)
         cli.start(["default-branch", instance.name, new_branch])
       end
 

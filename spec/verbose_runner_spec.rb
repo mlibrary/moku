@@ -6,13 +6,13 @@ require "fauxpaas/verbose_runner"
 module Fauxpaas
   RSpec.describe VerboseRunner do
     describe "#run" do
-      let(:mock_runner) do
+      let(:runner) do
         double(:runner,
           run: ["stdout", "stderr", double(:status)])
       end
 
       let(:command) { "/bin/something" }
-      subject { described_class.new(runner: mock_runner).run(command) }
+      subject { described_class.new(runner).run(command) }
 
       it "emits the listed command" do
         expect { subject }.to output(/#{command}/).to_stdout
@@ -27,11 +27,11 @@ module Fauxpaas
       end
 
       it "returns the same thing as its delegate" do
-        expect(subject).to eql(mock_runner.run(command))
+        expect(subject).to eql(runner.run(command))
       end
 
       it "delegates running the command to the given runner" do
-        expect(mock_runner).to receive(:run).with(command)
+        expect(runner).to receive(:run).with(command)
         subject
       end
     end

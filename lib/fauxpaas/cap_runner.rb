@@ -7,7 +7,7 @@ module Fauxpaas
 
   # Wraps capistrano commands
   class CapRunner
-    def initialize(system_runner = Open3Capture.new)
+    def initialize(system_runner)
       @system_runner = system_runner
     end
 

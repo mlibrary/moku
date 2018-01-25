@@ -6,7 +6,6 @@ require_relative "./support/spoofed_git_runner"
 require "fauxpaas/instance"
 require "fauxpaas/archive_reference"
 require "fauxpaas/release_signature"
-require "fauxpaas/components/git_runner"
 require "pathname"
 
 module Fauxpaas
@@ -24,10 +23,10 @@ module Fauxpaas
         "deploy_dir"    => "/some/deploy/dir"
       }
     end
-    let(:shared) { [ArchiveReference.new("infra.git", runner.branch)] }
+    let(:shared) { [ArchiveReference.new("infra.git", runner.branch, runner)] }
     let(:unshared) { [] }
-    let(:deploy) { ArchiveReference.new("deploy.git", runner.branch) }
-    let(:source) { ArchiveReference.new("source.git", runner.branch) }
+    let(:deploy) { ArchiveReference.new("deploy.git", runner.branch, runner) }
+    let(:source) { ArchiveReference.new("source.git", runner.branch, runner) }
     let(:a_release) { double(:a_release) }
     let(:another_release) { double(:another_release) }
 
@@ -42,10 +41,7 @@ module Fauxpaas
       )
     end
 
-    let(:runner) { SpoofedGitRunner.new }
-    before(:each) do
-      Fauxpaas.git_runner = runner
-    end
+    let(:runner) { Fauxpaas.git_runner }
 
     describe "#signature" do
       context "when no commitish given" do

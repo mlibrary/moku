@@ -10,10 +10,14 @@ module Fauxpaas
 
     def self.from_hash(hash)
       new(
-        source: ArchiveReference.from_hash(hash[:source]),
-        deploy: ArchiveReference.from_hash(hash[:deploy]),
-        shared: hash.fetch(:shared, []).map {|h| ArchiveReference.from_hash(h) },
-        unshared: hash.fetch(:unshared, []).map {|h| ArchiveReference.from_hash(h) }
+        source: ArchiveReference.from_hash(hash[:source], Fauxpaas.git_runner),
+        deploy: ArchiveReference.from_hash(hash[:deploy], Fauxpaas.git_runner),
+        shared: hash.fetch(:shared, []).map do |h|
+          ArchiveReference.from_hash(h, Fauxpaas.git_runner)
+        end,
+        unshared: hash.fetch(:unshared, []).map do |h|
+          ArchiveReference.from_hash(h, Fauxpaas.git_runner)
+        end
       )
     end
 

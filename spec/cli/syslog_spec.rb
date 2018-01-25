@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "../spec_helper"
 require "fauxpaas/cli/syslog"
 
 module Fauxpaas
@@ -9,8 +10,7 @@ module Fauxpaas
     let(:instance) { double(:instance, name: "something", interrogator: cap) }
     let(:cap) { double(:cap) }
     before(:each) do
-      Fauxpaas.instance_repo = instance_repo
-      allow(instance_repo).to receive(:find).with(instance.name)
+      allow(Fauxpaas.instance_repo).to receive(:find).with(instance.name)
         .and_return(instance)
     end
 

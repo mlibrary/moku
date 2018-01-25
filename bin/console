@@ -2,6 +2,6 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
-require "fauxpaas"
+require "fauxpaas/cli"
 
 Fauxpaas::CLI::Main.start(ARGV)

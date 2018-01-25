@@ -3,15 +3,14 @@
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
-require "fauxpaas/components/paths"
 require "fauxpaas/file_instance_repo"
 require "yaml"
 
 module Fauxpaas
   RSpec.describe FileInstanceRepo do
-    let(:static_repo) { described_class.new(Fauxpaas.instance_root, Fauxpaas.releases_root, Filesystem.new) }
+    let(:static_repo) { described_class.new(Fauxpaas.instance_root, Fauxpaas.releases_root, Filesystem.new, Fauxpaas.git_runner) }
     let(:mem_fs) { MemoryFilesystem.new }
-    let(:tmp_repo) { described_class.new("/instances", "/releases", mem_fs) }
+    let(:tmp_repo) { described_class.new("/instances", "/releases", mem_fs, Fauxpaas.git_runner) }
 
     it "can save and find instances" do
       contents_before = YAML.load(File.read(Fauxpaas.instance_root/"test-persistence"/"instance.yml"))

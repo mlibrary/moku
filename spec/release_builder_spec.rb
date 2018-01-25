@@ -7,7 +7,6 @@ require "fauxpaas/release_builder"
 require "fauxpaas/deploy_config"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
-require "fauxpaas/components/git_runner"
 require "pathname"
 require "yaml"
 
@@ -28,7 +27,7 @@ module Fauxpaas
     let(:unshared) { double(:unshared) }
     let(:shared) { double(:shared) }
     let(:deploy) { double(:deploy) }
-    let(:runner) { SpoofedGitRunner.new }
+    let(:runner) { Fauxpaas.git_runner }
     let(:deploy_content) do
       {
         "appname"       => "myapp-mystage",
@@ -46,10 +45,9 @@ module Fauxpaas
 )
     end
 
-    let(:builder) { described_class.new(signature, fs: fs) }
+    let(:builder) { described_class.new(fs) }
 
     before(:each) do
-      Fauxpaas.git_runner = runner
       allow(unshared).to receive(:checkout)
         .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("infrastructure.yml")]))
       allow(shared).to receive(:checkout)
@@ -71,12 +69,12 @@ module Fauxpaas
         it "creates the shared dir" do
           allow(fs).to receive(:mkdir_p).and_call_original
           expect(fs).to receive(:mkdir_p).with(fs.tmpdir/"shared")
-          builder.build
+          builder.build(signature)
         end
         it "creates the unshared dir" do
           allow(fs).to receive(:mkdir_p).and_call_original
           expect(fs).to receive(:mkdir_p).with(fs.tmpdir/"unshared")
-          builder.build
+          builder.build(signature)
         end
       end
 
@@ -91,7 +89,7 @@ module Fauxpaas
         end
 
         it "builds the release that corresponds to the signature" do
-          release = builder.build
+          release = builder.build(signature)
           expect(release).to eql(
             Release.new(
               source: signature.source,

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
 require "fauxpaas"
 require "fauxpaas/cli/main"
 require "tmpdir"
@@ -17,7 +16,7 @@ module Fauxpaas
         before(:all) do
           @root = Pathname.new(Dir.tmpdir)/"fauxpaas"/"sandbox"/instance_name
           `mkdir -p #{@root}`
-          CLI::Main.start(["deploy", instance_name])
+          CLI::Main.start(["deploy", instance_name, "--verbose"])
         end
         after(:all) { `rm -rf #{@root}` }
         let(:root) { @root }
