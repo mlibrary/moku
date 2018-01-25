@@ -1,50 +1,37 @@
 # frozen_string_literal: true
 
 require "fauxpaas/cli/syslog"
-require_relative "../support/mock_instance.rb"
 
 module Fauxpaas
   RSpec.describe CLI::Syslog do
-    subject(:cli) { described_class }
-    let(:instance_name) { "something" }
-    include_context "a mock instance"
-
-    let(:mock_cap) { instance_double(Cap) }
-
+    let(:cli) { described_class }
+    let(:instance_repo) { double(:repo) }
+    let(:instance) { double(:instance, name: "something", interrogator: cap) }
+    let(:cap) { double(:cap) }
     before(:each) do
-      allow(mock_instance).to receive(:interrogator)
-        .and_return(mock_cap)
-    end
-
-    shared_examples_for "a syslog subcommand" do |command|
-      before(:each) { allow(mock_cap).to receive(:"syslog_#{command}") }
-
-      it "runs using a KernelSystem" do
-        cli.start([command, instance_name])
-        expect(Fauxpaas.system_runner).to be_a_kind_of(KernelSystem)
-      end
-
-      it "calls syslog_#{command}" do
-        expect(mock_cap).to receive(:"syslog_#{command}")
-        cli.start([command, instance_name])
-      end
+      Fauxpaas.instance_repo = instance_repo
+      allow(instance_repo).to receive(:find).with(instance.name)
+        .and_return(instance)
     end
 
     describe "#view" do
-      it_behaves_like "a syslog subcommand", "view"
-    end
-
-    describe "#follow" do
-      it_behaves_like "a syslog subcommand", "follow"
-    end
-
-    describe "#grep" do
-      it "calls syslog_grep with the given argument" do
-        expect(mock_cap).to receive(:syslog_grep).with("pattern")
-        cli.start(["grep", instance_name, "pattern"])
+      it "runs syslog:view" do
+        expect(cap).to receive(:syslog_view).with(no_args)
+        cli.start(["view", instance.name])
       end
-
-      it_behaves_like "a syslog subcommand", "grep"
+    end
+    describe "#follow" do
+      it "runs syslog:follow" do
+        expect(cap).to receive(:syslog_follow).with(no_args)
+        cli.start(["follow", instance.name])
+      end
+    end
+    describe "#grep" do
+      let(:pattern) { "some\\n\//\/\\/pattern" }
+      it "runs syslog:grep" do
+        expect(cap).to receive(:syslog_grep).with(pattern)
+        cli.start(["grep", instance.name, pattern])
+      end
     end
   end
 end
