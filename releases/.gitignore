@@ -1,4 +1,3 @@
 *
 !.gitignore
-!test-norails.yml
-!test-rails.yml
+!test-persistence.yml

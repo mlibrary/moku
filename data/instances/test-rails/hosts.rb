@@ -1,11 +1,14 @@
 # frozen_string_literal: true
+#
+require "tmpdir"
+require "pathname"
 
-set :deploy_to, File.expand_path(File.join(File.dirname(__FILE__), "../../sandbox/test-rails"))
+deploy_to = File.join(Dir.tmpdir, "fauxpaas", "sandbox", "test-rails")
+`mkdir -p #{deploy_to}`
+
+set :deploy_to, deploy_to
 
 set :rbenv_custom_path, "/usr/local/rbenv"
-
-# Changed because we're testing against dev
-set :bundle_without, ["test"].join(" ") # this is default
 
 server "localhost",
   roles: ["app"],

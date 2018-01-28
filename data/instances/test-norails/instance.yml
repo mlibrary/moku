@@ -1,11 +1,13 @@
 ---
 deploy:
-  url: "git@github.com:mlibrary/faux-deploy"
-  commitish: test-norails
+  url: <%= Fauxpaas.root.to_s %>
+  commitish: test/norails/deploy
 source:
-  url: https://github.com/dpn-admin/dpn-client.git
-  commitish: master
+  url: <%= Fauxpaas.root.to_s %>
+  commitish: test/norails/source
 shared:
-  - url: "git@github.com:mlibrary/faux-infrastructure"
-    commitish: test-norails
-unshared: []
+  - url: <%= Fauxpaas.root.to_s %>
+    commitish: test/norails/shared
+unshared:
+  - url: <%= Fauxpaas.root.to_s %>
+    commitish: test/norails/unshared
