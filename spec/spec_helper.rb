@@ -13,4 +13,11 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  # Reset all global state
+  config.after(:each) do
+    Fauxpaas.methods(false)
+      .select { |m| m.match(/=$/) }
+      .each { |m| Fauxpaas.public_send(m,nil) }
+  end
 end
