@@ -4,6 +4,7 @@ require "fauxpaas/filesystem"
 require "fauxpaas/instance"
 require "fauxpaas/archive_reference"
 require "fauxpaas/logged_release"
+require "erb"
 require "pathname"
 require "yaml"
 
@@ -57,7 +58,7 @@ module Fauxpaas
     end
 
     def instance_content(name)
-      YAML.load(fs.read(path_to_instance(name)))
+      YAML.load(ERB.new(fs.read(path_to_instance(name))).result)
     end
 
     def releases_content(name)

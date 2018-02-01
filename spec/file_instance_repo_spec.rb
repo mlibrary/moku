@@ -14,24 +14,24 @@ module Fauxpaas
     let(:tmp_repo) { described_class.new("/instances", "/releases", mem_fs) }
 
     it "can save and find instances" do
-      contents_before = YAML.load(File.read(Fauxpaas.instance_root/"test-norails"/"instance.yml"))
-      instance = static_repo.find("test-norails")
+      contents_before = YAML.load(File.read(Fauxpaas.instance_root/"test-persistence"/"instance.yml"))
+      instance = static_repo.find("test-persistence")
       tmp_repo.save(instance)
-      expect(YAML.load(mem_fs.read("/instances/test-norails/instance.yml"))).to eql(contents_before)
+      expect(YAML.load(mem_fs.read("/instances/test-persistence/instance.yml"))).to eql(contents_before)
     end
 
     it "can save and find instances" do
-      contents_before = YAML.load(File.read(Fauxpaas.releases_root/"test-norails.yml"))
-      instance = static_repo.find("test-norails")
+      contents_before = YAML.load(File.read(Fauxpaas.releases_root/"test-persistence.yml"))
+      instance = static_repo.find("test-persistence")
       tmp_repo.save(instance)
-      expect(YAML.load(mem_fs.read("/releases/test-norails.yml"))).to eql(contents_before)
+      expect(YAML.load(mem_fs.read("/releases/test-persistence.yml"))).to eql(contents_before)
     end
 
     it "creates the directories to save in" do
-      expect(mem_fs).to receive(:mkdir_p).with(Pathname.new("/instances/test-norails"))
+      expect(mem_fs).to receive(:mkdir_p).with(Pathname.new("/instances/test-persistence"))
       expect(mem_fs).to receive(:mkdir_p).with(Pathname.new("/releases"))
 
-      instance = static_repo.find("test-norails")
+      instance = static_repo.find("test-persistence")
       tmp_repo.save(instance)
     end
   end

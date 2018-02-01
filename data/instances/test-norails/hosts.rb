@@ -1,6 +1,12 @@
 # frozen_string_literal: true
+#
+require "tmpdir"
+require "pathname"
 
-set :deploy_to, File.expand_path(File.join(File.dirname(__FILE__), "../../sandbox/test-norails"))
+deploy_to = File.join(Dir.tmpdir, "fauxpaas", "sandbox", "test-norails")
+`mkdir -p #{deploy_to}`
+
+set :deploy_to, deploy_to
 
 set :rbenv_custom_path, "/usr/local/rbenv"
 
