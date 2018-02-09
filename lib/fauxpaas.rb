@@ -50,8 +50,9 @@ module Fauxpaas
       @config = nil
     end
 
-    def load_settings!
+    def load_settings!(hash = {})
       @settings = Ettin.for(Ettin.settings_files(root/"config", env))
+      @settings.merge!(hash)
       @loaded = true
     end
 

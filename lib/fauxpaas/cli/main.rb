@@ -96,17 +96,8 @@ module Fauxpaas
       attr_reader :instance
 
       def setup(instance_name)
-        Fauxpaas.load_settings!
+        Fauxpaas.load_settings!(options.symbolize_keys)
         Fauxpaas.initialize!
-
-        # We're forced to invoke this in this fashion so that
-        # our tests can still supply a test Fauxpaas.config
-        if options.fetch(:verbose, false)
-          old_runner = Fauxpaas.config.system_runner
-          Fauxpaas.config.register(:system_runner) do
-            VerboseRunner.new(old_runner)
-          end
-        end
         @instance = Fauxpaas.instance_repo.find(instance_name)
       end
 
