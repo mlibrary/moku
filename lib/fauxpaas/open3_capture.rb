@@ -7,11 +7,7 @@ module Fauxpaas
   # Runner that uses Open3.capture3
   class Open3Capture
     def run(string)
-      if string.include?("syslog")
-        Kernel.system(string)
-      else
-        Open3.capture3(string)
-      end
+      Open3.capture3(string)
     end
   end
 end
