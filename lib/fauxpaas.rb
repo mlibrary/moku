@@ -88,7 +88,6 @@ module Fauxpaas
         container.register(:releases_root) { Pathname.new(settings.releases_root) }
         container.register(:deployer_env_root) { Pathname.new(settings.deployer_env_root) }
         container.register(:split_token) { settings.split_token.chomp }
-        container
       end
     end
 
