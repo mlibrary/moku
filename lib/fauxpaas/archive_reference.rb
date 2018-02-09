@@ -6,7 +6,7 @@ module Fauxpaas
   # A version-control archive at a specific point in time.
   class ArchiveReference
 
-    def self.from_hash(hash, runner)
+    def self.from_hash(hash, runner = Fauxpaas.git_runner)
       new(
         hash["url"],
         hash["commitish"],
@@ -19,7 +19,7 @@ module Fauxpaas
     # @param url [String]
     # @param commitish [String]
     # @return [ArchiveReference]
-    def self.at(url, commitish, runner)
+    def self.at(url, commitish, runner = Fauxpaas.git_runner)
       sha = runner.sha(url, "#{commitish}^{}")
       sha ||= runner.sha(url, commitish)
       sha ||= commitish
@@ -29,7 +29,7 @@ module Fauxpaas
     # Create a new instance without resolving the commitish.
     # @param url [String]
     # @param commitish [String]
-    def initialize(url, commitish, runner)
+    def initialize(url, commitish, runner = Fauxpaas.git_runner)
       @url = url
       @commitish = commitish
       @runner = runner
