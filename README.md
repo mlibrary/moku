@@ -162,6 +162,17 @@ We keep a log of every successful deployment.
   identifies the set of machines deployed to - i.e. the 'stage' as capistrano
   calls it
 
+
+## Examle Deploy Config (deploy.yml)
+
+```
+appname: test-rails
+deployer_env: rails.capfile
+deploy_dir: null
+rails_env: production
+assets_prefix: assets
+```
+
 ## Developer Config Repo Structure
 
 ```
