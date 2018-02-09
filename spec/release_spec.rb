@@ -20,7 +20,7 @@ module Fauxpaas
     let(:shared_path) { Pathname.new("/tmp/shared/structure") }
     let(:unshared_path) { Pathname.new("/tmp/unshared/structure") }
     let(:deploy_config) do
-      DeployConfig.new(
+      double(:deploy_config,
         appname: "myapp-mystage",
         deployer_env: "foo.rails",
         assets_prefix: "assets",
