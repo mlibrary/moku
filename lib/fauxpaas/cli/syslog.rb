@@ -2,6 +2,7 @@
 
 require "thor"
 require "fauxpaas"
+require "fauxpaas/kernel_system"
 
 module Fauxpaas
   module CLI
@@ -35,8 +36,10 @@ module Fauxpaas
       attr_reader :instance
 
       def setup(instance_name)
+        Fauxpaas.load_settings!
+        Fauxpaas.initialize!
+        Fauxpaas.config.register(:system_runner) { KernelSystem.new }
         @instance = Fauxpaas.instance_repo.find(instance_name)
-        Fauxpaas.system_runner = KernelSystem.new
       end
 
     end

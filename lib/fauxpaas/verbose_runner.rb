@@ -6,7 +6,7 @@ module Fauxpaas
 
   # Wraps a runner to execute its output verbosely
   class VerboseRunner
-    def initialize(runner: Fauxpaas.system_runner)
+    def initialize(runner)
       @runner = runner
     end
 

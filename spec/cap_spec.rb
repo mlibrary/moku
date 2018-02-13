@@ -2,7 +2,6 @@
 
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
-require "fauxpaas/components/token"
 require "fauxpaas/cap"
 
 module Fauxpaas
@@ -95,9 +94,9 @@ module Fauxpaas
 
     describe "#caches" do
       let(:stderr) do
-        "#{Fauxpaas.split_token}\n" \
+        "#{Fauxpaas.settings.split_token}\n" \
           "onecache\ntwocache\nthreecache\n" \
-          "#{Fauxpaas.split_token}\n"
+          "#{Fauxpaas.settings.split_token}\n"
       end
 
       before(:each) do

@@ -1,30 +1,21 @@
 # frozen_string_literal: true
 
+require_relative "../spec_helper"
 require "fauxpaas/cli/main"
-require "fauxpaas/components/system_runner"
 require "fauxpaas/archive_reference"
 require "fauxpaas/release_builder"
-require_relative "../support/mock_instance.rb"
+require "ostruct"
 
 module Fauxpaas
   RSpec.describe CLI::Main do
-    after(:each) { Fauxpaas.system_runner = nil }
-
-    subject(:cli) { described_class }
-    let(:instance_name) { "something" }
-
-    let(:mock_status) { double(:status, success?: true) }
-
-    include_context "a mock instance"
-
-    shared_examples_for "a Fauxpaas thor command" do |command|
+    shared_examples_for "a thor command" do |command|
       it "does not set verbose output by default" do
-        cli.start([command, instance_name])
+        cli.start([command, instance.name])
         expect(Fauxpaas.system_runner).not_to be_a_kind_of(VerboseRunner)
       end
 
       it "can set verbose output" do
-        cli.start([command, instance_name, "--verbose"])
+        cli.start([command, instance.name, "--verbose"])
         expect(Fauxpaas.system_runner).to be_a_kind_of(VerboseRunner)
       end
 
@@ -34,175 +25,169 @@ module Fauxpaas
       end
     end
 
-    describe "#deploy" do
-      let(:mock_release) do
-        instance_double(Release,
-          deploy: mock_status)
+    let(:cli) { described_class }
+      let(:instance) do
+        double(
+          :instance,
+          name: "something",
+          interrogator: cap,
+          source: double(:source, latest: double(:latest)),
+          log_release: true,
+          signature: double(:signature),
+          releases: ["one", "two", "three"]
+        )
       end
-      let(:mock_cap) { instance_double(Cap, restart: mock_status) }
 
+    before(:each) do
+      allow(Fauxpaas.instance_repo).to receive(:find).with(instance.name)
+        .and_return(instance)
+      allow(Fauxpaas.instance_repo).to receive(:save)
+    end
+
+    describe "#deploy" do
+      let(:cap) { double(:cap, restart: status) }
+      let(:release) { double(:release, deploy: status) }
       let(:release_builder) { double(:release_builder) }
       before(:each) do
         allow(ReleaseBuilder).to receive(:new).and_return(release_builder)
-        allow(release_builder).to receive(:build).and_return(mock_release)
-        allow(mock_instance).to receive(:signature)
-        allow(mock_instance).to receive(:log_release)
-        allow(mock_instance).to receive(:interrogator).and_return(mock_cap)
+        allow(release_builder).to receive(:build)
+          .with(instance.signature).and_return(release)
       end
 
-      it_behaves_like "a Fauxpaas thor command", "deploy"
+      context "when it succeeds" do
+        let(:status) { double(:status, success?: true) }
 
-      it "deploys an instance" do
-        expect(mock_release).to receive(:deploy)
-        cli.start(["deploy", instance_name])
-      end
+        it_behaves_like "a thor command", "deploy"
 
-      it "logs the release" do
-        expect(mock_instance).to receive(:log_release)
-        cli.start(["deploy", instance_name])
-      end
+        it "deploys an instance" do
+          expect(release).to receive(:deploy)
+          cli.start(["deploy", instance.name])
+        end
 
-      it "saves the instance" do
-        expect(mock_instance_repo).to receive(:save).with(mock_instance)
-        cli.start(["deploy", instance_name])
-      end
+        it "logs the release" do
+          expect(instance).to receive(:log_release)
+          cli.start(["deploy", instance.name])
+        end
 
-      it "reports success" do
-        expect { cli.start(["deploy", instance_name]) }
-          .to output(/deploy successful/).to_stdout
-      end
+        it "saves the instance" do
+          expect(Fauxpaas.instance_repo).to receive(:save).with(instance)
+          cli.start(["deploy", instance.name])
+        end
 
-      it "restarts the application" do
-        expect(mock_cap).to receive(:restart)
-        cli.start(["deploy", instance_name])
+        it "reports success" do
+          expect { cli.start(["deploy", instance.name]) }
+            .to output(/deploy successful/).to_stdout
+        end
+
+        it "restarts the application" do
+          expect(cap).to receive(:restart)
+          cli.start(["deploy", instance.name])
+        end
       end
 
       context "when it fails to deploy" do
-        let(:mock_status) { double(:status, success?: false) }
+        let(:status) { double(:status, success?: false) }
 
         it "doesn't restart the application" do
-          expect(mock_cap).not_to receive(:restart)
-          cli.start(["deploy", instance_name])
+          expect(cap).not_to receive(:restart)
+          cli.start(["deploy", instance.name])
         end
       end
     end
 
     describe "#default_branch" do
-      it_behaves_like "a Fauxpaas thor command", "default-branch"
-
-      before(:each) do
-        allow(mock_instance).to receive(:default_branch)
-        allow(mock_instance).to receive(:default_branch=)
+      let(:instance) do
+        OpenStruct.new(
+          name: "something",
+          interrogator: cap,
+          default_branch: old_branch
+        )
       end
+      let(:cap) { double(:cap, caches: "cachelist") }
+      let(:old_branch) { "old_branch" }
+      let(:new_branch) { "new_branch" }
 
-      let(:branch) { "newbranch" }
+      it_behaves_like "a thor command", "default-branch"
 
       it "sets the default branch" do
-        expect(mock_instance).to receive(:"default_branch=").with(branch)
-        cli.start(["default-branch", instance_name, branch])
+        expect { cli.start(["default-branch", instance.name, new_branch]) }
+          .to change{ instance.default_branch }
+          .from(old_branch)
+          .to(new_branch)
       end
 
       it "saves the instance" do
-        expect(mock_instance_repo).to receive(:save).with(mock_instance)
-        cli.start(["default-branch", instance_name, branch])
+        new_instance = instance.dup
+        new_instance.default_branch = new_branch
+        expect(Fauxpaas.instance_repo).to receive(:save).with(new_instance)
+        cli.start(["default-branch", instance.name, new_branch])
       end
 
       it "reports the change" do
-        expect { cli.start(["default-branch", instance_name, branch]) }
-          .to output(/Changed default branch from .* to #{branch}/).to_stdout
+        expect { cli.start(["default-branch", instance.name, new_branch]) }
+          .to output(/Changed default branch from .* to #{new_branch}/).to_stdout
       end
     end
 
     describe "#rollback" do
-      it_behaves_like "a Fauxpaas thor command", "rollback"
+      let(:cap) { double(:cap, rollback: double(:status, success?: true)) }
 
-      let(:mock_cap) { instance_double(Cap, rollback: mock_status) }
-
-      let(:mock_source) do
-        instance_double(ArchiveReference,
-          latest: instance_double(ArchiveReference))
-      end
-
-      before(:each) do
-        allow(mock_instance).to receive(:interrogator)
-          .and_return(mock_cap)
-
-        allow(mock_instance).to receive(:source)
-          .and_return(mock_source)
-      end
+      it_behaves_like "a thor command", "rollback"
 
       it "rolls back" do
-        expect(mock_cap).to receive(:rollback)
-        cli.start(["rollback", instance_name])
+        expect(cap).to receive(:rollback)
+        cli.start(["rollback", instance.name])
       end
 
       it "rolls back to a specified release" do
-        expect(mock_cap).to receive(:rollback).with(anything, "oldrelease")
-        cli.start(["rollback", instance_name, "oldrelease"])
+        expect(cap).to receive(:rollback).with(anything, "oldrelease")
+        cli.start(["rollback", instance.name, "oldrelease"])
       end
 
       it "reports success" do
-        expect { cli.start(["rollback", instance_name]) }
+        expect { cli.start(["rollback", instance.name]) }
           .to output(/rollback successful/).to_stdout
       end
     end
 
     describe "#caches" do
-      it_behaves_like "a Fauxpaas thor command", "caches"
+      let(:cap) { double(:cap, caches: "cachelist") }
 
-      let(:mock_cap) { instance_double(Cap, caches: "cachelist") }
-
-      before(:each) do
-        allow(mock_instance).to receive(:interrogator)
-          .and_return(mock_cap)
-      end
+      it_behaves_like "a thor command", "caches"
 
       it "prints the caches" do
-        expect { cli.start(["caches", instance_name]) }
+        expect { cli.start(["caches", instance.name]) }
           .to output(/cachelist/).to_stdout
       end
     end
 
     describe "#releases" do
-      it_behaves_like "a Fauxpaas thor command", "releases"
+      let(:cap) { double(:unused_cap) }
 
-      before(:each) do
-        allow(mock_instance).to receive(:releases)
-          .and_return(["one", "two", "three"])
-      end
+      it_behaves_like "a thor command", "releases"
 
       it "prints the releases" do
-        expect { cli.start(["releases", instance_name]) }
+        expect { cli.start(["releases", instance.name]) }
           .to output(/one\ntwo\nthree/).to_stdout
       end
     end
 
+
     describe "#restart" do
-      it_behaves_like "a Fauxpaas thor command", "restart"
+      let(:cap) { double(:cap, restart: double(:status, success?: true)) }
 
-      let(:mock_cap) { instance_double(Cap, restart: mock_status) }
-
-      before(:each) do
-        allow(mock_instance).to receive(:interrogator)
-          .and_return(mock_cap)
-      end
+      it_behaves_like "a thor command", "restart"
 
       it "restarts the application" do
-        expect(mock_cap).to receive(:restart)
-        cli.start(["restart", instance_name])
+        expect(cap).to receive(:restart)
+        cli.start(["restart", instance.name])
       end
 
       it "reports success" do
-        expect { cli.start(["restart", instance_name]) }
+        expect { cli.start(["restart", instance.name]) }
           .to output(/restart successful/).to_stdout
       end
     end
 
-    describe "#syslog" do
-      it "requires a subcommand" do
-        expect { cli.start(["syslog"]) }
-          .to output(/Commands:/).to_stdout
-      end
-    end
   end
 end

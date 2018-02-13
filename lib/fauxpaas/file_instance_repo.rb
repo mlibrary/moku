@@ -12,10 +12,11 @@ module Fauxpaas
 
   # Repository for persisting instances to files
   class FileInstanceRepo
-    def initialize(instances_path, releases_path, fs = Filesystem.new)
+    def initialize(instances_path, releases_path, fs, git_runner)
       @instances_path = Pathname.new(instances_path)
       @releases_path = Pathname.new(releases_path)
       @fs = fs
+      @git_runner = git_runner
     end
 
     def find(name)
@@ -23,10 +24,14 @@ module Fauxpaas
       releases = releases_content(name)
       Instance.new(
         name: name,
-        source: ArchiveReference.from_hash(contents["source"]),
-        deploy: ArchiveReference.from_hash(contents["deploy"]),
-        shared: contents["shared"].map {|h| ArchiveReference.from_hash(h) },
-        unshared: contents["unshared"].map {|h| ArchiveReference.from_hash(h) },
+        source: ArchiveReference.from_hash(contents["source"], git_runner),
+        deploy: ArchiveReference.from_hash(contents["deploy"], git_runner),
+        shared: contents["shared"].map do |h|
+          ArchiveReference.from_hash(h, git_runner)
+        end,
+        unshared: contents["unshared"].map do |h|
+          ArchiveReference.from_hash(h, git_runner)
+        end,
         releases: releases.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
     end
@@ -38,7 +43,7 @@ module Fauxpaas
 
     private
 
-    attr_reader :instances_path, :releases_path, :fs
+    attr_reader :instances_path, :releases_path, :fs, :git_runner
 
     def write_instance(instance)
       fs.mkdir_p(path_to_instance(instance.name).dirname)

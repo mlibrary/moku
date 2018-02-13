@@ -13,7 +13,7 @@ module Fauxpaas
     # @param fs [Filesystem]
     # @param local_resolver [LocalGitResolver]
     # @param remote_resolver [RemoteGitResolver]
-    def initialize(system_runner:, fs: Filesystem.new, local_resolver:, remote_resolver:)
+    def initialize(system_runner:, fs:, local_resolver:, remote_resolver:)
       @system_runner = system_runner
       @fs = fs
       @local_resolver = local_resolver

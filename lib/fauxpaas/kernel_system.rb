@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Fauxpaas
-
   # Runner that uses Kernel.system
   class KernelSystem
     def run(string)
@@ -9,3 +8,4 @@ module Fauxpaas
     end
   end
 end
+

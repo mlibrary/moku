@@ -29,7 +29,7 @@ module Fauxpaas
       def deploy(instance_name)
         setup(instance_name)
         signature = instance.signature(options[:reference])
-        release = ReleaseBuilder.new(signature).build
+        release = ReleaseBuilder.new(Fauxpaas.filesystem).build(signature)
         status = release.deploy
         report(status, action: "deploy")
         if status.success?
@@ -96,10 +96,9 @@ module Fauxpaas
       attr_reader :instance
 
       def setup(instance_name)
+        Fauxpaas.load_settings!(options.symbolize_keys)
+        Fauxpaas.initialize!
         @instance = Fauxpaas.instance_repo.find(instance_name)
-        if options.fetch(:verbose, false)
-          Fauxpaas.system_runner = VerboseRunner.new
-        end
       end
 
       def report(status, action: "action")

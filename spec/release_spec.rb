@@ -10,11 +10,17 @@ module Fauxpaas
   RSpec.describe Release do
     let(:success) { double(:success, success?: true) }
     let(:runner) { double(:runner, run: [nil, nil, success]) }
-    let(:source) { ArchiveReference.new("source.git", "1238019283019823019823091832") }
+    let(:source) do
+      ArchiveReference.new(
+        "source.git",
+        "1238019283019823019823091832",
+        Fauxpaas.git_runner
+      )
+    end
     let(:shared_path) { Pathname.new("/tmp/shared/structure") }
     let(:unshared_path) { Pathname.new("/tmp/unshared/structure") }
     let(:deploy_config) do
-      DeployConfig.new(
+      double(:deploy_config,
         appname: "myapp-mystage",
         deployer_env: "foo.rails",
         assets_prefix: "assets",

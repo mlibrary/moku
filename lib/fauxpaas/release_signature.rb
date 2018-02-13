@@ -12,8 +12,12 @@ module Fauxpaas
       new(
         source: ArchiveReference.from_hash(hash[:source]),
         deploy: ArchiveReference.from_hash(hash[:deploy]),
-        shared: hash.fetch(:shared, []).map {|h| ArchiveReference.from_hash(h) },
-        unshared: hash.fetch(:unshared, []).map {|h| ArchiveReference.from_hash(h) }
+        shared: hash.fetch(:shared, []).map do |h|
+          ArchiveReference.from_hash(h)
+        end,
+        unshared: hash.fetch(:unshared, []).map do |h|
+          ArchiveReference.from_hash(h)
+        end
       )
     end
 
