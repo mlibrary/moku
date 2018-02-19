@@ -16,7 +16,13 @@ module Fauxpaas
         before(:all) do
           @root = Pathname.new(Dir.tmpdir)/"fauxpaas"/"sandbox"/instance_name
           `mkdir -p #{@root}`
-          CLI::Main.start(["deploy", instance_name, "--verbose"])
+          options = %w{
+            -v
+            -I spec/fixtures/integration/instances
+            -R spec/fixtures/integration/releases
+            -D spec/fixtures/integration/capfiles
+          }
+          CLI::Main.start(["deploy", instance_name, *options])
         end
         after(:all) { `rm -rf #{@root}` }
         let(:root) { @root }
