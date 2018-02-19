@@ -25,6 +25,11 @@ module Fauxpaas
           }
           CLI::Main.start(["deploy", instance_name, *options])
         end
+        after(:all) do
+          `rm -rf #{@root}`
+          `git discard spec/fixtures/integration/instances`
+          `git discard spec/fixtures/integration/releases`
+        end
         after(:all) { `rm -rf #{@root}` }
         let(:root) { @root }
         let(:current_dir) { root/"current" }
