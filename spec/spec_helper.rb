@@ -2,6 +2,12 @@
 
 require "simplecov"
 require "bundler/setup"
+
+# We load these here to for fakefs compat
+require "pp"
+require "pry"
+
+# Load everything so that we can initialize
 require "fauxpaas"
 require_relative "support/memory_filesystem"
 require_relative "support/spoofed_git_runner"
