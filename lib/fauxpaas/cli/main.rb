@@ -36,23 +36,6 @@ module Fauxpaas
         type: :string,
         required: false
 
-      class_option :instance_root,
-        desc: "The directory to find and store instances",
-        aliases: "-I",
-        type: :string,
-        required: false
-
-      class_option :releases_root,
-        desc: "The directory to find and store releases",
-        aliases: "-R",
-        type: :string,
-        required: false
-
-      class_option :deployer_env_root,
-        aliases: "-D",
-        type: :string,
-        required: false
-
       desc "deploy <instance>",
         "Deploys the instance's source; by default deploys master. " \
         "Use --reference to deploy a specific revision"
