@@ -1,13 +1,22 @@
 module Fauxpaas
 
+  # Represetns a command within Fauxpaas
   class Command
     def initialize(options, policy)
       @options = options
       @policy = policy
     end
 
-    def run
+    # Run only the logic of the command
+    def execute
       raise NotImplementedError
+    end
+
+    # Validate, authorize, and execute the command
+    def run
+      validate!
+      authorize!
+      execute
     end
 
     def default_keys
@@ -69,7 +78,7 @@ module Fauxpaas
       policy.deploy?
     end
 
-    def run
+    def execute
       signature = instance.signature(options[:reference])
       release = ReleaseBuilder.new(Fauxpaas.filesystem).build(signature)
       status = release.deploy
@@ -97,7 +106,7 @@ module Fauxpaas
       [:new_branch]
     end
 
-    def run
+    def execute
       old_branch = instance.default_branch
       instance.default_branch = options[:new_branch]
       Fauxpaas.instance_repo.save(instance)
@@ -110,7 +119,7 @@ module Fauxpaas
       policy.read_default_branch?
     end
 
-    def run
+    def execute
       puts "Default branch: #{instance.default_branch}"
     end
   end
@@ -125,7 +134,7 @@ module Fauxpaas
       [:cache]
     end
 
-    def run
+    def execute
       report(instance.interrogator
         .rollback(instance.source.latest, options[:cache]),
       action: "rollback")
@@ -137,7 +146,7 @@ module Fauxpaas
       policy.caches?
     end
 
-    def run
+    def execute
       puts instance
         .interrogator
         .caches
@@ -149,7 +158,7 @@ module Fauxpaas
       policy.releases?
     end
 
-    def run
+    def execute
       puts instance.releases.map(&:to_s).join("\n")
     end
   end
@@ -159,7 +168,7 @@ module Fauxpaas
       policy.restart?
     end
 
-    def run
+    def execute
       report(instance.interrogator.restart,
         action: "restart")
     end
@@ -170,7 +179,7 @@ module Fauxpaas
       policy.syslog_view?
     end
 
-    def run
+    def execute
       instance.interrogator.syslog_view
     end
   end
@@ -183,7 +192,7 @@ module Fauxpaas
     def extra_keys
       [:pattern]
     end
-    def run
+    def execute
       instance.interrogator.syslog_grep(options[:pattern])
     end
   end
@@ -193,7 +202,7 @@ module Fauxpaas
       policy.syslog_follow?
     end
 
-    def run
+    def execute
       instance.interrogator.syslog_follow
     end
   end

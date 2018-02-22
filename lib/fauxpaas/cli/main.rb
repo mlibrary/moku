@@ -53,10 +53,7 @@ module Fauxpaas
           "Use default_branch to display or set the default branch."
       def deploy(instance_name)
         opts, policy = setup_for(instance_name)
-        DeployCommand.new(opts, policy)
-          .validate!
-          .authorize!
-          .run
+        DeployCommand.new(opts, policy).run
       end
 
       desc "default_branch <instance> [<new_branch>]",
@@ -67,7 +64,7 @@ module Fauxpaas
           SetDefaultBranchCommand.new(opts.merge({new_branch: new_branch}), policy)
         else
           ReadDefaultBranchCommand.new(opts, policy)
-        end.validate!.authorize!.run
+        end.run
       end
 
       desc "rollback <instance> [<cache>]",
@@ -75,40 +72,28 @@ module Fauxpaas
           "recent one otherwise. Use with care."
       def rollback(instance_name, cache = "")
         opts, policy = setup_for(instance_name)
-        RollbackCommand.new(opts.merge({cache: cache}), policy)
-          .validate!
-          .authorize!
-          .run
+        RollbackCommand.new(opts.merge({cache: cache}), policy).run
       end
 
       desc "caches <instance>",
         "List cached releases for the instance"
       def caches(instance_name)
         opts, policy = setup_for(instance_name)
-        CachesCommand.new(opts, policy)
-          .validate!
-          .authorize!
-          .run
+        CachesCommand.new(opts, policy).run
       end
 
       desc "releases <instance>",
         "List release history for the instance"
       def releases(instance_name)
         opts, policy = setup_for(instance_name)
-        ReleasesCommand.new(opts, policy)
-          .validate!
-          .authorize!
-          .run
+        ReleasesCommand.new(opts, policy).run
       end
 
       desc "restart <instance>",
         "Restart the application for the instance"
       def restart(instance_name)
         opts, policy = setup_for(instance_name)
-        RestartCommand.new(opts, policy)
-          .validate!
-          .authorize!
-          .run
+        RestartCommand.new(opts, policy).run
       end
 
       desc "syslog SUBCOMMAND <instance> args...",

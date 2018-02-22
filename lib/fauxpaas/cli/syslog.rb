@@ -22,30 +22,21 @@ module Fauxpaas
         "View the system logs for the instance"
       def view(instance_name)
         opts, policy = setup_for(instance_name)
-        SyslogViewCommand.new(opts, policy)
-          .validate!
-          .authorize!
-          .run
+        SyslogViewCommand.new(opts, policy).run
       end
 
       desc "grep <instance> pattern",
         "View the system logs for the instance"
       def grep(instance_name, pattern = ".")
         opts, policy = setup_for(instance_name)
-        SyslogGrepCommand.new(opts.merge({pattern: pattern}), policy)
-          .validate!
-          .authorize!
-          .run
+        SyslogGrepCommand.new(opts.merge({pattern: pattern}), policy).run
       end
 
       desc "follow <instance>",
         "Follow the system logs for the instance"
       def follow(instance_name)
         opts, policy = setup_for(instance_name)
-        SyslogFollowCommand.new(opts, policy)
-          .validate!
-          .authorize!
-          .run
+        SyslogFollowCommand.new(opts, policy).run
       end
 
       private
