@@ -1,8 +1,9 @@
 module Fauxpaas
 
   class Command
-    def initialize(options)
+    def initialize(options, policy)
       @options = options
+      @policy = policy
     end
 
     def run
@@ -11,6 +12,10 @@ module Fauxpaas
 
     def default_keys
       Set.new([:instance_name])
+    end
+
+    def authorized?
+      raise NotImplementedError
     end
 
     def extra_keys
@@ -29,6 +34,13 @@ module Fauxpaas
       missing.empty?
     end
 
+    def authorize!
+      unless authorized?
+        raise RuntimeError, "User is not authorized to peform this command"
+      end
+      self
+    end
+
     def validate!
       unless valid?
         raise KeyError, "Missing keys:\n\t#{missing.join(" :")}"
@@ -37,7 +49,7 @@ module Fauxpaas
     end
 
     private
-    attr_reader :options
+    attr_reader :options, :policy
 
     def instance
       @instance ||= Fauxpaas.instance_repo.find(options[:instance_name])
@@ -53,6 +65,10 @@ module Fauxpaas
   end
 
   class DeployCommand < Command
+    def authorized?
+      policy.deploy?
+    end
+
     def run
       signature = instance.signature(options[:reference])
       release = ReleaseBuilder.new(Fauxpaas.filesystem).build(signature)
@@ -61,7 +77,7 @@ module Fauxpaas
       if status.success?
         instance.log_release(LoggedRelease.new(ENV["USER"], Time.now, signature))
         Fauxpaas.instance_repo.save(instance)
-        RestartCommand.new(options).run
+        RestartCommand.new(options, policy).run
       end
     end
 
@@ -73,6 +89,10 @@ module Fauxpaas
   end
 
   class SetDefaultBranchCommand < Command
+    def authorized?
+      policy.set_default_branch?
+    end
+
     def extra_keys
       [:new_branch]
     end
@@ -86,6 +106,10 @@ module Fauxpaas
   end
 
   class ReadDefaultBranchCommand < Command
+    def authorized?
+      policy.read_default_branch?
+    end
+
     def run
       puts "Default branch: #{instance.default_branch}"
     end
@@ -93,6 +117,10 @@ module Fauxpaas
 
 
   class RollbackCommand < Command
+    def authorized?
+      policy.rollback?
+    end
+
     def extra_keys
       [:cache]
     end
@@ -105,6 +133,10 @@ module Fauxpaas
   end
 
   class CachesCommand < Command
+    def authorized?
+      policy.caches?
+    end
+
     def run
       puts instance
         .interrogator
@@ -113,12 +145,20 @@ module Fauxpaas
   end
 
   class ReleasesCommand < Command
+    def authorized?
+      policy.releases?
+    end
+
     def run
       puts instance.releases.map(&:to_s).join("\n")
     end
   end
 
   class RestartCommand < Command
+    def authorized?
+      policy.restart?
+    end
+
     def run
       report(instance.interrogator.restart,
         action: "restart")
@@ -126,12 +166,20 @@ module Fauxpaas
   end
 
   class SyslogViewCommand < Command
+    def authorized?
+      policy.syslog_view?
+    end
+
     def run
       instance.interrogator.syslog_view
     end
   end
 
   class SyslogGrepCommand < Command
+    def authorized?
+      policy.syslog_grep?
+    end
+
     def extra_keys
       [:pattern]
     end
@@ -141,6 +189,10 @@ module Fauxpaas
   end
 
   class SyslogFollowCommand < Command
+    def authorized?
+      policy.syslog_follow?
+    end
+
     def run
       instance.interrogator.syslog_follow
     end

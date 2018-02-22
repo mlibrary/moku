@@ -68,6 +68,24 @@ module Fauxpaas
         end
       end
 
+      context "without proper authorization" do
+        let(:options) do
+          %w{
+            -v
+            -I spec/fixtures/integration/instances
+            -R spec/fixtures/integration/releases
+            -D spec/fixtures/integration/capfiles
+            -u john_doe
+          }
+        end
+
+        it "raises an ArgumentError" do
+          expect {
+            CLI::Main.start(["deploy", "test-rails", *options])
+          }.to raise_error(RuntimeError, /not authorized/)
+        end
+      end
+
       context "without rails" do
         include_context "deploy setup", "test-norails"
         let(:gem) { "pry" }

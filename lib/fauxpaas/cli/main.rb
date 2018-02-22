@@ -36,6 +36,13 @@ module Fauxpaas
         type: :string,
         required: false
 
+      class_option :user,
+        desc: "The user running the action, defaults to $USER",
+        aliases: "-u",
+        type: :string,
+        required: true,
+        default: ENV["USER"]
+
       desc "deploy <instance>",
         "Deploys the instance's source; by default deploys master. " \
         "Use --reference to deploy a specific revision"
@@ -45,57 +52,62 @@ module Fauxpaas
         desc: "The branch or commit to deploy. " \
           "Use default_branch to display or set the default branch."
       def deploy(instance_name)
-        setup(instance_name)
-        DeployCommand.new(options)
+        opts, policy = setup_for(instance_name)
+        DeployCommand.new(opts, policy)
           .validate!
+          .authorize!
           .run
       end
 
       desc "default_branch <instance> [<new_branch>]",
         "Display or set the default branch for the instance"
       def default_branch(instance_name, new_branch = nil)
-        setup(instance_name)
+        opts, policy = setup_for(instance_name)
         if new_branch
-          SetDefaultBranchCommand.new(options.merge({new_branch: new_branch}))
+          SetDefaultBranchCommand.new(opts.merge({new_branch: new_branch}), policy)
         else
-          ReadDefaultBranchCommand.new(options)
-        end.validate!.run
+          ReadDefaultBranchCommand.new(opts, policy)
+        end.validate!.authorize!.run
       end
 
       desc "rollback <instance> [<cache>]",
         "Initiate a rollback to the specified cache if specified, or the most " \
           "recent one otherwise. Use with care."
       def rollback(instance_name, cache = "")
-        setup(instance_name)
-        RollbackCommand.new(options.merge({cache: cache}))
+        opts, policy = setup_for(instance_name)
+        RollbackCommand.new(opts.merge({cache: cache}), policy)
           .validate!
+          .authorize!
           .run
       end
 
       desc "caches <instance>",
         "List cached releases for the instance"
       def caches(instance_name)
-        setup(instance_name)
-        CachesCommand.new(options)
+        opts, policy = setup_for(instance_name)
+        CachesCommand.new(opts, policy)
           .validate!
+          .authorize!
           .run
       end
 
       desc "releases <instance>",
         "List release history for the instance"
       def releases(instance_name)
-        setup(instance_name)
-        ReleasesCommand.new(options)
+        opts, policy = setup_for(instance_name)
+        ReleasesCommand.new(opts, policy)
           .validate!
+          .authorize!
           .run
       end
 
       desc "restart <instance>",
         "Restart the application for the instance"
       def restart(instance_name)
-        setup(instance_name)
-        RestartCommand.new(options)
+        opts, policy = setup_for(instance_name)
+        RestartCommand.new(opts, policy)
           .validate!
+          .authorize!
           .run
       end
 
@@ -105,11 +117,16 @@ module Fauxpaas
 
       private
 
-      def setup(instance_name)
-        @options = options.merge({instance_name: instance_name})
-        Fauxpaas.load_settings!(options.symbolize_keys)
+      def setup_for(instance_name)
+        opts = options.merge({instance_name: instance_name})
+        Fauxpaas.load_settings!(opts.symbolize_keys)
         Fauxpaas.initialize!
+        policy = Fauxpaas.policy_factory_repo
+          .find
+          .for(opts[:user], opts[:instance_name])
+        [opts, policy]
       end
+
     end
 
   end

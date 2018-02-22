@@ -44,6 +44,13 @@ RSpec.configure do |config|
       container.register(:instance_root) { resolve_path(Fauxpaas.settings.instance_root) }
       container.register(:releases_root) { resolve_path(Fauxpaas.settings.releases_root) }
       container.register(:deployer_env_root) { resolve_path(Fauxpaas.settings.deployer_env_root) }
+
+      container.register(:policy_factory_repo) do
+        double(
+          :policy_factory_repo,
+          find: Fauxpaas::PolicyFactory.new(all: { admin: ENV["USER"] })
+        )
+      end
     end
   end
 

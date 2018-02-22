@@ -7,12 +7,15 @@ require "fauxpaas/cap_runner"
 require "fauxpaas/cli"
 require "fauxpaas/deploy_config"
 require "fauxpaas/file_instance_repo"
+require "fauxpaas/file_policy_factory_repo"
 require "fauxpaas/filesystem"
 require "fauxpaas/git_runner"
 require "fauxpaas/instance"
 require "fauxpaas/local_git_resolver"
 require "fauxpaas/logged_release"
 require "fauxpaas/open3_capture"
+require "fauxpaas/policy_factory"
+require "fauxpaas/policy"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
 require "fauxpaas/remote_git_resolver"
@@ -83,6 +86,9 @@ module Fauxpaas
             c.filesystem,
             c.git_runner
           )
+        end
+        container.register(:policy_factory_repo) do |c|
+          Fauxpaas::FilePolicyFactoryRepo.new(c.instance_root)
         end
 
         container.register(:instance_root) { Pathname.new(settings.instance_root) }
