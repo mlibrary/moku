@@ -8,19 +8,21 @@ require "yaml"
 
 module Fauxpaas
   RSpec.describe FileInstanceRepo do
-    let(:static_repo) { described_class.new(Fauxpaas.instance_root, Fauxpaas.releases_root, Filesystem.new, Fauxpaas.git_runner) }
+    let(:instance_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"instances" }
+    let(:releases_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"releases" }
+    let(:static_repo) { described_class.new(instance_root, releases_root, Filesystem.new, Fauxpaas.git_runner) }
     let(:mem_fs) { MemoryFilesystem.new }
     let(:tmp_repo) { described_class.new("/instances", "/releases", mem_fs, Fauxpaas.git_runner) }
 
     it "can save and find instances" do
-      contents_before = YAML.load(File.read(Fauxpaas.instance_root/"test-persistence"/"instance.yml"))
+      contents_before = YAML.load(File.read(instance_root/"test-persistence"/"instance.yml"))
       instance = static_repo.find("test-persistence")
       tmp_repo.save(instance)
       expect(YAML.load(mem_fs.read("/instances/test-persistence/instance.yml"))).to eql(contents_before)
     end
 
     it "can save and find instances" do
-      contents_before = YAML.load(File.read(Fauxpaas.releases_root/"test-persistence.yml"))
+      contents_before = YAML.load(File.read(releases_root/"test-persistence.yml"))
       instance = static_repo.find("test-persistence")
       tmp_repo.save(instance)
       expect(YAML.load(mem_fs.read("/releases/test-persistence.yml"))).to eql(contents_before)

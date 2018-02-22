@@ -14,9 +14,21 @@ module Fauxpaas
 
       RSpec.shared_context "deploy setup" do |instance_name|
         before(:all) do
+          Fauxpaas.reset!
           @root = Pathname.new(Dir.tmpdir)/"fauxpaas"/"sandbox"/instance_name
           `mkdir -p #{@root}`
-          CLI::Main.start(["deploy", instance_name, "--verbose"])
+          options = %w{
+            -v
+            -I spec/fixtures/integration/instances
+            -R spec/fixtures/integration/releases
+            -D spec/fixtures/integration/capfiles
+          }
+          CLI::Main.start(["deploy", instance_name, *options])
+        end
+        after(:all) do
+          `rm -rf #{@root}`
+          `git discard spec/fixtures/integration/instances`
+          `git discard spec/fixtures/integration/releases`
         end
         after(:all) { `rm -rf #{@root}` }
         let(:root) { @root }
