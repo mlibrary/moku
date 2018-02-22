@@ -85,27 +85,32 @@ This project assumes that an underprivileged user ("the user") elevated its priv
 a privileged, non-root user. This latter user is the application user, and all commands are run
 with its identity. The software must be able to access the real user's username.
 
-From there, the CLI verifies that the user is allowed to run the given command on the given
-target. It does so by instantiating the ApplicationPolicy with the user object and the target
-object, and asking the policy if the command is allowed.
+Fauxpaas does not provide any authentication method.
 
-The ApplicationPolicy itself will look in the following locations for files named `permissions.yml`.
+The identity use is expected to be specified on the command line.
+From there, the CLI verifies that the user is allowed to run the given command on the given
+target. It does so by instantiating a Policy from the user object, which can then be interrogated
+for permisions. This mechanism is not especially advanced; therefore, should the authorization
+scope of Fauxpaas increase significantly, more robust mechanisms should be used.
+
+The Policy itself will look in the following locations for files named `permissions.yml`.
 The order does not matter.
 
 * The folder of the named instance
-* The folder of the app to which the named instance belongs
+* ~~The folder of the app to which the named instance belongs~~
 * The top-level folder
 
 We understand the following permissions:
 
-| Permission | Description |
+| Role | Description |
 | --- | --- |
-| view | View the configuration of the current and past deployments. |
-| log | View the instance's application and system logs. |
-| deploy | Deploy and rollback the application. Implies view. |
-| all | Implies all other permissions. |
+| read | Read the configuration of the current and past deployments, and view logs. |
+| restart | Restart the application. |
+| edit | Edit the instance's configuration. Implies read. |
+| deploy | Deploy and rollback the application. Implies restart, read. |
+| admin | Implies all other permissions. |
 
-The ApplicationPolicy, and thus the authorization mechanism, is not accessed beyond this
+The Policy, and thus the authorization mechanism, is not accessed beyond this
 point.
 
 
