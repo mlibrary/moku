@@ -43,6 +43,10 @@ separate from other configuration so that it can change independently.
 Because it is useful to know if infrastructure changed, at least a log of when changes
 occurred will be available to developers.
 
+Infrastructure configuration will be available in the file `infrastructure.yml` in the
+base directory of your deployed application. We'll need to define the format used to
+represent various services in some place public, such as confluence.
+
 ### Deployment Configuration
 
 A configuration file that drives the deployment machinery. It includes config that is tied
@@ -55,19 +59,24 @@ where the instance will be deployed.
 ```
 faux
  |- permissions.yml             global whitelist
- |- instances
- |  |- myapp                    app dir
- |  |  |- permissions.yml       app whitelist
- |  |  |- prod                  stage dir
+ |- data
+ |  |- instances
+ |  |  |- myapp-prod            app dir
  |  |  |  |- permissions.yml    stage whitelist
- |  |  |  |- deploy_config.yml  configuration of the deployment process
- |  |  |  |- history.log        release history
- |  |  |- test                  we call myapp-test a "named instance"
- |  |- yourapp
- |- infrastructure (git)
- |  |- myapp-prod.yml           infrastructure config
- |  |- myapp-test.yml
-faux-app                        this code
+ |  |  |  |- instance.yml
+ |  |  |  |- hosts.rb           file describing hosts
+ |  |  |- myapp-test
+ |  |  |- yourapp-prod
+ |  |- stages
+ |  |  |- myapp-prod.rb
+ |  |  |- myapp-test.rb
+ |- releases
+ |  |- myapp-prod.yml           release history
+ |- deploy (git)                branch-per-instance
+ |  |- deploy.yml               deploy config
+ |- infrastructure (git)        branch-per-instance
+ |  |- infrastructure.yml       infrastructure config
+lib                             this code
 ```
 
 ## Authorization and Authentication
@@ -76,27 +85,32 @@ This project assumes that an underprivileged user ("the user") elevated its priv
 a privileged, non-root user. This latter user is the application user, and all commands are run
 with its identity. The software must be able to access the real user's username.
 
-From there, the CLI verifies that the user is allowed to run the given command on the given
-target. It does so by instantiating the ApplicationPolicy with the user object and the target
-object, and asking the policy if the command is allowed.
+Fauxpaas does not provide any authentication method.
 
-The ApplicationPolicy itself will look in the following locations for files named `permissions.yml`.
+The identity use is expected to be specified on the command line.
+From there, the CLI verifies that the user is allowed to run the given command on the given
+target. It does so by instantiating a Policy from the user object, which can then be interrogated
+for permisions. This mechanism is not especially advanced; therefore, should the authorization
+scope of Fauxpaas increase significantly, more robust mechanisms should be used.
+
+The Policy itself will look in the following locations for files named `permissions.yml`.
 The order does not matter.
 
 * The folder of the named instance
-* The folder of the app to which the named instance belongs
+* ~~The folder of the app to which the named instance belongs~~
 * The top-level folder
 
 We understand the following permissions:
 
-| Permission | Description |
+| Role | Description |
 | --- | --- |
-| view | View the configuration of the current and past deployments. |
-| log | View the instance's application and system logs. |
-| deploy | Deploy and rollback the application. Implies view. |
-| all | Implies all other permissions. |
+| read | Read the configuration of the current and past deployments, and view logs. |
+| restart | Restart the application. |
+| edit | Edit the instance's configuration. Implies read. |
+| deploy | Deploy and rollback the application. Implies restart, read. |
+| admin | Implies all other permissions. |
 
-The ApplicationPolicy, and thus the authorization mechanism, is not accessed beyond this
+The Policy, and thus the authorization mechanism, is not accessed beyond this
 point.
 
 
@@ -106,14 +120,11 @@ The result of a successful deploy operation is the creation of a new *release*. 
 a release is defined by the following information:
 
 * the user that deployed it
+* when it was deployed
 * Repo+SHA of the source code
 * Repo+SHA of the developer configuration
-* ~SHA of the infrastructure configuration _(hidden)_~
-* SHA of the deployment machinery _(hidden)_
-
-Note that this does not include the infrastructure configuration. That is because the infrastructure
-can change during the course of a release. Provided the application is restarted, developers need
-not be concerned about these changes.
+* SHA of the infrastructure configuration
+* SHA of the deployment machinery
 
 ### Cached Releases
 
@@ -129,12 +140,12 @@ The process is as follows:
 1. Copy the source code
 1. Copy the developer configuration
 1. Copy the infrastructure configuration
-1. Run before_build hooks
+1. Run before\_build hooks
 1. Build the application
-1. Run after_build hooks
+1. Run after\_build hooks
 1. Set this release as the current release
 1. Log the successful deployment
-1. Run after_release hooks
+1. Run after\_release hooks
 
 Should any step fail, the process ends and the subsequent steps are skipped.
 
@@ -145,13 +156,27 @@ _Note: Failed deployments still consume one of the cache slots._
 
 We keep a log of every successful deployment.
 
-> TIMESTAMP: USER deployed SRC CONFIG with DEPLOY
-
 * TIMESTAMP: When deployment process completed
 * USER: The user who initiated it
-* SRC: SHA of the source code deployed
-* CONFIG: SHA of the developer configuration deployed
-* DEPLOY: SHA of the deployment configuration used
+* SRC: commit identifier (SHA) of the source code deployed
+* CONFIG: commit identifier (SHA) (from an external repo) of the developer
+  configuration used for the deployment
+* INFRA: commit identifier (SHA) of the infrastructure configuration used
+* DEPLOY: commit identifier (SHA) (from an external repo) of the deployment
+  configuration - this will be generated by predeployment - essentially this
+  identifies the set of machines deployed to - i.e. the 'stage' as capistrano
+  calls it
+
+
+## Examle Deploy Config (deploy.yml)
+
+```
+appname: test-rails
+deployer_env: rails.capfile
+deploy_dir: null
+rails_env: production
+assets_prefix: assets
+```
 
 ## Developer Config Repo Structure
 
@@ -164,4 +189,22 @@ We keep a log of every successful deployment.
  |- yourotherfile.txt           will be installed to /yourotherfile.txt
 ```
 
-The files `after_build.yml` and `after_release.yml` are not installed with the application.
+The structure of `after_build.yml` and `after_release.yml` is as follows:
+
+```yaml
+---
+- bin: somebin.sh # The command to run
+  opts: 1 2 -v    # Options to the bin
+  roles:          # Host roles on which to run the command (set)
+    - db
+    - app
+    - web
+```
+
+# Examples
+
+The included examples can be used for end-to-end testing:
+
+* test-norails
+* test-rails
+

@@ -41,11 +41,17 @@
 
 # vim
 tags
+*~
 *.swp
 *.swo
 
 # testbed
-/spec/sandbox
+/sandbox
 
 # We're a gem
 Gemfile.lock
+
+# These dirs are for users
+/data/instances/*
+/data/stages/*
+/releases/*

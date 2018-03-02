@@ -3,6 +3,8 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   DisplayCopNames: true
   TargetRubyVersion: 2.3
+  Exclude:
+    - '*.gemspec'
 
 Naming/FileName:
   ExpectMatchingDefinition: true
@@ -10,6 +12,25 @@ Naming/FileName:
     - 'spec/**/*'
     - 'lib/*/version.rb'
     - 'bin/console'
+    - 'deploy/**/*'
+    - 'lib/*/components/*'
+    - 'lib/*/components.rb'
+
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'lib/*/components/*'
+    - 'lib/*/components.rb'
+
+# We disable this cop because we want to use Pathname#/
+# and this cop is not configurable at all.
+Layout/SpaceAroundOperators:
+  Enabled: false
+
+Security/YAMLLoad:
+  Exclude:
+    - 'lib/fauxpaas/file_instance_repo.rb'
+    - 'spec/**/*'
 
 Style/Alias:
   EnforcedStyle: prefer_alias_method
@@ -111,11 +132,9 @@ Layout/SpaceInsideBlockBraces:
 Style/SymbolArray:
   EnforcedStyle: brackets
 
-Style/WhileUntilModifier:
-  MaxLineLength: 100
-
 Lint/BlockAlignment:
-  EnforcedStyleAlignWith: start_of_line
+  EnforcedStyleAlignWith: start_of_block
+  #EnforcedStyleAlignWith: start_of_line
 
 Lint/EndAlignment:
   EnforcedStyleAlignWith: start_of_line
@@ -128,3 +147,4 @@ Performance/RedundantMerge:
 
 Style/WordArray:
   EnforcedStyle: brackets
+

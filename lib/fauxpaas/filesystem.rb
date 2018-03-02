@@ -1,9 +1,29 @@
-require "fileutils"
+# frozen_string_literal: true
 
-# We wrap the filesystem for easy mocking,
-# and to be clear about which methods we need.
+require "fileutils"
+require "tmpdir"
+
 module Fauxpaas
+  # We wrap the filesystem for easy mocking,
+  # and to be clear about which methods we need.
   class Filesystem
+
+    # @param path [Pathname]
+    def directory?(path)
+      path.directory?
+    end
+
+    # @param original [Pathname]
+    # @param dest [Pathanme]
+    def cp(original, dest)
+      FileUtils.cp(original, dest)
+    end
+
+    # @param original [Pathname]
+    # @param dest [Pathanme]
+    def mv(original, dest)
+      FileUtils.mv(original, dest)
+    end
 
     # @param [Pathname] dir
     # @return [Array<Pathname>]
@@ -70,6 +90,18 @@ module Fauxpaas
     # @param [String] contents
     def write(path, contents)
       File.write(path, contents)
+    end
+
+    def mktmpdir
+      if block_given?
+        Dir.mktmpdir {|dir| yield Pathname.new(dir) }
+      else
+        Pathname.new(Dir.mktmpdir)
+      end
+    end
+
+    def chdir(dir)
+      Dir.chdir(dir) { yield }
     end
 
   end
