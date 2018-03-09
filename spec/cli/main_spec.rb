@@ -23,6 +23,13 @@ module Fauxpaas
         expect { cli.start([command]) }
           .to output(/no arguments/).to_stderr
       end
+
+      it "reports a nice error when the instance can't be found" do
+        missing = "missing-instance"
+        allow(Fauxpaas.instance_repo).to receive(:find).with(missing).and_raise(Errno::ENOENT)
+        expect { cli.start([command, missing]) }
+          .to output(/The requested instance \[#{missing}\] doesn't exist/).to_stderr
+      end
     end
 
     let(:cli) { described_class }

@@ -61,7 +61,12 @@ module Fauxpaas
     attr_reader :options, :policy
 
     def instance
-      @instance ||= Fauxpaas.instance_repo.find(options[:instance_name])
+      begin
+        @instance ||= Fauxpaas.instance_repo.find(options[:instance_name])
+      rescue Errno::ENOENT
+        STDERR.puts "The requested instance [#{options[:instance_name]}] doesn't exist"
+        exit 7
+      end
     end
 
     def report(status, action: "action")
