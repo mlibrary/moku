@@ -45,7 +45,8 @@ module Fauxpaas
 
     def authorize!
       unless authorized?
-        raise RuntimeError, "User is not authorized to peform this command"
+        STDERR.puts "You are not authorized to perform this command"
+        exit 6
       end
       self
     end
@@ -65,7 +66,6 @@ module Fauxpaas
         @instance ||= Fauxpaas.instance_repo.find(options[:instance_name])
       rescue Errno::ENOENT
         STDERR.puts "The requested instance [#{options[:instance_name]}] doesn't exist"
-        exit 7
       end
     end
 
