@@ -91,9 +91,9 @@ module Fauxpaas
           Fauxpaas::FilePolicyFactoryRepo.new(c.instance_root)
         end
 
-        container.register(:instance_root) { Pathname.new(settings.instance_root) }
-        container.register(:releases_root) { Pathname.new(settings.releases_root) }
-        container.register(:deployer_env_root) { Pathname.new(settings.deployer_env_root) }
+        container.register(:instance_root) { Pathname.new(settings.instance_root).expand_path(Fauxpaas.root) }
+        container.register(:releases_root) { Pathname.new(settings.releases_root).expand_path(Fauxpaas.root) }
+        container.register(:deployer_env_root) { Pathname.new(settings.deployer_env_root).expand_path(Fauxpaas.root) }
         container.register(:split_token) { settings.split_token.chomp }
       end
     end
