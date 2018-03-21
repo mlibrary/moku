@@ -8,8 +8,9 @@ set :deploy_to, ENV["DEPLOY_DIR"] || fetch(:deploy_to)
 set :rails_env, ENV["RAILS_ENV"]
 set :assets_prefix, ENV["ASSETS_PREFIX"]
 set :ssh_options, user: fetch(:stage),
-  forward_agent: false,
-  auth_methods: ["publickey"]
+  forward_agent: true,
+  auth_methods: ["publickey"],
+  keys: [ "/home/faux/.ssh/id_rsa" ]
 
 set :split_token, File.read(File.join(File.dirname(__FILE__), "../.split_token"))
 
