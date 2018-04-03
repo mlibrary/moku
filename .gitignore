@@ -55,3 +55,9 @@ Gemfile.lock
 /data/instances/*
 /data/stages/*
 /releases/*
+
+# Ignore local configuration files
+config/settings.local.yml
+config/settings/test.local.yml
+config/settings/production.local.yml
+config/settings/development.local.yml
