@@ -13,6 +13,7 @@ namespace :unshared do
       Pathname.new(fetch(:unshared_local_path)).children.each do |path|
         upload! path.to_s, fetch(:release_path), recursive: path.directory?
       end
+      execute :chmod, "-R", "go-rw", fetch(:release_path)
     end
   end
 end

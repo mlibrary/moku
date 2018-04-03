@@ -21,6 +21,7 @@ namespace :shared do
       Pathname.new(fetch(:shared_local_path)).children.each do |path|
         upload! path.to_s, fetch(:shared_remote_path), recursive: path.directory?
       end
+      execute :chmod, "-R", "go-rw", fetch(:shared_remote_path)
     end
   end
 
