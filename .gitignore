@@ -52,6 +52,7 @@ tags
 Gemfile.lock
 
 # These dirs are for users
+/data
 /data/instances/*
 /data/stages/*
 /releases/*
