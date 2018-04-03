@@ -30,7 +30,6 @@ module Fauxpaas
           `git discard spec/fixtures/integration/instances`
           `git discard spec/fixtures/integration/releases`
         end
-        after(:all) { `rm -rf #{@root}` }
         let(:root) { @root }
         let(:current_dir) { root/"current" }
       end
@@ -48,9 +47,19 @@ module Fauxpaas
         it "installs unshared files" do
           expect(File.read(current_dir/"some"/"dev"/"file.txt")).to eql("with some dev contents\n")
         end
+        it "sets unshared files to be readable only by the application user" do
+          file = current_dir/"some"/"dev"/"file.txt"
+          expect(file.world_readable?).to be_falsey
+          expect(file.world_writable?).to be_falsey
+        end
         it "installs shared files" do
           expect(File.read(current_dir/"some"/"shared"/"file.txt"))
             .to eql("with some shared contents\n")
+        end
+        it "sets shared files to be readable only by the application user" do
+          file = current_dir/"some"/"shared"/"file.txt"
+          expect(file.world_readable?).to be_falsey
+          expect(file.world_writable?).to be_falsey
         end
         it "runs after_build commands" do
           expect((current_dir/"eureka_2.txt").exist?).to be true
