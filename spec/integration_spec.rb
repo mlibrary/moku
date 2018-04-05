@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "fauxpaas"
-require "fauxpaas/cli/main"
 require "tmpdir"
 require "pathname"
 require "open3"
@@ -14,16 +13,23 @@ module Fauxpaas
 
       RSpec.shared_context "deploy setup" do |instance_name|
         before(:all) do
-          Fauxpaas.reset!
           @root = Pathname.new(Dir.tmpdir)/"fauxpaas"/"sandbox"/instance_name
           `mkdir -p #{@root}`
-          options = %w{
-            -v
-            -I spec/fixtures/integration/instances
-            -R spec/fixtures/integration/releases
-            -D spec/fixtures/integration/capfiles
-          }
-          CLI::Main.start(["deploy", instance_name, *options])
+          Fauxpaas.reset!
+          Fauxpaas.initialize!
+          Fauxpaas.config.tap do |config|
+            config.register(:instance_root) { Pathname.new("spec/fixtures/integration/instances").expand_path(Fauxpaas.root) }
+            config.register(:releases_root) { Pathname.new("spec/fixtures/integration/releases").expand_path(Fauxpaas.root) }
+            config.register(:deployer_env_root) { Pathname.new("spec/fixtures/integration/capfiles").expand_path(Fauxpaas.root) }
+            config.register(:logger) { Logger.new(StringIO.new, level: :info) }
+          end
+          Fauxpaas.invoker.add_command(
+            DeployCommand.new({
+              user: ENV["USER"],
+              instance_name: instance_name,
+              reference: nil
+            })
+          )
         end
         after(:all) do
           `rm -rf #{@root}`
@@ -74,24 +80,6 @@ module Fauxpaas
         it "installs the source files" do
           expect((current_dir/source).exist?)
             .to be true
-        end
-      end
-
-      context "without proper authorization" do
-        let(:options) do
-          %w{
-            -v
-            -I spec/fixtures/integration/instances
-            -R spec/fixtures/integration/releases
-            -D spec/fixtures/integration/capfiles
-            -u john_doe
-          }
-        end
-
-        it "raises an ArgumentError" do
-          expect {
-            CLI::Main.start(["deploy", "test-rails", *options])
-          }.to raise_error(RuntimeError, /not authorized/)
         end
       end
 
