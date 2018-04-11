@@ -101,6 +101,7 @@ module Fauxpaas
           )
         end
 
+        container.register(:server) { settings.server }
         container.register(:invoker) { Fauxpaas::Invoker.new }
         container.register(:instance_root) { Pathname.new(settings.instance_root).expand_path(Fauxpaas.root) }
         container.register(:releases_root) { Pathname.new(settings.releases_root).expand_path(Fauxpaas.root) }
