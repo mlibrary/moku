@@ -1,0 +1,3 @@
+admin: []
+deploy:
+  - <%= ENV["USER"] %>
