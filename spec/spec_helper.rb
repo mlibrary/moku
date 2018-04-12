@@ -10,8 +10,6 @@ require "stringio"
 
 # Load everything so that we can initialize
 require "fauxpaas"
-require_relative "support/memory_filesystem"
-require_relative "support/spoofed_git_runner"
 
 
 RSpec.configure do |config|
@@ -30,8 +28,6 @@ RSpec.configure do |config|
     Fauxpaas.env = "test"
     Fauxpaas.initialize!
     Fauxpaas.config.tap do |container|
-      container.register(:filesystem) { Fauxpaas::MemoryFilesystem.new }
-      container.register(:git_runner) { Fauxpaas::SpoofedGitRunner.new }
       container.register(:log_file) { StringIO.new }
       container.register(:logger) {|c| Logger.new(c.log_file, level: :info) }
     end
