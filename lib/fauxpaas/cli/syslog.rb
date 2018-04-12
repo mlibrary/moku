@@ -16,13 +16,6 @@ module Fauxpaas
         @invoker = Fauxpaas.invoker
       end
 
-      class_option :user,
-        desc: "The user running the action, defaults to $USER",
-        aliases: "-u",
-        type: :string,
-        required: true,
-        default: ENV["USER"]
-
       desc "view <instance>",
         "View the system logs for the instance"
       def view(instance_name)

@@ -24,13 +24,6 @@ module Fauxpaas
         default: false,
         required: false
 
-      class_option :user,
-        desc: "The user running the action, defaults to $USER",
-        aliases: "-u",
-        type: :string,
-        required: true,
-        default: ENV["USER"]
-
       desc "deploy <instance> [<reference>]",
         "Deploys the instance using the source described by the default branch. " \
         "If a reference is given, that will be deployed instead. " \
