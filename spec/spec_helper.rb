@@ -27,10 +27,6 @@ RSpec.configure do |config|
     Fauxpaas.reset!
     Fauxpaas.env = "test"
     Fauxpaas.initialize!
-    Fauxpaas.config.tap do |container|
-      container.register(:log_file) { StringIO.new }
-      container.register(:logger) {|c| Logger.new(c.log_file, level: :info) }
-    end
   end
 
 end
