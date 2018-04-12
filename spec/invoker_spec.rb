@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/invoker"
 
 module Fauxpaas
@@ -42,17 +44,17 @@ module Fauxpaas
       context "with an invalid command" do
         let(:command) { invalid_command }
         it "raises an KeyError with the missing keys" do
-          expect {
+          expect do
             invoker.add_command(command)
-          }.to raise_error(KeyError, "Missing keys: foo, bar")
+          end.to raise_error(KeyError, "Missing keys: foo, bar")
         end
         it "does not run the command" do
-          expect {
+          expect do
             begin
               invoker.add_command(command)
-            rescue
+            rescue StandardError
             end
-          }.to_not change { command.executed? }
+          end.to_not change { command.executed? }
         end
       end
     end

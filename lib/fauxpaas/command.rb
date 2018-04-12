@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Fauxpaas
 
   # Represetns a command within Fauxpaas
@@ -28,7 +30,7 @@ module Fauxpaas
     end
 
     def missing
-      keys.select{|k| options[k].nil? }
+      keys.select {|k| options[k].nil? }
     end
 
     def valid?
@@ -36,10 +38,11 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :options
 
     def ssh_command
-      "ssh #{options[:server]} #{bin} #{options[:instance_name]} #{extra_keys.map{|k| options[k]}.join(" ")}"
+      "ssh #{options[:server]} #{bin} #{options[:instance_name]} #{extra_keys.map {|k| options[k] }.join(" ")}"
     end
   end
 
@@ -77,6 +80,7 @@ module Fauxpaas
     def bin
       "deploy"
     end
+
     def extra_keys
       [:reference]
     end
@@ -85,6 +89,7 @@ module Fauxpaas
     def bin
       "default_branch"
     end
+
     def extra_keys
       [:new_branch]
     end
@@ -93,6 +98,7 @@ module Fauxpaas
     def bin
       "rollback"
     end
+
     def extra_keys
       [:cache]
     end
@@ -101,6 +107,7 @@ module Fauxpaas
     def bin
       "syslog grep"
     end
+
     def extra_keys
       [:pattern]
     end

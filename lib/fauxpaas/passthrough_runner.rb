@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "open3"
 
 module Fauxpaas
@@ -9,8 +11,8 @@ module Fauxpaas
     end
 
     def run(command)
-      Open3.popen2e(command) do |stdin, output, thread|
-        while line = output.gets do
+      Open3.popen2e(command) do |_stdin, output, thread|
+        while line = output.gets
           stream.puts line
         end
         exit_status = thread.value

@@ -11,7 +11,6 @@ require "stringio"
 # Load everything so that we can initialize
 require "fauxpaas"
 
-
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
@@ -28,5 +27,4 @@ RSpec.configure do |config|
     Fauxpaas.env = "test"
     Fauxpaas.initialize!
   end
-
 end

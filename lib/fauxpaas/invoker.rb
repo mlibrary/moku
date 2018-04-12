@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Fauxpaas
   class Invoker
 
@@ -22,4 +24,3 @@ module Fauxpaas
 
   end
 end
-

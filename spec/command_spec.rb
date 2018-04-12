@@ -46,7 +46,7 @@ module Fauxpaas
       describe "#missing" do
         it "is keys - options.keys" do
           required_keys = command.keys
-          provided_keys = options.keys.reject{|k| options[k].nil? }
+          provided_keys = options.keys.reject {|k| options[k].nil? }
           expect(command.missing).to contain_exactly(*(required_keys - provided_keys))
         end
       end
