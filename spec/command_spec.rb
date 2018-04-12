@@ -26,7 +26,7 @@ module Fauxpaas
 
       describe "#default_keys" do
         it "returns the set of default keys" do
-          expect(command.default_keys).to contain_exactly(:instance_name)
+          expect(command.default_keys).to contain_exactly(:server, :instance_name)
         end
       end
 
@@ -66,15 +66,17 @@ module Fauxpaas
       end
     end
 
+    let(:server) { "localhost" }
+
     describe DeployCommand do
       let(:command) { described_class.new(options) }
       context "with a reference" do
-        let(:options) { { user: "someone", instance_name: "myapp-mystage", reference: "beta2" } }
+        let(:options) { { server: server, instance_name: "myapp-mystage", reference: "beta2" } }
         let(:ssh_command) { "ssh #{Fauxpaas.server} deploy myapp-mystage beta2" }
         it_behaves_like "a command"
       end
       context "without a reference" do
-        let(:options) { { user: "someone", instance_name: "myapp-mystage", reference: nil } }
+        let(:options) { { server: server, instance_name: "myapp-mystage", reference: nil } }
         let(:ssh_command) { "ssh #{Fauxpaas.server} deploy myapp-mystage" }
         it_behaves_like "a command"
       end
@@ -82,14 +84,14 @@ module Fauxpaas
 
     describe SetDefaultBranchCommand do
       let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage", new_branch: "new_branch" } }
+      let(:options) { { server: server, instance_name: "myapp-mystage", new_branch: "new_branch" } }
       let(:ssh_command) { "ssh #{Fauxpaas.server} default_branch myapp-mystage new_branch" }
       it_behaves_like "a command"
     end
 
     describe ReadDefaultBranchCommand do
       let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:options) { { server: server, instance_name: "myapp-mystage" } }
       let(:ssh_command) { "ssh #{Fauxpaas.server} default_branch myapp-mystage" }
       it_behaves_like "a command"
     end
@@ -97,12 +99,12 @@ module Fauxpaas
     describe RollbackCommand do
       let(:command) { described_class.new(options) }
       context "with a cache" do
-        let(:options) { { user: "someone", instance_name: "myapp-mystage", cache: "somecache" } }
+        let(:options) { { server: server, instance_name: "myapp-mystage", cache: "somecache" } }
         let(:ssh_command) { "ssh #{Fauxpaas.server} rollback myapp-mystage somecache" }
         it_behaves_like "a command"
       end
       context "without a cache" do
-        let(:options) { { user: "someone", instance_name: "myapp-mystage", cache: nil } }
+        let(:options) { { server: server, instance_name: "myapp-mystage", cache: nil } }
         let(:ssh_command) { "ssh #{Fauxpaas.server} rollback myapp-mystage" }
         it_behaves_like "a command"
       end
@@ -110,35 +112,35 @@ module Fauxpaas
 
     describe CachesCommand do
       let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:options) { { server: server, instance_name: "myapp-mystage" } }
       let(:ssh_command) { "ssh #{Fauxpaas.server} caches myapp-mystage" }
       it_behaves_like "a command"
     end
 
     describe ReleasesCommand do
       let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:options) { { server: server, instance_name: "myapp-mystage" } }
       let(:ssh_command) { "ssh #{Fauxpaas.server} releases myapp-mystage" }
       it_behaves_like "a command"
     end
 
     describe RestartCommand do
       let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:options) { { server: server, instance_name: "myapp-mystage" } }
       let(:ssh_command) { "ssh #{Fauxpaas.server} restart myapp-mystage" }
       it_behaves_like "a command"
     end
 
     describe SyslogViewCommand do
       let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:options) { { server: server, instance_name: "myapp-mystage" } }
       let(:ssh_command) { "ssh #{Fauxpaas.server} syslog view myapp-mystage" }
       it_behaves_like "a command"
     end
 
     describe SyslogFollowCommand do
       let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:options) { { server: server, instance_name: "myapp-mystage" } }
       let(:ssh_command) { "ssh #{Fauxpaas.server} syslog follow myapp-mystage" }
       it_behaves_like "a command"
     end
@@ -146,7 +148,7 @@ module Fauxpaas
     describe SyslogGrepCommand do
       let(:command) { described_class.new(options) }
       let(:pattern) { "some\\n\//\/\\/pattern" }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage", pattern: pattern } }
+      let(:options) { { server: server, instance_name: "myapp-mystage", pattern: pattern } }
       let(:ssh_command) { "ssh #{Fauxpaas.server} syslog grep myapp-mystage #{pattern}" }
       it_behaves_like "a command"
     end

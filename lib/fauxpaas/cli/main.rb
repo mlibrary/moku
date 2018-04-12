@@ -79,7 +79,10 @@ module Fauxpaas
       def setup
         Fauxpaas.load_settings!(options.symbolize_keys)
         Fauxpaas.initialize!
-        options.merge(instance_name: @args.first)
+        options.merge({
+          server: Fauxpaas.server,
+          instance_name: @args.first
+        })
       end
     end
 

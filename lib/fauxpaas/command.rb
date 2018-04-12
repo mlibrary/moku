@@ -16,7 +16,7 @@ module Fauxpaas
     end
 
     def default_keys
-      [:instance_name]
+      [:instance_name, :server]
     end
 
     def extra_keys
@@ -39,7 +39,7 @@ module Fauxpaas
     attr_reader :options
 
     def ssh_command
-      "ssh #{Fauxpaas.server} #{bin} #{options[:instance_name]} #{extra_keys.map{|k| options[k]}.join(" ")}"
+      "ssh #{options[:server]} #{bin} #{options[:instance_name]} #{extra_keys.map{|k| options[k]}.join(" ")}"
     end
   end
 
