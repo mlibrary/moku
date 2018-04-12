@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 require "fauxpaas/version"
-require "fauxpaas/cli"
-require "fauxpaas/open3_capture"
 require "fauxpaas/invoker"
+require "fauxpaas/passthrough_runner"
 
-require "logger"
 require "pathname"
 require "canister"
 require "ettin"
