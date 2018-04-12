@@ -5,12 +5,12 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "fauxpaas/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "fauxpaas"
+  spec.name          = "fauxpaas-client"
   spec.version       = Fauxpaas::VERSION
   spec.authors       = ["Bryan Hockey"]
   spec.email         = ["bhock@umich.edu"]
 
-  spec.summary       = "fauxpaas"
+  spec.summary       = "fauxpaas-client"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
@@ -28,19 +28,12 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) {|f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "activesupport"
-  spec.add_runtime_dependency "capistrano", "~> 3.9.1"
-  spec.add_runtime_dependency "capistrano-bundler"
-  spec.add_runtime_dependency "capistrano-rails"
-  spec.add_runtime_dependency "capistrano-rbenv"
   spec.add_runtime_dependency "canister"
   spec.add_runtime_dependency "ettin", "~> 1.1.0"
-  spec.add_runtime_dependency "git"
   spec.add_runtime_dependency "thor"
   spec.add_runtime_dependency "thor-hollaback"
 
   spec.add_development_dependency "bundler", "~> 1.15"
-  spec.add_development_dependency "fakefs"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
