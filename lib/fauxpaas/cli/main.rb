@@ -28,7 +28,7 @@ module Fauxpaas
         "Deploys the instance using the source described by the default branch. " \
         "If a reference is given, that will be deployed instead. " \
         "The reference be a branch, tag, or SHA."
-      def deploy(instance_name, reference = nil)
+      def deploy(instance_name, reference = "")
         invoker.add_command(DeployCommand.new(opts.merge(reference: reference)))
       end
 
