@@ -2,7 +2,6 @@
 
 require "thor"
 require "fauxpaas"
-require "fauxpaas/kernel_system"
 require "fauxpaas/command"
 
 module Fauxpaas
