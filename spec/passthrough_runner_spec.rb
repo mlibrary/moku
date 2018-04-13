@@ -17,8 +17,8 @@ module Fauxpaas
       it "prints stdout and stderr together" do
         runner.run("echo foo; ls nofile")
         log.rewind
-        expect(log.read).to eql(
-          "foo\nls: cannot access 'nofile': No such file or directory\n"
+        expect(log.read).to match(
+          /foo\nls: cannot access '?nofile'?: No such file or directory\n/
         )
       end
 
