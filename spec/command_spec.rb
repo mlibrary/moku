@@ -80,6 +80,11 @@ module Fauxpaas
         let(:ssh_command) { "ssh #{Fauxpaas.server} deploy myapp-mystage" }
         it_behaves_like "a command"
       end
+      context "with --verbose" do
+        let(:options) { { server: server, instance_name: "myapp-mystage", reference: "beta2", verbose: true } }
+        let(:ssh_command) { "ssh #{Fauxpaas.server} deploy myapp-mystage beta2 --verbose" }
+        it_behaves_like "a command"
+      end
     end
 
     describe SetDefaultBranchCommand do

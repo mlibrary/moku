@@ -42,7 +42,28 @@ module Fauxpaas
     attr_reader :options
 
     def ssh_command
-      "ssh #{options[:server]} #{bin} #{options[:instance_name]} #{extra_keys.map {|k| options[k] }.join(" ")}"
+      "ssh #{server} #{bin} #{instance_name} #{params.join(' ')} #{flags.join(' ')}"
+    end
+
+    def server
+      options[:server]
+    end
+
+    def instance_name
+      options[:instance_name]
+    end
+
+    def params
+      extra_keys.map{|k| options[k] }
+    end
+
+    def flags
+      # A simplification as there is only one key, --verbose
+      if options[:verbose]
+        ["--verbose"]
+      else
+        [""]
+      end
     end
   end
 
