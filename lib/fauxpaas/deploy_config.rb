@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "active_support/core_ext/hash/keys"
+require "core_extensions/hash/keys"
 require "fauxpaas/cap"
 require "ostruct"
 

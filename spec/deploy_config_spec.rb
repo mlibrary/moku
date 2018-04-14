@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "./spec_helper"
-require "active_support/core_ext/hash/keys"
+require "core_extensions/hash/keys"
 require "fauxpaas/deploy_config"
 
 module Fauxpaas
