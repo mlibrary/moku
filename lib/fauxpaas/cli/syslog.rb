@@ -10,6 +10,11 @@ module Fauxpaas
 
     # Main commands of the cli
     class Syslog < Thor
+      def initialize(*args)
+        super(*args)
+        @opts = setup
+        @invoker = Fauxpaas.invoker
+      end
 
       class_option :user,
         desc: "The user running the action, defaults to $USER",
@@ -21,35 +26,30 @@ module Fauxpaas
       desc "view <instance>",
         "View the system logs for the instance"
       def view(instance_name)
-        opts, policy = setup_for(instance_name)
-        SyslogViewCommand.new(opts, policy).run
+        invoker.add_command(SyslogViewCommand.new(opts))
       end
 
       desc "grep <instance> pattern",
         "View the system logs for the instance"
       def grep(instance_name, pattern = ".")
-        opts, policy = setup_for(instance_name)
-        SyslogGrepCommand.new(opts.merge({pattern: pattern}), policy).run
+        invoker.add_command(SyslogGrepCommand.new(opts.merge({pattern: pattern})))
       end
 
       desc "follow <instance>",
         "Follow the system logs for the instance"
       def follow(instance_name)
-        opts, policy = setup_for(instance_name)
-        SyslogFollowCommand.new(opts, policy).run
+        invoker.add_command(SyslogFollowCommand.new(opts))
       end
 
       private
 
-      def setup_for(instance_name)
-        opts = options.merge({instance_name: instance_name})
-        Fauxpaas.load_settings!(opts.symbolize_keys)
+      attr_reader :opts, :invoker
+
+      def setup
+        Fauxpaas.load_settings!(options.symbolize_keys)
         Fauxpaas.initialize!
         Fauxpaas.config.register(:system_runner) { KernelSystem.new }
-        policy = Fauxpaas.policy_factory_repo
-          .find
-          .for(opts[:user], opts[:instance_name])
-        [opts, policy]
+        options.merge(instance_name: @args.first)
       end
 
     end

@@ -2,16 +2,13 @@ require "fileutils"
 require "erb"
 require "pathname"
 require "yaml"
-require "fauxpaas/policy_factory"
-require "fauxpaas/policy"
 
 module Fauxpaas
 
-  # Loads and saves role information used by policy factories.
-  class FilePolicyFactoryRepo
-    def initialize(instances_root, policy_type: Policy)
+  # Loads and saves role information used by the auth service.
+  class FilePermissionsRepo
+    def initialize(instances_root)
       @instances_root = Pathname.new(instances_root)
-      @policy_type = policy_type
     end
 
     def find
@@ -20,18 +17,17 @@ module Fauxpaas
         .map{|path| Pathname.new(path) }
         .map{|path| [path.dirname.basename.to_s, load_file(path)] }
         .to_h
-      PolicyFactory.new(
-        policy_type: policy_type,
+      {
         all: all,
         instances: instances
-      )
+      }
     end
 
-    def save(factory)
+    def save(data)
       FileUtils.mkdir_p instances_root
-      File.write(instances_root/"permissions.yml", YAML.dump(factory.send(:all)))
+      File.write(instances_root/"permissions.yml", YAML.dump(data.fetch(:all, {})))
 
-      factory.send(:instances).each_pair do |name, data|
+      data.fetch(:instances, {}).each_pair do |name, data|
         FileUtils.mkdir_p instance_path(name).dirname
         File.write(instance_path(name), YAML.dump(data))
       end
@@ -39,7 +35,7 @@ module Fauxpaas
     end
 
     private
-    attr_reader :instances_root, :policy_type
+    attr_reader :instances_root
 
     def load_file(path)
       if path.exist?
