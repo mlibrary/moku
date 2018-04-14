@@ -3,6 +3,25 @@ module Fauxpaas
   # The policy is responsible for deciding whether or not a
   # user can perform an action.
   class Policy
+    def self.all_roles
+      IMPLIED_BY.keys
+    end
+
+    def self.for(roles)
+      new(roles)
+    end
+
+    def initialize(roles)
+      @roles = roles
+    end
+
+    def authorized?(action)
+      role?(ACTION_TO_ROLE.fetch(action, :none))
+    end
+
+    private
+    attr_reader :roles
+
     # The key is implied by each of the roles in the value
     IMPLIED_BY = {
       admin: [:admin].freeze,
@@ -12,71 +31,21 @@ module Fauxpaas
       edit: [:admin, :edit].freeze
     }.freeze
 
-    def self.all_roles
-      IMPLIED_BY.keys
-    end
-
-    def initialize(roles)
-      @roles = roles
-    end
-
-    def deploy?
-      role?(:deploy)
-    end
-
-    def read_default_branch?
-      read?
-    end
-
-    def set_default_branch?
-      edit?
-    end
-
-    def rollback?
-      deploy?
-    end
-
-    def caches?
-      read?
-    end
-
-    def releases?
-      read?
-    end
-
-    def restart?
-      role?(:restart)
-    end
-
-    def syslog_view?
-      read?
-    end
-
-    def syslog_grep?
-      read?
-    end
-
-    def syslog_follow?
-      read?
-    end
-
-    private
-    attr_reader :roles
+    ACTION_TO_ROLE = {
+      deploy: :deploy,
+      read_default_branch: :read,
+      set_default_branch: :edit,
+      rollback: :deploy,
+      caches: :read,
+      releases: :read,
+      restart: :restart,
+      syslog_view: :read,
+      syslog_grep: :read,
+      syslog_follow: :read,
+    }.freeze
 
     def role?(role)
       !(roles & IMPLIED_BY[role]).empty?
-    end
-
-    def admin?
-      role?(:admin)
-    end
-
-    def read?
-      role?(:read)
-    end
-
-    def edit?
-      role?(:edit)
     end
 
   end
