@@ -74,7 +74,7 @@ module Fauxpaas
       report(status, action: "deploy")
       if status.success?
         instance.log_release(LoggedRelease.new(ENV["USER"], Time.now, signature))
-        Fauxpaas.instance_repo.save(instance)
+        Fauxpaas.instance_repo.save_releases(instance)
         Fauxpaas.invoker.add_command(RestartCommand.new(options))
       end
     end
@@ -98,7 +98,7 @@ module Fauxpaas
     def execute
       old_branch = instance.default_branch
       instance.default_branch = options[:new_branch]
-      Fauxpaas.instance_repo.save(instance)
+      Fauxpaas.instance_repo.save_instance(instance)
       Fauxpaas.logger.info "Changed default branch from #{old_branch} to #{options[:new_branch]}"
     end
   end

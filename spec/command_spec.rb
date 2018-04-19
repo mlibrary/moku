@@ -58,7 +58,14 @@ module Fauxpaas
       end
     end
 
-    let(:instance_repo) { double(:instance_repo, find: instance, save: nil) }
+    let(:instance_repo) do
+      double(
+        :instance_repo,
+        find: instance,
+        save_instance: nil,
+        save_releases: nil
+      )
+    end
     let(:auth) { double(:auth, authorized?: true) }
     let(:instance) { double(:instance) }
     before(:each) do
@@ -114,12 +121,9 @@ module Fauxpaas
             expect(instance.interrogator).to receive(:restart)
             command.execute
           end
-          it "saves the instance" do
-            expect(instance_repo).to receive(:save).with(instance)
-            command.execute
-          end
           it "saves the release" do
             expect(instance).to receive(:log_release)
+            expect(instance_repo).to receive(:save_releases).with(instance)
             command.execute
           end
           it "reports success" do
@@ -150,7 +154,7 @@ module Fauxpaas
       describe "#execute" do
         let(:instance) { OpenStruct.new(default_branch: "old_branch") }
         it "saves the changed branch" do
-          expect(instance_repo).to receive(:save)
+          expect(instance_repo).to receive(:save_instance)
             .with(OpenStruct.new(default_branch: "new_branch"))
           command.execute
         end
