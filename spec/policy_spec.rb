@@ -8,13 +8,13 @@ module Fauxpaas
 
     RSpec.shared_examples "can perform" do |name, roles, action|
       it "#{name} can peform #{action}" do
-        expect(described_class.new(roles).public_send(:"#{action}?")).to be true
+        expect(described_class.new(roles).authorized?(action)).to be true
       end
     end
 
     RSpec.shared_examples "cannot perform" do |name, roles, action|
       it "#{name} cannot peform #{action}" do
-        expect(described_class.new(roles).public_send(:"#{action}?")).to be false
+        expect(described_class.new(roles).authorized?(action)).to be false
       end
     end
 

@@ -36,8 +36,11 @@ module Fauxpaas
       )
     end
 
-    def save(instance)
+    def save_instance(instance)
       write_instance(instance)
+    end
+
+    def save_releases(instance)
       write_releases(instance.name, instance.releases)
     end
 
