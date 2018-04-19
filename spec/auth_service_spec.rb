@@ -6,7 +6,6 @@ require "fauxpaas/auth_service"
 
 module Fauxpaas
   RSpec.describe AuthService do
-
     # The AuthService is initialized with roles. We use a policy
     # here that checks for roles, not actions, for simplicity.
     class TestPolicy
@@ -115,8 +114,6 @@ module Fauxpaas
           entity: entity
         )).to be true
       end
-
     end
-
   end
 end

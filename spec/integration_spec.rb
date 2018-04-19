@@ -8,9 +8,7 @@ require "open3"
 module Fauxpaas
 
   RSpec.describe "integration tests", integration: true do
-
     describe "deploy" do
-
       RSpec.shared_context "deploy setup" do |instance_name|
         before(:all) do
           @root = Pathname.new(Dir.tmpdir)/"fauxpaas"/"sandbox"/instance_name
@@ -18,17 +16,23 @@ module Fauxpaas
           Fauxpaas.reset!
           Fauxpaas.initialize!
           Fauxpaas.config.tap do |config|
-            config.register(:instance_root) { Pathname.new("spec/fixtures/integration/instances").expand_path(Fauxpaas.root) }
-            config.register(:releases_root) { Pathname.new("spec/fixtures/integration/releases").expand_path(Fauxpaas.root) }
-            config.register(:deployer_env_root) { Pathname.new("spec/fixtures/integration/capfiles").expand_path(Fauxpaas.root) }
+            config.register(:instance_root) do
+              Pathname.new("spec/fixtures/integration/instances").expand_path(Fauxpaas.root)
+            end
+            config.register(:releases_root) do
+              Pathname.new("spec/fixtures/integration/releases").expand_path(Fauxpaas.root)
+            end
+            config.register(:deployer_env_root) do
+              Pathname.new("spec/fixtures/integration/capfiles").expand_path(Fauxpaas.root)
+            end
             config.register(:logger) { Logger.new(StringIO.new, level: :info) }
           end
           Fauxpaas.invoker.add_command(
-            DeployCommand.new({
+            DeployCommand.new(
               user: ENV["USER"],
               instance_name: instance_name,
               reference: nil
-            })
+            )
           )
         end
         after(:all) do
@@ -48,7 +52,7 @@ module Fauxpaas
           expect((root/"releases").exist?).to be true
         end
         it "the 'current' dir exists" do
-          expect((current_dir).exist?).to be true
+          expect(current_dir.exist?).to be true
         end
         it "installs unshared files" do
           expect(File.read(current_dir/"some"/"dev"/"file.txt")).to eql("with some dev contents\n")
@@ -106,12 +110,12 @@ module Fauxpaas
         end
 
         it "installs a working project" do
-          _, _, status = Open3.capture3("BUNDLE_GEMFILE=#{current_dir/"Gemfile"} bundle exec rails runner 'Post.new.valid?'")
+          _, _, status = Open3.capture3(
+            "BUNDLE_GEMFILE=#{current_dir/"Gemfile"} bundle exec rails runner 'Post.new.valid?'"
+          )
           expect(status.success?).to be true
         end
       end
-
     end
-
   end
 end

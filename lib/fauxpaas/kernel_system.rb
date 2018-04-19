@@ -8,4 +8,3 @@ module Fauxpaas
     end
   end
 end
-

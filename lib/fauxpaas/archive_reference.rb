@@ -70,11 +70,12 @@ module Fauxpaas
     def to_hash
       {
         "url"       => url,
-        "commitish" => commitish,
+        "commitish" => commitish
       }
     end
 
     private
+
     attr_reader :runner
 
   end

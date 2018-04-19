@@ -29,14 +29,18 @@ require "ettin"
 # Fake Platform As A Service
 module Fauxpaas
   class << self
-    attr_reader :config, :env, :settings
+    attr_reader :config, :settings
     attr_writer :config, :env
+
+    def respond_to_missing?(method_name, include_private = false)
+      config.respond_to?(method_name) || super
+    end
 
     def method_missing(method, *args, &block)
       if config.respond_to?(method)
         config.send(method, *args, &block)
       else
-        super(method, *args, &block)
+        super
       end
     end
 
@@ -101,13 +105,18 @@ module Fauxpaas
         end
 
         container.register(:invoker) { Fauxpaas::Invoker.new }
-        container.register(:instance_root) { Pathname.new(settings.instance_root).expand_path(Fauxpaas.root) }
-        container.register(:releases_root) { Pathname.new(settings.releases_root).expand_path(Fauxpaas.root) }
-        container.register(:deployer_env_root) { Pathname.new(settings.deployer_env_root).expand_path(Fauxpaas.root) }
+        container.register(:instance_root) do
+          Pathname.new(settings.instance_root).expand_path(Fauxpaas.root)
+        end
+        container.register(:releases_root) do
+          Pathname.new(settings.releases_root).expand_path(Fauxpaas.root)
+        end
+        container.register(:deployer_env_root) do
+          Pathname.new(settings.deployer_env_root).expand_path(Fauxpaas.root)
+        end
         container.register(:split_token) { settings.split_token.chomp }
       end
     end
 
   end
 end
-

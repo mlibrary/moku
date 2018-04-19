@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Fauxpaas
 
   # The policy is responsible for deciding whether or not a
@@ -20,28 +22,29 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :roles
 
     # The key is implied by each of the roles in the value
     IMPLIED_BY = {
-      admin: [:admin].freeze,
-      deploy: [:admin, :deploy].freeze,
+      admin:   [:admin].freeze,
+      deploy:  [:admin, :deploy].freeze,
       restart: [:admin, :deploy, :restart].freeze,
-      read: [:admin, :deploy, :edit, :read].freeze,
-      edit: [:admin, :edit].freeze
+      read:    [:admin, :deploy, :edit, :read].freeze,
+      edit:    [:admin, :edit].freeze
     }.freeze
 
     ACTION_TO_ROLE = {
-      deploy: :deploy,
+      deploy:              :deploy,
       read_default_branch: :read,
-      set_default_branch: :edit,
-      rollback: :deploy,
-      caches: :read,
-      releases: :read,
-      restart: :restart,
-      syslog_view: :read,
-      syslog_grep: :read,
-      syslog_follow: :read,
+      set_default_branch:  :edit,
+      rollback:            :deploy,
+      caches:              :read,
+      releases:            :read,
+      restart:             :restart,
+      syslog_view:         :read,
+      syslog_grep:         :read,
+      syslog_follow:       :read
     }.freeze
 
     def role?(role)

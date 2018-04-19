@@ -44,7 +44,7 @@ module Fauxpaas
 
         it "changes back afterwards" do
           starting_dir = `pwd`.strip
-          fs.chdir("/tmp"){}
+          fs.chdir("/tmp") {}
           expect(`pwd`.strip).to eql(starting_dir)
         end
       end

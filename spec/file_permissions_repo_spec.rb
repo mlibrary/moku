@@ -9,16 +9,16 @@ module Fauxpaas
   RSpec.describe FilePermissionsRepo do
     include FakeFS::SpecHelpers
 
-    let(:all) {{ "edit" => ["bhock"] }}
-    let(:myapp_staging) {{ "deploy" => ["bhock"], "edit" => ["aelkiss"] }}
-    let(:yourapp_testing) {{ "admin" => ["bhock", "aelkiss"], "edit" => [] }}
+    let(:all) { { "edit" => ["bhock"] } }
+    let(:myapp_staging) { { "deploy" => ["bhock"], "edit" => ["aelkiss"] } }
+    let(:yourapp_testing) { { "admin" => ["bhock", "aelkiss"], "edit" => [] } }
     let(:instances_root) { Pathname.new("/some/instances/root") }
 
     let(:permissions) do
       {
-        all: all,
+        all:       all,
         instances: {
-          "myapp-staging" => myapp_staging,
+          "myapp-staging"   => myapp_staging,
           "yourapp-testing" => yourapp_testing
         }
       }
@@ -36,17 +36,17 @@ module Fauxpaas
 
         data = described_class.new(instances_root).find
 
-        expect(data[:all]).to eql({"edit" => ["bhock"]})
-        expect(data[:instances]).to eql({
+        expect(data[:all]).to eql("edit" => ["bhock"])
+        expect(data[:instances]).to eql(
           "myapp-staging"=>{
-            "deploy"=>["bhock"],
-            "edit"=>["aelkiss"]
+            "deploy" => ["bhock"],
+            "edit"   => ["aelkiss"]
           },
           "yourapp-testing"=>{
-            "admin"=>["bhock", "aelkiss"],
-            "edit"=>[]
+            "admin" => ["bhock", "aelkiss"],
+            "edit"  => []
           }
-        })
+        )
       end
 
       it "can handle uninitialized file structure" do
@@ -66,10 +66,10 @@ module Fauxpaas
         data = described_class.new(instances_root).find
 
         expect(data[:all]).to eql({})
-        expect(data[:instances]).to eql({
+        expect(data[:instances]).to eql(
           "myapp-staging"=>{},
           "yourapp-testing"=>{}
-        })
+        )
       end
     end
 
@@ -77,11 +77,11 @@ module Fauxpaas
       it "saves the permissions to disk" do
         described_class.new(instances_root).save(permissions)
         expect(YAML.load(File.read(instances_root/"permissions.yml"))).to eql(all)
-        expect(YAML.load(File.read(instances_root/"myapp-staging"/"permissions.yml"))).to eql(myapp_staging)
-        expect(YAML.load(File.read(instances_root/"yourapp-testing"/"permissions.yml"))).to eql(yourapp_testing)
+        expect(YAML.load(File.read(instances_root/"myapp-staging"/"permissions.yml")))
+          .to eql(myapp_staging)
+        expect(YAML.load(File.read(instances_root/"yourapp-testing"/"permissions.yml")))
+          .to eql(yourapp_testing)
       end
     end
-
   end
 end
-

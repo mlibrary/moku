@@ -17,7 +17,7 @@ module Fauxpaas
     def initialize(hash = {})
       hash[:systemd_services] ||= []
       super(hash)
-      self.freeze
+      freeze
     end
 
     def runner

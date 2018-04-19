@@ -25,8 +25,7 @@ module Fauxpaas
         deployer_env: "foo.rails",
         assets_prefix: "assets",
         rails_env: "production",
-        deploy_dir: "/path/to/deploy/dir"
-      )
+        deploy_dir: "/path/to/deploy/dir")
     end
     before(:each) do
       allow(deploy_config).to receive(:runner).and_return(runner)

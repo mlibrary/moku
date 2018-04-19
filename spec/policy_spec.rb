@@ -5,7 +5,6 @@ require "fauxpaas/policy"
 
 module Fauxpaas
   RSpec.describe Policy do
-
     RSpec.shared_examples "can perform" do |name, roles, action|
       it "#{name} can peform #{action}" do
         expect(described_class.new(roles).authorized?(action)).to be true
@@ -47,7 +46,7 @@ module Fauxpaas
     describe "read actions" do
       [
         :read_default_branch, :caches, :releases,
-        :syslog_view, :syslog_grep, :syslog_follow,
+        :syslog_view, :syslog_grep, :syslog_follow
       ].each do |action|
         include_examples "can perform", "admins", [:admin], action
         include_examples "can perform", "deployers", [:deploy], action
@@ -70,6 +69,5 @@ module Fauxpaas
         include_examples "cannot perform", "nobodies", [], action
       end
     end
-
   end
 end

@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# frozen_string_litera: true
+
 module Fauxpaas
 
   # Represetns a command within Fauxpaas
@@ -35,7 +39,7 @@ module Fauxpaas
     end
 
     def missing
-      keys.select{|k| options[k].nil? }
+      keys.select {|k| options[k].nil? }
     end
 
     def valid?
@@ -43,14 +47,13 @@ module Fauxpaas
     end
 
     private
+
     attr_reader :options
 
     def instance
-      begin
-        @instance ||= Fauxpaas.instance_repo.find(options[:instance_name])
-      rescue Errno::ENOENT
-        raise ArgumentError, "The requested instance [#{options[:instance_name]}] doesn't exist"
-      end
+      @instance ||= Fauxpaas.instance_repo.find(options[:instance_name])
+    rescue Errno::ENOENT
+      raise ArgumentError, "The requested instance [#{options[:instance_name]}] doesn't exist"
     end
 
     def report(status, action: "action")
@@ -62,6 +65,7 @@ module Fauxpaas
     end
   end
 
+  # Create and deploy a release
   class DeployCommand < Command
     def action
       :deploy
@@ -86,6 +90,7 @@ module Fauxpaas
     end
   end
 
+  # Change the instance's default source branch
   class SetDefaultBranchCommand < Command
     def action
       :set_default_branch
@@ -103,6 +108,7 @@ module Fauxpaas
     end
   end
 
+  # Show the instance's default source branch
   class ReadDefaultBranchCommand < Command
     def action
       :read_default_branch
@@ -113,7 +119,7 @@ module Fauxpaas
     end
   end
 
-
+  # Rollback to a previous cache
   class RollbackCommand < Command
     def action
       :rollback
@@ -126,10 +132,11 @@ module Fauxpaas
     def execute
       report(instance.interrogator
         .rollback(instance.source.latest, options[:cache]),
-      action: "rollback")
+        action: "rollback")
     end
   end
 
+  # Show the existing caches
   class CachesCommand < Command
     def action
       :caches
@@ -142,6 +149,7 @@ module Fauxpaas
     end
   end
 
+  # Show the releases
   class ReleasesCommand < Command
     def action
       :releases
@@ -152,6 +160,7 @@ module Fauxpaas
     end
   end
 
+  # Restart the application
   class RestartCommand < Command
     def action
       :restart
@@ -163,6 +172,7 @@ module Fauxpaas
     end
   end
 
+  # View the system logs
   class SyslogViewCommand < Command
     def action
       :syslog_view
@@ -173,6 +183,7 @@ module Fauxpaas
     end
   end
 
+  # Grep the system logs
   class SyslogGrepCommand < Command
     def action
       :syslog_grep
@@ -181,11 +192,13 @@ module Fauxpaas
     def extra_keys
       [:pattern]
     end
+
     def execute
       instance.interrogator.syslog_grep(options[:pattern])
     end
   end
 
+  # tail -f the system logs
   class SyslogFollowCommand < Command
     def action
       :syslog_follow

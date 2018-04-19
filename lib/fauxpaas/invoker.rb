@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 module Fauxpaas
+
+  # Responsible for when and where commands are executed
   class Invoker
 
     # TODO: test this
@@ -10,20 +14,18 @@ module Fauxpaas
 
     # TODO: test this
     def run(command)
-      begin
-        validate!(command)
-        authorize!(command)
-        command.execute
-        return nil
-      rescue StandardError => e
-        Fauxpaas.logger.fatal e.message
-        raise #TODO swallow this exception
-      end
+      validate!(command)
+      authorize!(command)
+      command.execute
+      nil
+    rescue StandardError => e
+      Fauxpaas.logger.fatal e.message
+      raise # TODO swallow this exception
     end
 
     def authorize!(command)
       unless command.authorized?
-        raise RuntimeError, "User is not authorized to peform this command"
+        raise "User is not authorized to peform this command"
       end
     end
 
@@ -35,4 +37,3 @@ module Fauxpaas
 
   end
 end
-

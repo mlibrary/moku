@@ -13,7 +13,6 @@ require "fauxpaas"
 require_relative "support/memory_filesystem"
 require_relative "support/spoofed_git_runner"
 
-
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
@@ -36,5 +35,4 @@ RSpec.configure do |config|
       container.register(:logger) {|c| Logger.new(c.log_file, level: :info) }
     end
   end
-
 end

@@ -144,7 +144,9 @@ module Fauxpaas
 
     describe SetDefaultBranchCommand do
       let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage", new_branch: "new_branch" } }
+      let(:options) do
+        { user: "someone", instance_name: "myapp-mystage", new_branch: "new_branch" }
+      end
       it_behaves_like "a command"
 
       it "action is :set_default_branch" do

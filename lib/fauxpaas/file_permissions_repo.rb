@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fileutils"
 require "erb"
 require "pathname"
@@ -14,11 +16,11 @@ module Fauxpaas
     def find
       all = load_file(top_path)
       instances = Dir[instances_root/"*"/"permissions.yml"]
-        .map{|path| Pathname.new(path) }
-        .map{|path| [path.dirname.basename.to_s, load_file(path)] }
+        .map {|path| Pathname.new(path) }
+        .map {|path| [path.dirname.basename.to_s, load_file(path)] }
         .to_h
       {
-        all: all,
+        all:       all,
         instances: instances
       }
     end
@@ -27,14 +29,14 @@ module Fauxpaas
       FileUtils.mkdir_p instances_root
       File.write(instances_root/"permissions.yml", YAML.dump(data.fetch(:all, {})))
 
-      data.fetch(:instances, {}).each_pair do |name, data|
+      data.fetch(:instances, {}).each_pair do |name, role_users|
         FileUtils.mkdir_p instance_path(name).dirname
-        File.write(instance_path(name), YAML.dump(data))
+        File.write(instance_path(name), YAML.dump(role_users))
       end
-
     end
 
     private
+
     attr_reader :instances_root
 
     def load_file(path)

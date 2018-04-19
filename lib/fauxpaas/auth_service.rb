@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/policy"
 
 module Fauxpaas
@@ -29,14 +31,18 @@ module Fauxpaas
     end
 
     def roles(user_name, instance_name)
-      global.merge(instances.fetch(instance_name, {})) do |key, oldval, newval|
-        oldval + newval
-      end.select{|role, users| users.include?(user_name)}
+      merged_role_users(instance_name)
+        .select {|_role, users| users.include?(user_name) }
         .keys
         .map(&:to_sym)
+    end
+
+    def merged_role_users(instance_name)
+      global.merge(instances.fetch(instance_name, {})) do |_key, oldval, newval|
+        oldval + newval
+      end
     end
 
     attr_reader :global, :instances, :policy_factory
   end
 end
-
