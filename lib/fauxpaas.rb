@@ -15,6 +15,7 @@ require "fauxpaas/instance"
 require "fauxpaas/local_git_resolver"
 require "fauxpaas/logged_release"
 require "fauxpaas/open3_capture"
+require "fauxpaas/passthrough_runner"
 require "fauxpaas/policy"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
@@ -66,14 +67,13 @@ module Fauxpaas
     def initialize!
       load_settings! unless @settings
       @config ||= Canister.new.tap do |container|
-        container.register(:logger) do
-          if settings.verbose
-            Logger.new(STDOUT, level: :debug)
-          else
-            Logger.new(STDOUT, level: :info)
-          end
+        if settings.verbose
+          container.register(:logger) { Logger.new(STDOUT, level: :debug) }
+          container.register(:system_runner) { Fauxpaas::PassthroughRunner.new(STDOUT) }
+        else
+          container.register(:logger) { Logger.new(STDOUT, level: :info) }
+          container.register(:system_runner) { Fauxpaas::Open3Capture.new }
         end
-        container.register(:system_runner) { Open3Capture.new }
         container.register(:backend_runner) {|c| Fauxpaas::CapRunner.new(c.system_runner) }
         container.register(:filesystem) { Fauxpaas::Filesystem.new }
         container.register(:git_runner) do |c|
