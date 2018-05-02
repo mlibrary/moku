@@ -49,7 +49,7 @@ set :rbenv_roles, :all
 set :migration_role, :app # default: :db, but :app is recommended
 set :migration_servers, -> { primary(fetch(:migration_role)) } # this is default
 set :conditionally_migrate, false                             # this is default
-set :assets_roles, [:web]                                     # this is default
+set :assets_roles, [:app, :web]
 set :normalize_asset_timestamps, ["public/images", "public/javascripts", "public/stylesheets"]
 set :keep_assets, 2                                           # default: nil (disabled)
 
