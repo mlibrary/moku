@@ -13,7 +13,14 @@ namespace :unshared do
       Pathname.new(fetch(:unshared_local_path)).children.each do |path|
         upload! path.to_s, fetch(:release_path), recursive: path.directory?
       end
-      execute :chmod, "-R", "go-rw", fetch(:release_path)
+
+      # Lock down files, but dont follow symlinks into shared dir
+      execute :find, fetch(:release_path), %Q(
+        -P
+        -type f
+        -perm /g=rw,o=rw
+        -exec chmod go-rwx '{}' \;
+      )
     end
   end
 end

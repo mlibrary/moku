@@ -21,7 +21,15 @@ namespace :shared do
       Pathname.new(fetch(:shared_local_path)).children.each do |path|
         upload! path.to_s, fetch(:shared_remote_path), recursive: path.directory?
       end
-      execute :chmod, "-R", "go-rw", fetch(:shared_remote_path)
+
+      # Lock down files, except for public. Don't waste time on the bundled gems.
+      execute :find, fetch(:shared_remote_path), %Q(
+        -path #{fetch(:shared_remote_path)}/public -prune -o
+        -path #{fetch(:shared_remote_path)}/bundle -prune -o
+        -type f
+        -perm /g=rw,o=rw
+        -exec chmod go-rwx '{}' \;"
+      )
     end
   end
 
