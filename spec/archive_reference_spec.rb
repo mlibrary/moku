@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "./spec_helper"
-require_relative "./support/spoofed_git_runner"
 require "fauxpaas/archive_reference"
 require "pathname"
 
@@ -11,7 +10,7 @@ module Fauxpaas
     let(:runner) { Fauxpaas.git_runner }
     let(:reference) { described_class.new(url, runner.branch, runner) }
 
-    describe "#reference" do
+    describe "#at" do
       it "resolves a branch to its latest commit" do
         expect(reference.at(runner.branch)).to eql(
           described_class.new(url, runner.long_for(runner.branch), runner)
@@ -35,6 +34,14 @@ module Fauxpaas
       it "resolves a smart tag to its commit" do
         expect(reference.at(runner.smart_tag)).to eql(
           described_class.new(url, runner.long_for(runner.smart_tag), runner)
+        )
+      end
+    end
+
+    describe "#branch" do
+      it "resolves a branch unchanged" do
+        expect(reference.branch(runner.branch)).to eql(
+          described_class.new(url, runner.branch, runner)
         )
       end
     end

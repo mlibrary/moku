@@ -2,7 +2,6 @@
 
 require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
-require_relative "./support/spoofed_git_runner"
 require "fauxpaas/instance"
 require "fauxpaas/archive_reference"
 require "fauxpaas/release_signature"

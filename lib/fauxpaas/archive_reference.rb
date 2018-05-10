@@ -55,6 +55,13 @@ module Fauxpaas
       self.class.at(url, new_commitish, runner)
     end
 
+    # Get a reference to the branch without resolving it.
+    # No checks are performed against the paramater
+    # @param new_branch [String] the branch name
+    def branch(new_branch)
+      self.class.new(url, new_branch, runner)
+    end
+
     # @yield [GitRunner::WorkingDirectory] The directory in which
     #   the content has been checked out.
     def checkout

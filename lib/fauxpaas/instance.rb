@@ -50,9 +50,9 @@ module Fauxpaas
       source.commitish
     end
 
-    # @param value [String]
-    def default_branch=(value)
-      @source = source.at(value)
+    # @param name [String]
+    def default_branch=(name)
+      @source = source.branch(name)
     end
 
     # @param release [LoggedRelease]

@@ -11,6 +11,10 @@ module Fauxpaas
       "master"
     end
 
+    def newbranch
+      "newbranch"
+    end
+
     def dumb_tag
       "some_tag"
     end
@@ -30,6 +34,7 @@ module Fauxpaas
     def long_for(commitish)
       @long_for ||= {
         branch    => long,
+        newbranch => long,
         dumb_tag  => "66b689fbb3e5b689c3560d24dd50ac9027d94dbe",
         smart_tag => "f44af182ef3cae3d9c6946c18284658ac78008ac",
         short     => long,
