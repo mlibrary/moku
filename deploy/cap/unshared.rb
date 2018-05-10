@@ -15,11 +15,10 @@ namespace :unshared do
       end
 
       # Lock down files, but dont follow symlinks into shared dir
-      execute :find, fetch(:release_path), %Q(
-        -P
+      execute :find, "-P", fetch(:release_path), %W(
         -type f
         -perm /g=rw,o=rw
-        -exec chmod go-rwx '{}' \;
+        -exec chmod go-rwx '{}' \\;
       )
     end
   end
