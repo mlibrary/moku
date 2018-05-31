@@ -51,7 +51,8 @@ set :migration_servers, -> { primary(fetch(:migration_role)) } # this is default
 set :conditionally_migrate, false                             # this is default
 set :assets_roles, [:app, :web]
 set :normalize_asset_timestamps, ["public/images", "public/javascripts", "public/stylesheets"]
-set :keep_assets, 2                                           # default: nil (disabled)
+# Disabled to avoid an overzealous cleanup step in rails 3
+set :keep_assets, nil
 
 # local stuff
 set :systemd_services, ENV.fetch("SYSTEMD_SERVICES", "").split(":")
@@ -75,4 +76,5 @@ load File.join(File.dirname(__FILE__), "cap", "unshared.rb")
 load File.join(File.dirname(__FILE__), "cap", "restart.rb")
 load File.join(File.dirname(__FILE__), "cap", "syslog.rb")
 load File.join(File.dirname(__FILE__), "cap", "commands.rb")
+load File.join(File.dirname(__FILE__), "cap", "assets.rb")
 
