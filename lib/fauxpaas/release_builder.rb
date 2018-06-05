@@ -31,9 +31,11 @@ module Fauxpaas
     attr_reader :fs
 
     def deploy_config(signature)
-      @deploy_config ||= signature.deploy.checkout do |working_dir|
-        contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
-        DeployConfig.from_hash(contents)
+      @deploy_config ||= fs.mktmpdir do |dir|
+        signature.deploy.checkout(dir) do |working_dir|
+          contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
+          DeployConfig.from_hash(contents)
+        end
       end
     end
 
@@ -44,15 +46,18 @@ module Fauxpaas
     end
 
     def add_reference(reference, base)
-      reference.checkout do |working_dir|
-        working_dir
-          .relative_files
-          .reject {|path| fs.directory?(path) }
-          .map {|file| [working_dir.dir/file, base/file] }
-          .each do |src, dest|
-            fs.mkdir_p(dest.dirname)
-            fs.cp(src, dest)
-          end
+      fs.mkdir_p(base)
+      fs.mktmpdir do |dir|
+        reference.checkout(dir) do |working_dir|
+          working_dir
+            .relative_files
+            .reject {|path| fs.directory?(path) }
+            .map {|file| [working_dir.dir/file, base/file] }
+            .each do |src, dest|
+              fs.mkdir_p(dest.dirname)
+              fs.cp(src, dest)
+            end
+        end
       end
     end
 

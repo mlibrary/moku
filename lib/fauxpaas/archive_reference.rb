@@ -64,9 +64,12 @@ module Fauxpaas
 
     # @yield [GitRunner::WorkingDirectory] The directory in which
     #   the content has been checked out.
-    def checkout
-      runner.safe_checkout(url, commitish) do |working_dir|
+    def checkout(dir)
+      working_dir = runner.safe_checkout(url, commitish, dir)
+      if block_given?
         yield working_dir
+      else
+        working_dir
       end
     end
 

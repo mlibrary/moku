@@ -31,18 +31,24 @@ module Fauxpaas
       end
     end
 
-    # Checkout into a temporary directory, and yield the files
+    # Checkout into the given directory, and return the files. The
+    # block form will additionally yield the files.
+    # @param dir [Pathname] A path to an existing, empty directory
     # @yield [Array<Pathname>] Files contained in the
     #   checked-out repository, including the working directory
     #   itself.
-    def safe_checkout(url, commitish)
-      fs.mktmpdir do |dir|
-        cloned_dir = Pathname.new(dir) + "fauxpaas"
-        system_runner.run("git clone #{url} #{cloned_dir}")
-        fs.chdir(cloned_dir) do
-          system_runner.run("git checkout #{commitish}")
-          yield working_dir(cloned_dir)
-        end
+    # @return [WorkingDirectory]
+    def safe_checkout(url, commitish, dir)
+      cloned_dir = Pathname.new(dir) + "fauxpaas"
+      system_runner.run("git clone #{url} #{cloned_dir}")
+      working_directory = fs.chdir(cloned_dir) do
+        system_runner.run("git checkout #{commitish}")
+        working_dir(cloned_dir)
+      end
+      if block_given?
+        yield working_directory
+      else
+        working_directory
       end
     end
 

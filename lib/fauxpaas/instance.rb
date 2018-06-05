@@ -62,9 +62,11 @@ module Fauxpaas
     private
 
     def deploy_config(fs)
-      @deploy_config ||= deploy.latest.checkout do |working_dir|
-        contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
-        DeployConfig.from_hash(contents)
+      @deploy_config ||= fs.mktmpdir do |dir|
+        deploy.latest.checkout(dir) do |working_dir|
+          contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
+          DeployConfig.from_hash(contents)
+        end
       end
     end
 

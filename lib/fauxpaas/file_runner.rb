@@ -21,13 +21,14 @@ module Fauxpaas
     # @yield [Array<Pathname>] Files contained in the
     #   checked-out repository, including the working directory
     #   itself.
-    def safe_checkout(url, commitish)
-      Dir.mktmpdir do |dir|
-        cloned_dir = Pathname.new(dir) + "fauxpaas"
-        FileUtils.cp_r url, cloned_dir
-        Dir.chdir(cloned_dir) do
-          yield WorkingDirectory.from_path(cloned_dir)
-        end
+    def safe_checkout(url, commitish, dir)
+      cloned_dir = Pathname.new(dir) + "fauxpaas"
+      FileUtils.cp_r url, cloned_dir
+      working_directory = WorkingDirectory.from_path(cloned_dir)
+      if block_given?
+        yield working_directory
+      else
+        working_directory
       end
     end
 

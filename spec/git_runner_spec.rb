@@ -60,12 +60,14 @@ module Fauxpaas
           allow(system_runner).to receive(:run)
             .with(a_string_matching("git ls-files"))
             .and_return(["one.txt\ntwo.txt\n"])
-          runner.safe_checkout(url, commit) do |working_dir|
-            expect(working_dir.dir).to eql(fs.tmpdir/"fauxpaas")
-            expect(working_dir.real_files).to match_array([
-              fs.tmpdir/"fauxpaas"/"one.txt",
-              fs.tmpdir/"fauxpaas"/"two.txt"
-            ])
+          fs.mktmpdir do |dir|
+            runner.safe_checkout(url, commit, dir) do |working_dir|
+              expect(working_dir.dir).to eql(fs.tmpdir/"fauxpaas")
+              expect(working_dir.real_files).to match_array([
+                fs.tmpdir/"fauxpaas"/"one.txt",
+                fs.tmpdir/"fauxpaas"/"two.txt"
+              ])
+            end
           end
         end
       end
@@ -84,16 +86,20 @@ module Fauxpaas
           )
         end
         it "checks out the ref" do
-          runner.safe_checkout(url, commit) do |working_dir|
-            expect(`git -C #{working_dir.dir} rev-parse HEAD`.strip)
-              .to eql(commit)
+          Dir.mktmpdir do |dir|
+            runner.safe_checkout(url, commit, dir) do |working_dir|
+              expect(`git -C #{working_dir.dir} rev-parse HEAD`.strip)
+                .to eql(commit)
+            end
           end
         end
         it "yields a working_directory" do
-          runner.safe_checkout(url, commit) do |working_dir|
-            expected = [".gitignore", "Gemfile"]
-              .map {|file| Pathname.new(file) }
-            expect(working_dir.relative_files).to match_array(expected)
+          Dir.mktmpdir do |dir|
+            runner.safe_checkout(url, commit, dir) do |working_dir|
+              expected = [".gitignore", "Gemfile"]
+                .map {|file| Pathname.new(file) }
+              expect(working_dir.relative_files).to match_array(expected)
+            end
           end
         end
       end
