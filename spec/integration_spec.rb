@@ -37,8 +37,8 @@ module Fauxpaas
         end
         after(:all) do
           `rm -rf #{@root}`
-          `git discard spec/fixtures/integration/instances`
-          `git discard spec/fixtures/integration/releases`
+          `git checkout -- spec/fixtures/integration/instances`
+          `git checkout -- spec/fixtures/integration/releases`
         end
         let(:root) { @root }
         let(:current_dir) { root/"current" }
