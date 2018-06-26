@@ -25,7 +25,12 @@ module Fauxpaas
             config.register(:deployer_env_root) do
               Pathname.new("spec/fixtures/integration/capfiles").expand_path(Fauxpaas.root)
             end
-            config.register(:logger) { Logger.new(StringIO.new, level: :info) }
+            if ENV["DEBUG"]
+              config.register(:logger) { Logger.new(STDOUT, level: :debug) }
+              config.register(:system_runner) { Fauxpaas::PassthroughRunner.new(STDOUT) }
+            else
+              config.register(:logger) { Logger.new(StringIO.new, level: :info) }
+            end
           end
           Fauxpaas.invoker.add_command(
             DeployCommand.new(
