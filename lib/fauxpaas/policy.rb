@@ -42,13 +42,14 @@ module Fauxpaas
       caches:              :read,
       releases:            :read,
       restart:             :restart,
+      exec:                :deploy,
       syslog_view:         :read,
       syslog_grep:         :read,
       syslog_follow:       :read
     }.freeze
 
     def role?(role)
-      !(roles & IMPLIED_BY[role]).empty?
+      !(roles & IMPLIED_BY.fetch(role, [])).empty?
     end
 
   end

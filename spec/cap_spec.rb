@@ -143,6 +143,24 @@ module Fauxpaas
       end
     end
 
+    describe "#exec" do
+      let(:role) { "app" }
+      let(:bin) { "bundle" }
+      let(:args) { "exec rake db:dostuff" }
+
+      subject { cap.exec(role: role, bin: bin, args: args) }
+
+      it_behaves_like "a cap task", "commands:run_one"
+
+      it "runs the arbitrary command" do
+        expect(backend_runner).to receive(:run)
+          .with(anything, anything, anything, a_hash_including(
+            faux_role: role, faux_bin: bin, faux_args: args
+          ))
+        subject
+      end
+    end
+
     describe "#syslog_view" do
       subject { cap.syslog_view }
 
