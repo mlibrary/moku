@@ -280,6 +280,41 @@ module Fauxpaas
       end
     end
 
+    describe ExecCommand do
+      let(:command) { described_class.new(options) }
+      let(:options) do
+        {
+          user:          "someone",
+          instance_name: "myapp-mystage",
+          role:          "app",
+          bin:           "bundle",
+          args:          ["exec", "rake", "db:dostuff"]
+        }
+      end
+      it_behaves_like "a command"
+
+      it "action is :exec" do
+        expect(command.action).to eql(:exec)
+      end
+
+      describe "#execute" do
+        let(:instance) do
+          double(:instance,
+            interrogator: double(:interrogator,
+              exec: OpenStruct.new(success?: true)))
+        end
+        it "tells cap to exec" do
+          expect(instance.interrogator).to receive(:exec)
+            .with(
+              role: options[:role],
+              bin: "bundle",
+              args: "exec rake db:dostuff"
+            )
+          command.execute
+        end
+      end
+    end
+
     describe SyslogViewCommand do
       let(:command) { described_class.new(options) }
       let(:options) { { user: "someone", instance_name: "myapp-mystage" } }

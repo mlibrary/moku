@@ -49,6 +49,17 @@ module Fauxpaas
       status
     end
 
+    # @param role [String] The role on which the command should be run
+    # @param bin [String] The executable
+    # @param args [String] Optional arguments as a single string
+    def exec(role:, bin:, args: "")
+      stdout, stderr, status = run("commands:run_one",
+        faux_bin: bin,
+        faux_args: args,
+        faux_role: role)
+      status
+    end
+
     def syslog_view
       run("syslog:view", {})
     end

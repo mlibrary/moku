@@ -19,7 +19,7 @@ module Fauxpaas
 
     describe "deploy actions" do
       [
-        :deploy, :rollback
+        :deploy, :rollback, :exec
       ].each do |action|
         include_examples "can perform", "admins", [:admin], action
         include_examples "can perform", "deployers", [:deploy], action

@@ -1,4 +1,17 @@
 namespace :commands do
+  task :run_one do
+    role = (ENV["FAUX_ROLE"] || :none).to_sym
+    bin = ENV["FAUX_BIN"].to_sym
+    args = ENV["FAUX_ARGS"]
+    on roles(role) do
+      within fetch(:deploy_to) do
+        within 'current' do
+          execute bin, args
+        end
+      end
+    end
+  end
+
   task :run do
     on roles(:all) do |host|
       within fetch(:release_path) do

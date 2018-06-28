@@ -172,6 +172,28 @@ module Fauxpaas
     end
   end
 
+  # Run an arbitrary command
+  class ExecCommand < Command
+    def action
+      :exec
+    end
+
+    def extra_keys
+      [:role, :bin, :args]
+    end
+
+    def execute
+      report(instance
+        .interrogator
+        .exec(
+          role: options[:role],
+          bin: options[:bin],
+          args: options[:args].join(" ")
+        )
+      )
+    end
+  end
+
   # View the system logs
   class SyslogViewCommand < Command
     def action

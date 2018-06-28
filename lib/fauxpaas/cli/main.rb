@@ -75,6 +75,24 @@ module Fauxpaas
         invoker.add_command(RestartCommand.new(opts))
       end
 
+      desc "exec <instance> <role> <bin> [<args>]",
+        "Run an arbitrary command."
+      long_desc "Run an arbitrary command from the root of the deployed release. " \
+        "The command is only run on hosts that match the supplied role. Legal values " \
+        "for <role> are app, web, db, or all. For best results, quote the full command."
+      def exec(instance_name, role, bin, *args)
+        bin = [bin.split].flatten
+        args = [args.join(" ").split].flatten
+        full = [bin, args].flatten
+        invoker.add_command(
+          ExecCommand.new(opts.merge(
+            role: role,
+            bin: full.first,
+            args: full[1..-1]
+          ))
+        )
+      end
+
       desc "syslog SUBCOMMAND <instance> args...",
         "Interact with system log contents for the instance"
       subcommand "syslog", CLI::Syslog
