@@ -30,6 +30,13 @@ namespace :shared do
         -perm /g=rw,o=rw
         -exec chmod go-rwx '{}' \\;
       )
+
+      # Grant read access to logs until this can be done first-class in fauxpaas
+      execute :mkdir, "-p", "#{fetch(:shared_remote_path)}/log"
+      execute :find, "#{fetch(:shared_remote_path)}/log", %W(
+        -exec chmod g+r '{}' \\;
+      )
+
     end
   end
 

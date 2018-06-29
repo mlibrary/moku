@@ -76,6 +76,15 @@ module Fauxpaas
           expect(file.world_readable?).to be_falsey
           expect(file.world_writable?).to be_falsey
         end
+        it "sets shared/log to be readable by the application group" do
+          dir = current_dir/"log"
+          expect(dir.exist?).to be true
+          expect(dir.directory?).to be true
+          # We check the group permissions by checking that chmod does nothing
+          before = dir.stat.mode
+          `chmod g+tr #{dir}`
+          expect(dir.stat.mode).to eql(before)
+        end
         it "runs after_build commands" do
           expect((current_dir/"eureka_2.txt").exist?).to be true
           expect(File.read(current_dir/"eureka_1.txt")).to eql("eureka!\n")
