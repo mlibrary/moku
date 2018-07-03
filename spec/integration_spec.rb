@@ -62,28 +62,23 @@ module Fauxpaas
         it "installs unshared files" do
           expect(File.read(current_dir/"some"/"dev"/"file.txt")).to eql("with some dev contents\n")
         end
-        it "sets unshared files to be readable only by the application user" do
+        it "sets unshared files to be readable by the app user+group" do
           file = current_dir/"some"/"dev"/"file.txt"
-          expect(file.world_readable?).to be_falsey
-          expect(file.world_writable?).to be_falsey
+          expect(file.stat.mode & 0777).to eql(0660)
         end
         it "installs shared files" do
           expect(File.read(current_dir/"some"/"shared"/"file.txt"))
             .to eql("with some shared contents\n")
         end
-        it "sets shared files to be readable only by the application user" do
+        it "sets shared files to be readable the app user+group" do
           file = current_dir/"some"/"shared"/"file.txt"
-          expect(file.world_readable?).to be_falsey
-          expect(file.world_writable?).to be_falsey
+          expect(file.stat.mode & 0777).to eql(0660)
         end
         it "sets shared/log to be readable by the application group" do
           dir = current_dir/"log"
           expect(dir.exist?).to be true
           expect(dir.directory?).to be true
-          # We check the group permissions by checking that chmod does nothing
-          before = dir.stat.mode
-          `chmod g+tr #{dir}`
-          expect(dir.stat.mode).to eql(before)
+          expect(dir.stat.mode & 07777).to eql(02770)
         end
         it "runs after_build commands" do
           expect((current_dir/"eureka_2.txt").exist?).to be true
