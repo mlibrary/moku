@@ -80,10 +80,13 @@ module Fauxpaas
       long_desc "Run an arbitrary command from the root of the deployed release. " \
         "The command is only run on hosts that match the supplied role. Legal values " \
         "for <role> are app, web, db, or all. For best results, quote the full command."
+      option :env, type: :hash, default: {},
+        desc: "Specify environment variables. Separate pairs with a space."
       def exec(instance_name, role, *args)
         full = [args.join(" ").split].flatten
         invoker.add_command(
           ExecCommand.new(opts.merge(
+            env: options[:env],
             role: role,
             bin: full.first,
             args: full[1..-1]

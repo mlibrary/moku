@@ -49,11 +49,13 @@ module Fauxpaas
       status
     end
 
+    # @param env [Hash] Environment variables to set before running the command
     # @param role [String] The role on which the command should be run
     # @param bin [String] The executable
     # @param args [String] Optional arguments as a single string
-    def exec(role:, bin:, args: "")
+    def exec(env:, role:, bin:, args: "")
       stdout, stderr, status = run("commands:run_one",
+        faux_vars: env.map{|pair| pair.join("=")}.join(":"),
         faux_bin: bin,
         faux_args: args,
         faux_role: role)

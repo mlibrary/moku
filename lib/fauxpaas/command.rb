@@ -186,6 +186,7 @@ module Fauxpaas
       report(instance
         .interrogator
         .exec(
+          env: options.fetch(:env, {}),
           role: options[:role],
           bin: options[:bin],
           args: options[:args].join(" ")
