@@ -336,7 +336,7 @@ module Fauxpaas
             )
           )
         end
-        it "tells cap to restart" do
+        it "tells cap to syslog_view" do
           expect(instance.interrogator).to receive(:syslog_view)
           command.execute
         end
@@ -362,7 +362,7 @@ module Fauxpaas
             )
           )
         end
-        it "tells cap to restart" do
+        it "tells cap to syslog_follow" do
           expect(instance.interrogator).to receive(:syslog_follow)
           command.execute
         end
@@ -389,7 +389,7 @@ module Fauxpaas
             )
           )
         end
-        it "tells cap to restart" do
+        it "tells cap to syslog_grep" do
           expect(instance.interrogator).to receive(:syslog_grep)
             .with(pattern)
           command.execute
