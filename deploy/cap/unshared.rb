@@ -14,11 +14,14 @@ namespace :unshared do
         upload! path.to_s, fetch(:release_path), recursive: path.directory?
       end
 
-      # Lock down files, but dont follow symlinks into shared dir
+      # Don't follow symlinks into shared dir
+      execute :find, "-P", fetch(:release_path), %W(
+        -type d
+        -exec chmod 2770 '{}' \\;
+      )
       execute :find, "-P", fetch(:release_path), %W(
         -type f
-        -perm /g=rw,o=rw
-        -exec chmod go-rwx '{}' \\;
+        -exec chmod g+rw,o-rwx '{}' \\;
       )
     end
   end

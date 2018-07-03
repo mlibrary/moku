@@ -22,19 +22,20 @@ namespace :shared do
         upload! path.to_s, fetch(:shared_remote_path), recursive: path.directory?
       end
 
-      # Lock down files, except for public. Don't waste time on the bundled gems.
+      # Don't waste time on the bundled gems.
+      # Grant read access to logs until this can be done first-class in fauxpaas
+      execute :mkdir, "-p", "#{fetch(:shared_remote_path)}/log"
+      execute :find, fetch(:shared_remote_path), %W(
+        -path #{fetch(:shared_remote_path)}/public -prune -o
+        -path #{fetch(:shared_remote_path)}/bundle -prune -o
+        -type d
+        -exec chmod 2770 '{}' \\;
+      )
       execute :find, fetch(:shared_remote_path), %W(
         -path #{fetch(:shared_remote_path)}/public -prune -o
         -path #{fetch(:shared_remote_path)}/bundle -prune -o
         -type f
-        -perm /g=rw,o=rw
-        -exec chmod go-rwx '{}' \\;
-      )
-
-      # Grant read access to logs until this can be done first-class in fauxpaas
-      execute :mkdir, "-p", "#{fetch(:shared_remote_path)}/log"
-      execute :find, "#{fetch(:shared_remote_path)}/log", %W(
-        -exec chmod g+r '{}' \\;
+        -exec chmod g+rw,o-rwx '{}' \\;
       )
 
     end
