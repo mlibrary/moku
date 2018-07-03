@@ -288,6 +288,7 @@ module Fauxpaas
           instance_name: "myapp-mystage",
           role:          "app",
           bin:           "bundle",
+          env:           {foo: "bar", delicious: "sandwich"},
           args:          ["exec", "rake", "db:dostuff"]
         }
       end
@@ -306,6 +307,7 @@ module Fauxpaas
         it "tells cap to exec" do
           expect(instance.interrogator).to receive(:exec)
             .with(
+              env: options[:env],
               role: options[:role],
               bin: "bundle",
               args: "exec rake db:dostuff"
