@@ -16,11 +16,13 @@ namespace :unshared do
 
       # Don't follow symlinks into shared dir
       execute :find, "-P", fetch(:release_path), %W(
-        -type d
+        -path #{fetch(:release_path)}/public -prune
+        -o -type d
         -exec chmod 2770 '{}' \\;
       )
       execute :find, "-P", fetch(:release_path), %W(
-        -type f
+        -path #{fetch(:release_path)}/public -prune
+        -o -type f
         -exec chmod g+rw,o-rwx '{}' \\;
       )
     end
