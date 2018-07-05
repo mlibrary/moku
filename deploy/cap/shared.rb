@@ -26,18 +26,21 @@ namespace :shared do
       # Grant read access to logs until this can be done first-class in fauxpaas
       execute :mkdir, "-p", "#{fetch(:shared_remote_path)}/log"
       execute :find, fetch(:shared_remote_path), %W(
+        \\(
         -path #{fetch(:shared_remote_path)}/public -prune -o
-        -path #{fetch(:shared_remote_path)}/bundle -prune -o
-        -type d
+        -path #{fetch(:shared_remote_path)}/bundle -prune
+        \\)
+        -o -type d
         -exec chmod 2770 '{}' \\;
       )
       execute :find, fetch(:shared_remote_path), %W(
+        \\(
         -path #{fetch(:shared_remote_path)}/public -prune -o
-        -path #{fetch(:shared_remote_path)}/bundle -prune -o
-        -type f
+        -path #{fetch(:shared_remote_path)}/bundle -prune
+        \\)
+        -o -type f
         -exec chmod g+rw,o-rwx '{}' \\;
       )
-
     end
   end
 

@@ -47,6 +47,7 @@ module Fauxpaas
         end
         let(:root) { @root }
         let(:current_dir) { root/"current" }
+        let(:shared_dir) { root/"shared" }
       end
 
       # Expects
@@ -62,24 +63,58 @@ module Fauxpaas
         it "installs unshared files" do
           expect(File.read(current_dir/"some"/"dev"/"file.txt")).to eql("with some dev contents\n")
         end
-        it "sets unshared files to be readable by the app user+group" do
-          file = current_dir/"some"/"dev"/"file.txt"
-          expect(file.stat.mode & 0777).to eql(0660)
-        end
         it "installs shared files" do
           expect(File.read(current_dir/"some"/"shared"/"file.txt"))
             .to eql("with some shared contents\n")
         end
-        it "sets shared files to be readable the app user+group" do
-          file = current_dir/"some"/"shared"/"file.txt"
-          expect(file.stat.mode & 0777).to eql(0660)
+
+        describe "permissions" do
+          it "releases 2775" do
+            expect((root/"releases").stat.mode & 07777).to eql(02775)
+          end
+          it "releases/<release> 2775" do
+            release_dir = (root/"releases").children.first
+            expect(release_dir.stat.mode & 07777).to eql(02775)
+          end
+          it "current/public 2775" do
+            expect((current_dir/"public").stat.mode & 07777).to eql(02775)
+          end
+          it "current/<some_unshared> 660" do
+            file = current_dir/"some"/"dev"/"file.txt"
+            expect(file.stat.mode & 0777).to eql(0660)
+          end
+          it "current/<some_shared_file> 660" do
+            file = current_dir/"some"/"shared"/"file.txt"
+            expect(file.stat.mode & 0777).to eql(0660)
+          end
+          it "current/public/<file> 664" do
+            file = (current_dir/"public").children.find{|f| f.file? }
+            expect(file.stat.mode & 0777).to eql(0664)
+          end
+          it "shared 2775" do
+            expect(shared_dir.stat.mode & 07777).to eql(02775)
+          end
+          it "shared/public 2775" do
+            expect((shared_dir/"public").stat.mode & 07777).to eql(02775)
+          end
+          it "shared/public/<file> 664" do
+            file = (shared_dir/"public").children.find{|f| f.file? }
+            expect(file.stat.mode & 0777).to eql(0664)
+          end
+          it "shared/log 2770" do
+            dir = current_dir/"log"
+            expect(dir.exist?).to be true
+            expect(dir.directory?).to be true
+            expect(dir.stat.mode & 07777).to eql(02770)
+          end
+          it "current/log is a symlink to shared/log" do
+            dir = current_dir/"log"
+            expect(dir.symlink?).to be true
+            expect(dir.realpath).to eql(shared_dir/"log")
+          end
+
         end
-        it "sets shared/log to be readable by the application group" do
-          dir = current_dir/"log"
-          expect(dir.exist?).to be true
-          expect(dir.directory?).to be true
-          expect(dir.stat.mode & 07777).to eql(02770)
-        end
+
         it "runs after_build commands" do
           expect((current_dir/"eureka_2.txt").exist?).to be true
           expect(File.read(current_dir/"eureka_1.txt")).to eql("eureka!\n")
@@ -110,6 +145,16 @@ module Fauxpaas
         let(:source) { Pathname.new("config/environment.rb") }
 
         include_examples "a successful deploy"
+
+        it "shared/public/assets 2775" do
+          expect((shared_dir/"public"/"assets").stat.mode & 07777).to eql(02775)
+        end
+
+        it "current/public/assets is a symlink to shared/public/assets" do
+          dir = current_dir/"public"/"assets"
+          expect(dir.symlink?).to be true
+          expect(dir.realpath).to eql(shared_dir/"public"/"assets")
+        end
 
         it "runs the migrations" do
           expect(`sqlite3 #{current_dir/"db"/"production.sqlite3"} ".schema posts"`.chomp)
