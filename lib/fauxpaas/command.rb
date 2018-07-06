@@ -77,7 +77,7 @@ module Fauxpaas
       status = release.deploy
       report(status, action: "deploy")
       if status.success?
-        instance.log_release(LoggedRelease.new(ENV["USER"], Time.now, signature))
+        instance.log_release(LoggedRelease.new(options[:user], Time.now, signature))
         Fauxpaas.instance_repo.save_releases(instance)
         Fauxpaas.invoker.add_command(RestartCommand.new(options))
       end
