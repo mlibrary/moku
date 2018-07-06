@@ -3,8 +3,8 @@ deploy:
   url: <%= Fauxpaas.fixtures_path.to_s %>/repos/rails/deploy
   commitish: rails_deploy
 source:
-  url: <%= Fauxpaas.root.to_s %>
-  commitish: test/rails/source
+  url: <%= Fauxpaas.fixtures_path.to_s %>/repos/rails/source
+  commitish: rails_source
 shared:
   - url: <%= Fauxpaas.fixtures_path.to_s %>/repos/rails/shared
     commitish: rails_shared

@@ -3,8 +3,8 @@ deploy:
   url: <%= Fauxpaas.fixtures_path.to_s %>/repos/norails/deploy
   commitish: norails_deploy
 source:
-  url: <%= Fauxpaas.root.to_s %>
-  commitish: test/norails/source
+  url: <%= Fauxpaas.fixtures_path.to_s %>/repos/norails/source
+  commitish: norails_source
 shared:
   - url: <%= Fauxpaas.fixtures_path.to_s %>/repos/norails/shared
     commitish: norails_shared
