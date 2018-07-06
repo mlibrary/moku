@@ -143,12 +143,25 @@ module Fauxpaas
 
   # Show the releases
   class ReleasesCommand < Command
+    def initialize(instance_name:, user:, long: false)
+      super(instance_name: instance_name, user: user)
+      @long = long
+    end
+
+    attr_reader :long
+
     def action
       :releases
     end
 
     def execute
-      Fauxpaas.logger.info instance.releases.map(&:to_s).join("\n")
+      string = if long
+        LoggedReleases.new(instance.releases).to_s
+      else
+        LoggedReleases.new(instance.releases).to_short_s
+      end
+
+      Fauxpaas.logger.info "\n#{string}"
     end
   end
 

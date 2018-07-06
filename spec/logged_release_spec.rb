@@ -47,22 +47,17 @@ module Fauxpaas
     let(:formatted_time) { time.strftime("%FT%T") }
     let(:logged_release) { described_class.new(user, time, sig) }
 
-    let(:all_shared) { shared }
-    let(:all_unshared) { unshared }
-
     let(:sig) do
       ReleaseSignature.new(
         source: source,
-        shared: all_shared,
-        unshared: all_unshared,
+        shared: shared,
+        unshared: unshared,
         deploy: deploy
       )
     end
 
     describe "#to_s" do
       context "with single shared,unshared" do
-        let(:all_shared) { shared }
-        let(:all_unshared) { unshared }
         it "returns a formatted string" do
           expect(logged_release.to_s).to eql(
             "2017-01-31T13:44:11: foouser source_ref w/ deploy_ref\n" \
@@ -70,6 +65,19 @@ module Fauxpaas
             "  shared_ref"
           )
         end
+      end
+    end
+
+    describe "#to_brief_hash" do
+      it "returns a hash of shas" do
+        expect(logged_release.to_brief_hash).to eql(
+          user: user,
+          time: formatted_time,
+          source: source_ref,
+          deploy: deploy_ref,
+          unshared: unshared_ref,
+          shared: shared_ref
+        )
       end
     end
 

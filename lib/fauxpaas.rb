@@ -14,6 +14,7 @@ require "fauxpaas/git_runner"
 require "fauxpaas/instance"
 require "fauxpaas/local_git_resolver"
 require "fauxpaas/logged_release"
+require "fauxpaas/logged_releases"
 require "fauxpaas/open3_capture"
 require "fauxpaas/passthrough_runner"
 require "fauxpaas/policy"
@@ -116,6 +117,8 @@ module Fauxpaas
           Pathname.new(settings.deployer_env_root).expand_path(Fauxpaas.root)
         end
         container.register(:split_token) { settings.split_token.chomp }
+        container.register(:unshared_name) { settings.unshared_name.chomp }
+        container.register(:shared_name) { settings.shared_name.chomp }
       end
     end
 

@@ -245,10 +245,22 @@ module Fauxpaas
           double(:instance,
             releases: [1, 2, 3, 4])
         end
+        let(:logged_releases) do
+          double(
+            :logged_releases,
+            to_short_s: "some_string"
+          )
+        end
+
+        before(:each) do
+          allow(LoggedReleases).to receive(:new).with([1,2,3,4])
+            .and_return(logged_releases)
+        end
+
 
         # TODO: convert this to print to stdout, inserted via stringio
         it "logs the releases" do
-          expect(Fauxpaas.logger).to receive(:info).with([1, 2, 3, 4].join("\n"))
+          expect(Fauxpaas.logger).to receive(:info).with("\nsome_string")
           command.execute
         end
       end
