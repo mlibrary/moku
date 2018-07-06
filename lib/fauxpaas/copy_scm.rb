@@ -16,9 +16,9 @@ module Fauxpaas
       namespace :fauxpaas do
         task :create_release do
           on release_roles(:all) do
-            execute :mkdir, "-p", release_path
+            FileUtils.mkdir_p release_path
             Pathname.new(repo_url).children.each do |path|
-              upload! path.to_s, release_path, recursive: true
+              FileUtils.cp_r path, release_path
             end
           end
         end
