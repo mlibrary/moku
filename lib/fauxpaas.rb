@@ -21,6 +21,7 @@ require "fauxpaas/release"
 require "fauxpaas/release_signature"
 require "fauxpaas/remote_git_resolver"
 require "fauxpaas/invoker"
+require "fauxpaas/file_runner"
 
 require "logger"
 require "pathname"

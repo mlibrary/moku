@@ -1,13 +1,13 @@
 ---
 deploy:
-  url: <%= Fauxpaas.root.to_s %>
-  commitish: test/rails/deploy
+  url: <%= Fauxpaas.fixtures_path.to_s %>/repos/rails/deploy
+  commitish: rails_deploy
 source:
   url: <%= Fauxpaas.root.to_s %>
   commitish: test/rails/source
 shared:
-  - url: <%= Fauxpaas.root.to_s %>
-    commitish: test/rails/shared
+  - url: <%= Fauxpaas.fixtures_path.to_s %>/repos/rails/shared
+    commitish: rails_shared
 unshared:
-  - url: <%= Fauxpaas.root.to_s %>
-    commitish: test/rails/unshared
+  - url: <%= Fauxpaas.fixtures_path.to_s %>/repos/rails/unshared
+    commitish: rails_unshared
