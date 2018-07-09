@@ -49,7 +49,7 @@ tags
 /sandbox
 
 # We're a gem
-Gemfile.lock
+/Gemfile.lock
 
 # These dirs are for users
 /data
