@@ -6,8 +6,8 @@ source:
   url: https://github.com/dpn-admin/dpn-client.git
   commitish: master
 shared:
-  url: "git@github.com:mlibrary/faux-infrastructure"
-  commitish: test-norails
+  - url: "git@github.com:mlibrary/faux-infrastructure"
+    commitish: test-norails
 unshared:
-  url: "git@github.com:mlibrary/faux-dev"
-  commitish: test-norails
+  - url: "git@github.com:mlibrary/faux-dev"
+    commitish: test-norails

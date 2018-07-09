@@ -19,8 +19,8 @@ module Fauxpaas
     def build(signature)
       dir = fs.mktmpdir
       Release.new(
-        shared_path: extract_shared!(signature, dir/"shared"),
-        unshared_path: extract_unshared!(signature, dir/"unshared"),
+        shared_path: extract_ref(signature.shared, dir/"shared"),
+        unshared_path: extract_ref(signature.unshared, dir/"unshared"),
         deploy_config: deploy_config(signature),
         source: signature.source
       )
@@ -37,16 +37,10 @@ module Fauxpaas
       end
     end
 
-    def extract_shared!(signature, shared_path)
-      fs.mkdir_p(shared_path)
-      signature.shared.each {|ref| add_reference(ref, shared_path) }
-      shared_path
-    end
-
-    def extract_unshared!(signature, unshared_path)
-      fs.mkdir_p(unshared_path)
-      signature.unshared.each {|ref| add_reference(ref, unshared_path) }
-      unshared_path
+    def extract_ref(ref, path)
+      fs.mkdir_p path
+      add_reference(ref, path)
+      path
     end
 
     def add_reference(reference, base)

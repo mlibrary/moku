@@ -22,8 +22,8 @@ module Fauxpaas
         "deploy_dir"    => "/some/deploy/dir"
       }
     end
-    let(:shared) { [ArchiveReference.new("infra.git", runner.branch, runner)] }
-    let(:unshared) { [] }
+    let(:shared) { ArchiveReference.new("infra.git", runner.branch, runner) }
+    let(:unshared) { ArchiveReference.new("dev.git", runner.branch, runner) }
     let(:deploy) { ArchiveReference.new("deploy.git", runner.branch, runner) }
     let(:source) { ArchiveReference.new("source.git", runner.branch, runner) }
     let(:a_release) { double(:a_release) }
@@ -47,8 +47,8 @@ module Fauxpaas
         it "returns the latest release signature" do
           expect(instance.signature).to eql(
             ReleaseSignature.new(
-              shared: shared.map(&:latest),
-              unshared: unshared.map(&:latest),
+              shared: shared.latest,
+              unshared: unshared.latest,
               deploy: deploy.latest,
               source: source.latest
             )
@@ -59,8 +59,8 @@ module Fauxpaas
         it "returns an appropriate signature" do
           expect(instance.signature(runner.short)).to eql(
             ReleaseSignature.new(
-              shared: shared.map(&:latest),
-              unshared: unshared.map(&:latest),
+              shared: shared.latest,
+              unshared: unshared.latest,
               deploy: deploy.latest,
               source: source.at(runner.short)
             )
