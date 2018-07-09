@@ -26,11 +26,7 @@ module Fauxpaas
         cloned_dir = Pathname.new(dir) + "fauxpaas"
         FileUtils.cp_r url, cloned_dir
         Dir.chdir(cloned_dir) do
-          files = Find.find(cloned_dir.to_s)
-            .map{|f| Pathname.new(f) }
-            .select{|f| f.file? }
-            .map{|f| f.relative_path_from(cloned_dir)}
-          yield WorkingDirectory.new(cloned_dir, files)
+          yield WorkingDirectory.from_path(cloned_dir)
         end
       end
     end
