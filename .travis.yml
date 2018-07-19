@@ -12,5 +12,5 @@ branches:
 before_install: gem install bundler
 
 script:
-    - bundle exec rspec --tag ~broken_in_travis --tag ~integration
+    - bundle exec rspec --tag ~broken_in_travis
 
