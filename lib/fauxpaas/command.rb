@@ -1,21 +1,16 @@
 # frozen_string_literal: true
 
-# frozen_string_litera: true
-
 module Fauxpaas
 
   # Represetns a command within Fauxpaas
   class Command
-    def initialize(options)
-      @options = options
+    def initialize(instance_name:, user:)
+      @instance_name = instance_name
+      @user = user
     end
 
     def execute
       raise NotImplementedError
-    end
-
-    def default_keys
-      [:instance_name]
     end
 
     def action
@@ -24,36 +19,20 @@ module Fauxpaas
 
     def authorized?
       Fauxpaas.auth.authorized?(
-        user: options.fetch(:user, "nobody"),
+        user: user || "nobody",
         entity: instance,
         action: action
       )
     end
 
-    def extra_keys
-      []
-    end
-
-    def keys
-      default_keys | extra_keys
-    end
-
-    def missing
-      keys.select {|k| options[k].nil? }
-    end
-
-    def valid?
-      missing.empty?
-    end
-
     private
 
-    attr_reader :options
+    attr_reader :instance_name, :user
 
     def instance
-      @instance ||= Fauxpaas.instance_repo.find(options[:instance_name])
+      @instance ||= Fauxpaas.instance_repo.find(instance_name)
     rescue Errno::ENOENT
-      raise ArgumentError, "The requested instance [#{options[:instance_name]}] doesn't exist"
+      raise ArgumentError, "The requested instance [#{instance_name}] doesn't exist"
     end
 
     def report(status, action: "action")
@@ -67,44 +46,54 @@ module Fauxpaas
 
   # Create and deploy a release
   class DeployCommand < Command
+    def initialize(instance_name:, user:, reference: nil)
+      super(instance_name: instance_name, user: user)
+      @reference = reference
+    end
+
     def action
       :deploy
     end
 
     def execute
-      signature = instance.signature(options[:reference])
+      signature = instance.signature(reference)
       release = ReleaseBuilder.new(Fauxpaas.filesystem).build(signature)
       status = release.deploy
       report(status, action: "deploy")
       if status.success?
-        instance.log_release(LoggedRelease.new(options[:user], Time.now, signature))
+        instance.log_release(LoggedRelease.new(user, Time.now, signature))
         Fauxpaas.instance_repo.save_releases(instance)
-        Fauxpaas.invoker.add_command(RestartCommand.new(options))
+        Fauxpaas.invoker.add_command(
+          RestartCommand.new(instance_name: instance_name, user: user)
+        )
       end
     end
 
     private
 
     def reference
-      options.fetch(:reference, instance.default_branch)
+      @reference || instance.default_branch
     end
   end
 
   # Change the instance's default source branch
   class SetDefaultBranchCommand < Command
+    def initialize(instance_name:, user:, new_branch:)
+      super(instance_name: instance_name, user: user)
+      @new_branch = new_branch
+    end
+
+    attr_reader :new_branch
+
     def action
       :set_default_branch
     end
 
-    def extra_keys
-      [:new_branch]
-    end
-
     def execute
       old_branch = instance.default_branch
-      instance.default_branch = options[:new_branch]
+      instance.default_branch = new_branch
       Fauxpaas.instance_repo.save_instance(instance)
-      Fauxpaas.logger.info "Changed default branch from #{old_branch} to #{options[:new_branch]}"
+      Fauxpaas.logger.info "Changed default branch from #{old_branch} to #{new_branch}"
     end
   end
 
@@ -121,17 +110,20 @@ module Fauxpaas
 
   # Rollback to a previous cache
   class RollbackCommand < Command
+    def initialize(instance_name:, user:, cache:)
+      super(instance_name: instance_name, user: user)
+      @cache = cache
+    end
+
+    attr_reader :cache
+
     def action
       :rollback
     end
 
-    def extra_keys
-      [:cache]
-    end
-
     def execute
       report(instance.interrogator
-        .rollback(instance.source.latest, options[:cache]),
+        .rollback(instance.source.latest, cache),
         action: "rollback")
     end
   end
@@ -174,22 +166,28 @@ module Fauxpaas
 
   # Run an arbitrary command
   class ExecCommand < Command
-    def action
-      :exec
+    def initialize(instance_name:, user:, env: {}, role:, bin:, args: [])
+      super(instance_name: instance_name, user: user)
+      @env = env
+      @role = role
+      @bin = bin
+      @args = args
     end
 
-    def extra_keys
-      [:role, :bin, :args]
+    attr_reader :env, :role, :bin, :args
+
+    def action
+      :exec
     end
 
     def execute
       report(instance
         .interrogator
         .exec(
-          env: options.fetch(:env, {}),
-          role: options[:role],
-          bin: options[:bin],
-          args: options[:args].join(" ")
+          env: env,
+          role: role,
+          bin: bin,
+          args: args.join(" ")
         )
       )
     end
@@ -208,16 +206,19 @@ module Fauxpaas
 
   # Grep the system logs
   class SyslogGrepCommand < Command
+    def initialize(instance_name:, user:, pattern:)
+      super(instance_name: instance_name, user: user)
+      @pattern = pattern
+    end
+
+    attr_reader :pattern
+
     def action
       :syslog_grep
     end
 
-    def extra_keys
-      [:pattern]
-    end
-
     def execute
-      instance.interrogator.syslog_grep(options[:pattern])
+      instance.interrogator.syslog_grep(pattern)
     end
   end
 

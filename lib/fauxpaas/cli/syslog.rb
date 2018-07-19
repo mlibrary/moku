@@ -26,19 +26,35 @@ module Fauxpaas
       desc "view <instance>",
         "View the system logs for the instance"
       def view(_instance_name)
-        invoker.add_command(SyslogViewCommand.new(opts))
+        invoker.add_command(
+          SyslogViewCommand.new(
+            instance_name: opts[:instance_name],
+            user: opts[:user],
+          )
+        )
       end
 
       desc "grep <instance> pattern",
         "View the system logs for the instance"
       def grep(_instance_name, pattern = ".")
-        invoker.add_command(SyslogGrepCommand.new(opts.merge(pattern: pattern)))
+        invoker.add_command(
+          SyslogGrepCommand.new(
+            instance_name: opts[:instance_name],
+            user: opts[:user],
+            pattern: pattern
+          )
+        )
       end
 
       desc "follow <instance>",
         "Follow the system logs for the instance"
       def follow(_instance_name)
-        invoker.add_command(SyslogFollowCommand.new(opts))
+        invoker.add_command(
+          SyslogFollowCommand.new(
+            instance_name: opts[:instance_name],
+            user: opts[:user],
+          )
+        )
       end
 
       private

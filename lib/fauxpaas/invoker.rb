@@ -14,7 +14,6 @@ module Fauxpaas
 
     # TODO: test this
     def run(command)
-      validate!(command)
       authorize!(command)
       command.execute
       nil
@@ -26,12 +25,6 @@ module Fauxpaas
     def authorize!(command)
       unless command.authorized?
         raise "User is not authorized to peform this command"
-      end
-    end
-
-    def validate!(command)
-      unless command.valid?
-        raise KeyError, "Missing keys:\n\t#{command.missing.join(" ,")}"
       end
     end
 
