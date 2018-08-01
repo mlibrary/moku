@@ -5,6 +5,7 @@ AllCops:
   TargetRubyVersion: 2.3
   Exclude:
     - '*.gemspec'
+    - 'spec/fixtures/**/*'
 
 Naming/FileName:
   ExpectMatchingDefinition: true
