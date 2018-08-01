@@ -34,6 +34,17 @@ module Fauxpaas
       @signature = signature
     end
 
+    def to_brief_hash
+      {
+        time:     formatted_time,
+        user:     user,
+        source:   signature.source.commitish,
+        deploy:   signature.deploy.commitish,
+        unshared: signature.unshared.commitish,
+        shared:   signature.shared.commitish
+      }
+    end
+
     def to_s
       "#{formatted_time}: #{user} #{signature.source.commitish} " \
         "w/ #{signature.deploy.commitish}\n" \
