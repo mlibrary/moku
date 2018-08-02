@@ -89,18 +89,6 @@ module Fauxpaas
       end
     end
 
-    describe "#app" do
-      it "returns the app" do
-        expect(instance.app).to eql(app)
-      end
-    end
-
-    describe "#stage" do
-      it "returns the stage" do
-        expect(instance.stage).to eql(stage)
-      end
-    end
-
     describe "#default_branch" do
       it "returns the branch" do
         expect(instance.default_branch).to eql(runner.branch)

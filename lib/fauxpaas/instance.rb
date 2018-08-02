@@ -17,7 +17,6 @@ module Fauxpaas
     # @param releases [Array<LoggedRelease>]
     def initialize(name:, source:, deploy:, shared:, unshared:, releases: [])
       @name = name
-      @app, @stage = name.split("-")
       @source = source
       @deploy = deploy
       @shared = shared
@@ -25,7 +24,7 @@ module Fauxpaas
       @releases = releases
     end
 
-    attr_reader :name, :app, :stage
+    attr_reader :name
     attr_reader :source, :deploy
     attr_reader :shared, :unshared, :releases
 
