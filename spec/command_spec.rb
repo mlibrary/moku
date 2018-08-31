@@ -6,12 +6,6 @@ require "fauxpaas/command"
 module Fauxpaas
   RSpec.describe "commands" do
     RSpec.shared_examples "a command" do
-      describe "#default_keys" do
-        it "returns the set of default keys" do
-          expect(command.default_keys).to contain_exactly(:instance_name)
-        end
-      end
-
       describe "#action" do
         it "returns a symbol" do
           expect(command.action).to be_an_instance_of Symbol
@@ -21,7 +15,7 @@ module Fauxpaas
       describe "#authorized?" do
         it "calls out to the auth system" do
           expect(auth).to receive(:authorized?).with(
-            user: options[:user],
+            user: user,
             entity: instance,
             action: command.action
           )
@@ -29,31 +23,6 @@ module Fauxpaas
         end
         it "delegates to the auth system" do
           expect(command.authorized?).to eql(auth.authorized?)
-        end
-      end
-
-      describe "#extra_keys" do
-        it "is an array" do
-          expect(command.extra_keys).to be_a_kind_of(Array)
-        end
-      end
-
-      describe "#keys" do
-        it "is the union of #default_keys and #extra_keys" do
-          union = (command.default_keys + command.extra_keys).uniq
-          expect(command.keys).to contain_exactly(*union)
-        end
-      end
-
-      describe "#missing" do
-        it "is keys - options.keys" do
-          expect(command.missing).to contain_exactly(*(command.keys - options.keys))
-        end
-      end
-
-      describe "#valid?" do
-        it "is valid if there are no missing keys" do
-          expect(command.valid?).to eql(command.missing.empty?)
         end
       end
     end
@@ -67,7 +36,9 @@ module Fauxpaas
       )
     end
     let(:auth) { double(:auth, authorized?: true) }
-    let(:instance) { double(:instance) }
+    let(:instance_name) { "myapp-mystage" }
+    let(:user) { "someone" }
+    let(:instance) { double(:instance, default_branch: "master") }
     before(:each) do
       Fauxpaas.config.tap do |c|
         c.register(:auth) { auth }
@@ -76,14 +47,18 @@ module Fauxpaas
     end
 
     describe Command do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:command) { described_class.new(instance_name: instance_name, user: user) }
       it_behaves_like "a command"
     end
 
     describe DeployCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage", reference: nil } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+          reference: nil
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :deploy" do
@@ -97,6 +72,7 @@ module Fauxpaas
           double(
             :instance,
             name: "something",
+            default_branch: "master",
             interrogator: double(:interrogator,
               deploy: OpenStruct.new(success?: true),
               restart: OpenStruct.new(success?: true)),
@@ -143,9 +119,12 @@ module Fauxpaas
     end
 
     describe SetDefaultBranchCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) do
-        { user: "someone", instance_name: "myapp-mystage", new_branch: "new_branch" }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+          new_branch: "new_branch"
+        )
       end
       it_behaves_like "a command"
 
@@ -164,8 +143,12 @@ module Fauxpaas
     end
 
     describe ReadDefaultBranchCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :read_default_branch" do
@@ -187,8 +170,13 @@ module Fauxpaas
     end
 
     describe RollbackCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage", cache: "foo" } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+          cache: "foo"
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :rollback" do
@@ -205,15 +193,19 @@ module Fauxpaas
         end
         it "tells cap to rollback" do
           expect(instance.interrogator).to receive(:rollback)
-            .with(instance.source.latest, options[:cache])
+            .with(instance.source.latest, "foo")
           command.execute
         end
       end
     end
 
     describe CachesCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :caches" do
@@ -236,8 +228,12 @@ module Fauxpaas
     end
 
     describe ReleasesCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :releases" do
@@ -249,18 +245,34 @@ module Fauxpaas
           double(:instance,
             releases: [1, 2, 3, 4])
         end
+        let(:logged_releases) do
+          double(
+            :logged_releases,
+            to_short_s: "some_string"
+          )
+        end
+
+        before(:each) do
+          allow(LoggedReleases).to receive(:new).with([1,2,3,4])
+            .and_return(logged_releases)
+        end
+
 
         # TODO: convert this to print to stdout, inserted via stringio
         it "logs the releases" do
-          expect(Fauxpaas.logger).to receive(:info).with([1, 2, 3, 4].join("\n"))
+          expect(Fauxpaas.logger).to receive(:info).with("\nsome_string")
           command.execute
         end
       end
     end
 
     describe RestartCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :restart" do
@@ -281,16 +293,17 @@ module Fauxpaas
     end
 
     describe ExecCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) do
-        {
-          user:          "someone",
-          instance_name: "myapp-mystage",
-          role:          "app",
-          bin:           "bundle",
-          env:           {foo: "bar", delicious: "sandwich"},
-          args:          ["exec", "rake", "db:dostuff"]
-        }
+      let(:env) {{foo: "bar", delicious: "sandwich"}}
+      let(:role) { "app" }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+          env: env,
+          role: role,
+          bin: "bundle",
+          args: ["exec", "rake", "db:dostuff"]
+        )
       end
       it_behaves_like "a command"
 
@@ -307,8 +320,8 @@ module Fauxpaas
         it "tells cap to exec" do
           expect(instance.interrogator).to receive(:exec)
             .with(
-              env: options[:env],
-              role: options[:role],
+              env: env,
+              role: role,
               bin: "bundle",
               args: "exec rake db:dostuff"
             )
@@ -318,8 +331,12 @@ module Fauxpaas
     end
 
     describe SyslogViewCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :syslog_view" do
@@ -344,8 +361,12 @@ module Fauxpaas
     end
 
     describe SyslogFollowCommand do
-      let(:command) { described_class.new(options) }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage" } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :syslog_follow" do
@@ -370,9 +391,14 @@ module Fauxpaas
     end
 
     describe SyslogGrepCommand do
-      let(:command) { described_class.new(options) }
       let(:pattern) { "some\\n\//\/\\/pattern" }
-      let(:options) { { user: "someone", instance_name: "myapp-mystage", pattern: pattern } }
+      let(:command) do
+        described_class.new(
+          instance_name: instance_name,
+          user: user,
+          pattern: pattern
+        )
+      end
       it_behaves_like "a command"
 
       it "action is :syslog_grep" do

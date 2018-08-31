@@ -1,11 +1,22 @@
 # frozen_string_literal: true
 
+require "find"
+
 module Fauxpaas
 
   # Represents a working directory of a checked-out git
   # repository, with a reference to both the checked-out directory
   # and all files within the working directory.
   class WorkingDirectory
+
+    def self.from_path(path)
+      files = Find.find(path.to_s)
+        .map{|f| Pathname.new(f) }
+        .select{|f| f.file? }
+        .map{|f| f.relative_path_from(path) }
+      new(Pathname.new(path), files)
+    end
+
     # @param dir [Pathname]
     # @param relative_files [Array<Pathname>]
     def initialize(dir, relative_files)

@@ -12,12 +12,11 @@ module Fauxpaas
     # @param name [String] Of the format appname-stagename
     # @param source [ArchiveReference]
     # @param deploy [ArchiveReference]
-    # @param shared [Array<ArchiveReference>]
-    # @param unshared [Array<ArchiveReference>]
+    # @param shared [ArchiveReference]
+    # @param unshared [ArchiveReference]
     # @param releases [Array<LoggedRelease>]
-    def initialize(name:, source:, deploy:, shared: [], unshared: [], releases: [])
+    def initialize(name:, source:, deploy:, shared:, unshared:, releases: [])
       @name = name
-      @app, @stage = name.split("-")
       @source = source
       @deploy = deploy
       @shared = shared
@@ -25,7 +24,7 @@ module Fauxpaas
       @releases = releases
     end
 
-    attr_reader :name, :app, :stage
+    attr_reader :name
     attr_reader :source, :deploy
     attr_reader :shared, :unshared, :releases
 
@@ -35,8 +34,8 @@ module Fauxpaas
       ReleaseSignature.new(
         deploy: deploy.latest,
         source: source.at(commitish),
-        shared: shared.map(&:latest),
-        unshared: unshared.map(&:latest)
+        shared: shared.latest,
+        unshared: unshared.latest
       )
     end
 

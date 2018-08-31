@@ -25,6 +25,7 @@ ratings:
 
 exclude_paths:
   - spec/
+  - spec/fixtures/
   - .bundle/
   - app/assets/fonts/
   - app/assets/images/

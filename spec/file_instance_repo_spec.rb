@@ -17,6 +17,13 @@ module Fauxpaas
     let(:tmp_repo) { described_class.new("/instances", "/releases", mem_fs, Fauxpaas.git_runner) }
 
     describe "#save_instance" do
+      it "find legacy instances" do
+        instance = static_repo.find("test-legacypersistence")
+        tmp_repo.save_instance(instance)
+        updated_contents = YAML.load(File.read(instance_root/"test-persistence"/"instance.yml"))
+        expect(YAML.load(mem_fs.read("/instances/test-legacypersistence/instance.yml")))
+          .to eql(updated_contents)
+      end
       it "can save and find instances" do
         contents_before = YAML.load(File.read(instance_root/"test-persistence"/"instance.yml"))
         instance = static_repo.find("test-persistence")
@@ -33,6 +40,14 @@ module Fauxpaas
     end
 
     describe "#save_releases" do
+      it "find legacy releases" do
+        instance = static_repo.find("test-legacypersistence")
+        tmp_repo.save_releases(instance)
+        updated_contents = YAML.load(File.read(releases_root/"test-persistence.yml"))
+        expect(YAML.load(mem_fs.read("/releases/test-legacypersistence.yml")))
+          .to eql(updated_contents)
+      end
+
       it "can save and find releases" do
         contents_before = YAML.load(File.read(releases_root/"test-persistence.yml"))
         instance = static_repo.find("test-persistence")

@@ -34,11 +34,22 @@ module Fauxpaas
       @signature = signature
     end
 
+    def to_brief_hash
+      {
+        time:     formatted_time,
+        user:     user,
+        source:   signature.source.commitish,
+        deploy:   signature.deploy.commitish,
+        unshared: signature.unshared.commitish,
+        shared:   signature.shared.commitish
+      }
+    end
+
     def to_s
-      "#{formatted_time}: #{user} #{archive_s(signature.source)} " \
-        "w/ #{archive_s(signature.deploy)}\n" \
-        "  #{archive_s(signature.unshared)}\n" \
-        "  #{archive_s(signature.shared)}"
+      "#{formatted_time}: #{user} #{signature.source.commitish} " \
+        "w/ #{signature.deploy.commitish}\n" \
+        "  #{signature.unshared.commitish}\n" \
+        "  #{signature.shared.commitish}"
     end
 
     def to_hash
@@ -52,10 +63,6 @@ module Fauxpaas
     private
 
     attr_reader :user, :time
-
-    def archive_s(archives)
-      [archives].flatten.map(&:commitish).join(" ")
-    end
 
     def formatted_time
       time.strftime(LoggedRelease.time_format)

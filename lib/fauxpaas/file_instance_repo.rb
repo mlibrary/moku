@@ -26,12 +26,8 @@ module Fauxpaas
         name: name,
         source: ArchiveReference.from_hash(contents["source"], git_runner),
         deploy: ArchiveReference.from_hash(contents["deploy"], git_runner),
-        shared: contents["shared"].map do |h|
-          ArchiveReference.from_hash(h, git_runner)
-        end,
-        unshared: contents["unshared"].map do |h|
-          ArchiveReference.from_hash(h, git_runner)
-        end,
+        shared: ArchiveReference.from_hash([contents["shared"]].flatten.first, git_runner),
+        unshared: ArchiveReference.from_hash([contents["unshared"]].flatten.first, git_runner),
         releases: releases.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
     end
@@ -53,8 +49,8 @@ module Fauxpaas
       fs.write(path_to_instance(instance.name), YAML.dump(
         "deploy" => instance.deploy.to_hash,
         "source" => instance.source.to_hash,
-        "shared" => instance.shared.map(&:to_hash),
-        "unshared" => instance.unshared.map(&:to_hash)
+        "shared" => instance.shared.to_hash,
+        "unshared" => instance.unshared.to_hash
       ))
     end
 

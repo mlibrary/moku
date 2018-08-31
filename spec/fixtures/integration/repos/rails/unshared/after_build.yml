@@ -1,0 +1,12 @@
+- roles:
+    - web
+    - db
+    - app
+  bin: echo
+  opts: "eureka! > eureka_1.txt"
+- roles:
+    - web
+    - db
+    - app
+  bin: touch
+  opts: "eureka_2.txt"

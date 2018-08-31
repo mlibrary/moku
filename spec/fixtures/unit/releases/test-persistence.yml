@@ -10,9 +10,11 @@ releases:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb
     :shared:
-      - url: "."
-        commitish: d8354414fdd500469c984733c08daf57a066bcfb
-    :unshared: []
+      url: "."
+      commitish: d8354414fdd500469c984733c08daf57a066bcfb
+    :unshared:
+      url: "."
+      commitish: d8354414fdd500469c984733c08daf57a066bcfb
 - :user: bhock
   :time: '2017-11-13T11:32:00'
   :signature:
@@ -23,6 +25,8 @@ releases:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb
     :shared:
-      - url: "."
-        commitish: d8354414fdd500469c984733c08daf57a066bcfb
-    :unshared: []
+      url: "."
+      commitish: d8354414fdd500469c984733c08daf57a066bcfb
+    :unshared:
+      url: "."
+      commitish: d8354414fdd500469c984733c08daf57a066bcfb

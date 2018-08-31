@@ -57,32 +57,11 @@ module Fauxpaas
     end
 
     describe "#release" do
-      context "with empty shared, unshared" do
-        let(:signature) do
-          ReleaseSignature.new(
-            shared: [],
-            unshared: [],
-            deploy: deploy,
-            source: source
-          )
-        end
-        it "creates the shared dir" do
-          allow(fs).to receive(:mkdir_p).and_call_original
-          expect(fs).to receive(:mkdir_p).with(fs.tmpdir/"shared")
-          builder.build(signature)
-        end
-        it "creates the unshared dir" do
-          allow(fs).to receive(:mkdir_p).and_call_original
-          expect(fs).to receive(:mkdir_p).with(fs.tmpdir/"unshared")
-          builder.build(signature)
-        end
-      end
-
       context "with non-empty shared, unshared" do
         let(:signature) do
           ReleaseSignature.new(
-            shared: [shared],
-            unshared: [unshared],
+            shared: shared,
+            unshared: unshared,
             deploy: deploy,
             source: source
           )
