@@ -12,5 +12,7 @@
 
 ## More Info
 
+For development instructions, see `DESIGN.md`.
+
 See the documentation on
 [confluence](https://tools.lib.umich.edu/confluence/display/LD/Fauxpaas+for+Developers)

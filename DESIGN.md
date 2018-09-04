@@ -6,6 +6,22 @@ is not a guide for how to use it--that comes later.
 To begin, this project is implemented as a command-line utility. Many commands
 modify or query the program's state. It has no notion of sessions.
 
+## Getting Up and Running
+
+This project currently requires ruby 2.4.x, and doesn't quite support ruby 2.5.x. If you have
+rbenv and rbenv-aliases installed, it will pin to 2.4. Otherwise, ensure that the shell and
+subshells will run in 2.4.x.
+
+`git clone, bundle install, bundle exec rspec`
+
+The tests should ass out of the box.
+99% of the test run time is the integration tests, which are tagged as "integration".
+You can skip them by using rspec's tag feature, e.g. `--tag ~integration` will skip them,
+and just drop the tilde to only run the integration specs.
+
+Finally, the integration specs don't provide a lot of information when they fail by default.
+Set the environment variable `DEBUG` to `true` to see verbose output.
+
 
 ## Named Instance
 
