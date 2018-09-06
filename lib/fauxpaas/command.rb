@@ -110,22 +110,6 @@ module Fauxpaas
 
   # Rollback to a previous cache
   class RollbackCommand < Command
-    def initialize(instance_name:, user:, cache:)
-      super(instance_name: instance_name, user: user)
-      @cache = cache
-    end
-
-    attr_reader :cache
-
-    def action
-      :rollback
-    end
-
-    def execute
-      report(instance.interrogator
-        .rollback(instance.source.latest, cache),
-        action: "rollback")
-    end
   end
 
   # Show the existing caches

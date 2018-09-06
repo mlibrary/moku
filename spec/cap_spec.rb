@@ -115,7 +115,7 @@ module Fauxpaas
       end
     end
 
-    describe "#rollback" do
+    describe "#rollback", skip: true do
       let(:source) { double(:source, url: "someurl", commitish: "someref") }
       let(:cache) { "20160614133327" }
 

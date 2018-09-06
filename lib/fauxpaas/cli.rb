@@ -76,23 +76,6 @@ module Fauxpaas
         end
       end
 
-      desc "Initiate a rollback"
-      long_desc "Initiate a rollback to the specified cache if given, " \
-        "or the most recent one otherwise. Use with care"
-      arg "instance"
-      arg "cache", :optional
-      command :rollback do |c|
-        c.action do |global_options, _options, args|
-          invoker.add_command(
-            RollbackCommand.new(
-              instance_name: global_options[:instance_name],
-              user: global_options[:user],
-              cache: args.first
-            )
-          )
-        end
-      end
-
       desc "List cached releases"
       arg "instance"
       command :caches do |c|

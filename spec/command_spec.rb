@@ -169,7 +169,7 @@ module Fauxpaas
       end
     end
 
-    describe RollbackCommand do
+    describe RollbackCommand, skip: true do
       let(:command) do
         described_class.new(
           instance_name: instance_name,

@@ -34,16 +34,6 @@ module Fauxpaas
         .first
     end
 
-    # @param source [ArchiveReference]
-    # @param cache [String]
-    def rollback(source, cache)
-      _stdout, _stderr, status = run("deploy:rollback",
-        source_repo: source.url,
-        branch: source.commitish.to_s,
-        rollback_release: cache)
-      status
-    end
-
     def restart
       _stdout, _stderr, status = run("systemd:restart", {})
       status
