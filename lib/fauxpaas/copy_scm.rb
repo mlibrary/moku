@@ -2,6 +2,8 @@ require "capistrano/scm/plugin"
 require "pathname"
 
 module Fauxpaas
+  # A capistrano source control manager that uses standard file copy.
+  # Only works locally.
   class CopySCM < ::Capistrano::SCM::Plugin
 
     # Define any variables needed to configure the plugin.
