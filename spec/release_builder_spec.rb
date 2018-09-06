@@ -49,9 +49,9 @@ module Fauxpaas
 
     before(:each) do
       allow(unshared).to receive(:checkout)
-        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("infrastructure.yml")]))
+        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("unshared.yml")]))
       allow(shared).to receive(:checkout)
-        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("myshared.yml")]))
+        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("infrastructure.yml")]))
       allow(deploy).to receive(:checkout)
         .and_yield(FakeWorkingDir.new(fs.tmpdir, [runner.tmpdir/"deploy.yml"]))
     end
