@@ -68,10 +68,10 @@ module Fauxpaas
     end
 
     describe "#deploy" do
+      let(:source_path) { Pathname.new("some/path/source") }
       let(:shared_path) { Pathname.new("some/path/shared") }
       let(:unshared_path) { Pathname.new("some/path/unshared") }
-      let(:source) { double(:source, url: "someurl", commitish: "someref") }
-      subject { cap.deploy(source, shared_path, unshared_path) }
+      subject { cap.deploy(source_path, shared_path, unshared_path) }
 
       it_behaves_like "a cap task", "deploy"
 

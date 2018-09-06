@@ -13,15 +13,14 @@ module Fauxpaas
       @runner = runner
     end
 
-    # @param source [ArchiveReference]
+    # @param source_path [Pathname]
     # @param shared_path [Pathname]
     # @param unshared_path [Pathname]
-    def deploy(source, shared_path, unshared_path)
+    def deploy(source_path, shared_path, unshared_path)
       _, _, status = run("deploy",
+        source_path: source_path.to_s,
         shared_config_path: shared_path.to_s,
-        unshared_config_path: unshared_path.to_s,
-        source_repo: source.url,
-        branch: source.commitish.to_s)
+        unshared_config_path: unshared_path.to_s)
       status
     end
 

@@ -10,13 +10,7 @@ module Fauxpaas
   RSpec.describe Release do
     let(:success) { double(:success, success?: true) }
     let(:runner) { double(:runner, run: [nil, nil, success]) }
-    let(:source) do
-      ArchiveReference.new(
-        "source.git",
-        "1238019283019823019823091832",
-        Fauxpaas.git_runner
-      )
-    end
+    let(:source_path) { Pathname.new("/tmp/source") }
     let(:shared_path) { Pathname.new("/tmp/shared/structure") }
     let(:unshared_path) { Pathname.new("/tmp/unshared/structure") }
     let(:deploy_config) do
@@ -36,7 +30,7 @@ module Fauxpaas
         deploy_config: deploy_config,
         shared_path: shared_path,
         unshared_path: unshared_path,
-        source: source
+        source_path: source_path
       )
     end
 
@@ -53,7 +47,7 @@ module Fauxpaas
       end
       it "calls deploy with the source" do
         expect(runner).to receive(:deploy)
-          .with(source, anything, anything)
+          .with(source_path, anything, anything)
         release.deploy
       end
     end

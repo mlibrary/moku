@@ -2,8 +2,6 @@
 
 lock "~> 3.9.1"
 
-set :repo_url, ENV["SOURCE_REPO"]
-set :branch, ENV["BRANCH"]
 set :deploy_to, ENV["DEPLOY_DIR"] || fetch(:deploy_to)
 set :rails_env, ENV["RAILS_ENV"]
 set :assets_prefix, ENV["ASSETS_PREFIX"]
@@ -102,6 +100,7 @@ end
 after "deploy:updated", :open_public
 
 load File.join(File.dirname(__FILE__), "cap", "shared.rb")
+load File.join(File.dirname(__FILE__), "cap", "source.rb")
 load File.join(File.dirname(__FILE__), "cap", "unshared.rb")
 load File.join(File.dirname(__FILE__), "cap", "restart.rb")
 load File.join(File.dirname(__FILE__), "cap", "syslog.rb")
