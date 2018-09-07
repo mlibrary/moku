@@ -11,7 +11,7 @@ module Fauxpaas
     describe "deploy" do
       RSpec.shared_context "deploy setup" do |instance_name|
         before(:all) do
-          @root = Pathname.new(Dir.tmpdir)/"fauxpaas"/"sandbox"/instance_name
+          @root = Pathname.new(File.realpath(Dir.tmpdir))/"fauxpaas"/"sandbox"/instance_name
           `mkdir -p #{@root}`
           Fauxpaas.reset!
           Fauxpaas.initialize!

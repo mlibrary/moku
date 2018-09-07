@@ -36,16 +36,24 @@ module Fauxpaas
         end
       end
       describe "#chdir" do
+        before do
+          @dir = File.realpath(Dir.mktmpdir)
+        end
+
         it "changes directory" do
-          fs.chdir("/tmp") do
-            expect(`pwd`.strip).to eql("/tmp")
+          fs.chdir(@dir) do
+            expect(`pwd`.strip).to eql(@dir)
           end
         end
 
         it "changes back afterwards" do
           starting_dir = `pwd`.strip
-          fs.chdir("/tmp") {}
+          fs.chdir(@dir) {}
           expect(`pwd`.strip).to eql(starting_dir)
+        end
+
+        after do
+          FileUtils.remove_entry @dir
         end
       end
     end
@@ -61,14 +69,15 @@ module Fauxpaas
       describe "#mktmpdir" do
         context "when given a block" do
           it "creates a new directory" do
-            before = Pathname.new("/tmp").children
+            before = Pathname.new(File.realpath(Dir.tmpdir)).children
             fs.mktmpdir do |dir|
-              expect(before).to_not include(dir)
+              expect(before).to_not include(dir.realpath)
             end
           end
           it "yields the temporary dir" do
             fs.mktmpdir do |dir|
-              expect(dir.parent).to eql(Pathname.new("/tmp"))
+              tmp_base = Pathname.new(File.realpath(Dir.tmpdir))
+              expect(dir.parent.realpath).to eql(tmp_base)
             end
           end
           it "deletes it when the block completes" do
