@@ -22,7 +22,7 @@ module Fauxpaas
         shared_path: extract_ref(signature.shared, dir/"shared"),
         unshared_path: extract_ref(signature.unshared, dir/"unshared"),
         deploy_config: deploy_config(signature),
-        source: signature.source
+        source_path: extract_ref(signature.source, dir/"source")
       )
     end
 

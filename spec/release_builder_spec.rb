@@ -48,6 +48,8 @@ module Fauxpaas
     let(:builder) { described_class.new(fs) }
 
     before(:each) do
+      allow(source).to receive(:checkout)
+        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("some_source.rb")]))
       allow(unshared).to receive(:checkout)
         .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("unshared.yml")]))
       allow(shared).to receive(:checkout)
@@ -71,7 +73,7 @@ module Fauxpaas
           release = builder.build(signature)
           expect(release).to eql(
             Release.new(
-              source: signature.source,
+              source_path: fs.tmpdir/"source",
               shared_path: fs.tmpdir/"shared",
               unshared_path: fs.tmpdir/"unshared",
               deploy_config: DeployConfig.from_hash(deploy_content)
