@@ -19,10 +19,12 @@ module Fauxpaas
     def build(signature)
       dir = fs.mktmpdir
       Release.new(
+        artifact: Artifact.new(
         shared_path: extract_ref(signature.shared, dir/"shared"),
         unshared_path: extract_ref(signature.unshared, dir/"unshared"),
-        deploy_config: deploy_config(signature),
         source_path: extract_ref(signature.source, dir/"source")
+        ),
+        deploy_config: deploy_config(signature),
       )
     end
 

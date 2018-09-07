@@ -71,7 +71,8 @@ module Fauxpaas
       let(:source_path) { Pathname.new("some/path/source") }
       let(:shared_path) { Pathname.new("some/path/shared") }
       let(:unshared_path) { Pathname.new("some/path/unshared") }
-      subject { cap.deploy(source_path, shared_path, unshared_path) }
+      let(:artifact) { Artifact.new(source_path: source_path, shared_path: shared_path, unshared_path: unshared_path) }
+      subject { cap.deploy(artifact) }
 
       it_behaves_like "a cap task", "deploy"
 

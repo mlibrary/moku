@@ -10,9 +10,8 @@ module Fauxpaas
   RSpec.describe Release do
     let(:success) { double(:success, success?: true) }
     let(:runner) { double(:runner, run: [nil, nil, success]) }
-    let(:source_path) { Pathname.new("/tmp/source") }
-    let(:shared_path) { Pathname.new("/tmp/shared/structure") }
-    let(:unshared_path) { Pathname.new("/tmp/unshared/structure") }
+
+    let(:artifact) { double(:artifact) }
     let(:deploy_config) do
       double(:deploy_config,
         appname: "myapp-mystage",
@@ -28,26 +27,14 @@ module Fauxpaas
     let(:release) do
       described_class.new(
         deploy_config: deploy_config,
-        shared_path: shared_path,
-        unshared_path: unshared_path,
-        source_path: source_path
+        artifact: artifact,
       )
     end
 
     describe "#deploy" do
-      it "calls deploy with the shared_path" do
+      it "calls deploy with the artifact" do
         expect(runner).to receive(:deploy)
-          .with(anything, shared_path, anything)
-        release.deploy
-      end
-      it "calls deploy with the unshared_path" do
-        expect(runner).to receive(:deploy)
-          .with(anything, anything, unshared_path)
-        release.deploy
-      end
-      it "calls deploy with the source" do
-        expect(runner).to receive(:deploy)
-          .with(source_path, anything, anything)
+          .with(artifact)
         release.deploy
       end
     end

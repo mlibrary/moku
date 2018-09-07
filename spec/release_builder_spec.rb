@@ -69,13 +69,19 @@ module Fauxpaas
           )
         end
 
+        let(:artifact) do
+          Artifact.new(
+            source_path: fs.tmpdir/"source",
+            shared_path: fs.tmpdir/"shared",
+            unshared_path: fs.tmpdir/"unshared"
+          )
+        end
+
         it "builds the release that corresponds to the signature" do
           release = builder.build(signature)
           expect(release).to eql(
             Release.new(
-              source_path: fs.tmpdir/"source",
-              shared_path: fs.tmpdir/"shared",
-              unshared_path: fs.tmpdir/"unshared",
+              artifact: artifact,
               deploy_config: DeployConfig.from_hash(deploy_content)
             )
           )
