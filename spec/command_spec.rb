@@ -67,7 +67,6 @@ module Fauxpaas
 
       describe "#execute" do
         let(:release) { double(:release, deploy: status) }
-        let(:release_builder) { double(:release_builder) }
         let(:instance) do
           double(
             :instance,
@@ -83,9 +82,8 @@ module Fauxpaas
           )
         end
         before(:each) do
-          allow(ReleaseBuilder).to receive(:new).and_return(release_builder)
-          allow(release_builder).to receive(:build)
-            .with(instance.signature).and_return(release)
+          allow(Release).to receive(:new)
+            .with(signature: instance.signature,fs: anything).and_return(release)
         end
         context "when it succeeds" do
           let(:status) { double(:status, success?: true) }

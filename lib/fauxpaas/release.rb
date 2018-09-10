@@ -7,10 +7,18 @@ module Fauxpaas
   class Release
 
     # @param deploy_config [DeployConfig]
-    # @param built_release [BuiltRelease]
-    def initialize(deploy_config:, artifact:)
-      @deploy_config = deploy_config
-      @artifact = artifact
+    # @param artifact [Artifact]
+    def initialize(signature:, fs:,
+      artifact_factory: Artifact,
+      deploy_config_factory: DeployConfig)
+      @artifact = artifact_factory.new(signature: signature, fs: fs)
+
+      @deploy_config = fs.mktmpdir do |dir|
+        signature.deploy.checkout(dir) do |working_dir|
+          contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
+          deploy_config_factory.from_hash(contents)
+        end
+      end
     end
 
     def deploy
@@ -19,16 +27,9 @@ module Fauxpaas
         .deploy(artifact)
     end
 
-    def eql?(other)
-      [:@artifact, :@deploy_config].index do |var|
-        !instance_variable_get(var).eql?(other.instance_variable_get(var))
-      end.nil?
-    end
-
     private
 
-    attr_reader :artifact
-    attr_reader :deploy_config
+    attr_reader :artifact, :deploy_config
 
   end
 end

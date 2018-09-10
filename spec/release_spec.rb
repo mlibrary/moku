@@ -7,34 +7,65 @@ require "fauxpaas/archive_reference"
 require "yaml"
 
 module Fauxpaas
-  RSpec.describe Release do
-    let(:success) { double(:success, success?: true) }
-    let(:runner) { double(:runner, run: [nil, nil, success]) }
-
-    let(:artifact) { double(:artifact) }
-    let(:deploy_config) do
-      double(:deploy_config,
-        appname: "myapp-mystage",
-        deployer_env: "foo.rails",
-        assets_prefix: "assets",
-        rails_env: "production",
-        deploy_dir: "/path/to/deploy/dir")
+  class FakeWorkingDir
+    def initialize(dir, files)
+      @dir = dir
+      @files = files
     end
+    attr_reader :dir
+    def relative_files
+      @files
+    end
+  end
+
+  RSpec.describe Release do
+    let(:git_runner) { Fauxpaas.git_runner }
+
+    let(:fs) do
+      MemoryFilesystem.new(
+        git_runner.tmpdir/"deploy.yml" => YAML.dump({})
+      )
+    end
+
+    let(:success) { double(:success, success?: true) }
+    let(:deploy_runner) { double(:deploy_runner, run: [nil, nil, success]) }
+    let(:deploy_config) { double(:deploy_config, runner: deploy_runner) }
+    let(:deploy_config_factory) do
+      double(:deploy_config_factory,
+        from_hash: deploy_config)
+    end
+
+    let(:deploy) { double(:deploy) }
     before(:each) do
-      allow(deploy_config).to receive(:runner).and_return(runner)
+      allow(deploy).to receive(:checkout)
+        .and_yield(FakeWorkingDir.new(fs.tmpdir, [git_runner.tmpdir/"deploy.yml"]))
+    end
+
+    let(:signature) { double(:signature, deploy: deploy) }
+
+    let(:artifact) do
+      double(:artifact)
+    end
+
+    let(:artifact_factory) { double(:artifact_factory) }
+    before(:each) do
+      allow(artifact_factory).to receive(:new)
+        .with(signature: signature, fs: fs)
+        .and_return(artifact)
     end
 
     let(:release) do
       described_class.new(
-        deploy_config: deploy_config,
-        artifact: artifact,
+        signature: signature,
+        fs: fs,
+        artifact_factory: artifact_factory,
+        deploy_config_factory: deploy_config_factory
       )
     end
 
     describe "#deploy" do
       it "calls deploy with the artifact" do
-        expect(runner).to receive(:deploy)
-          .with(artifact)
+        expect(deploy_runner).to receive(:deploy).with(artifact)
         release.deploy
       end
     end
