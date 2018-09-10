@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Fauxpaas
+  # A set of files on disk as they will be uploaded to an
+  # application server. Pending work on AEIM-1357, AEIM-1361, AEIM-1362,
+  # AEIM-1375, AEIM-1363, etc to fully expose the proper shape of this.
   class Artifact
     def initialize(signature:, fs:)
       dir = fs.mktmpdir
@@ -16,6 +19,9 @@ module Fauxpaas
       path
     end
 
+    # This will be refacted in the course of AEIM-1357
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def add_reference(reference, base)
       fs.mkdir_p(base)
       fs.mktmpdir do |dir|
@@ -31,6 +37,8 @@ module Fauxpaas
         end
       end
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
 
     attr_reader :source_path, :shared_path, :unshared_path
 
