@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "fauxpaas"
+
 module Fauxpaas
 
   # Represetns a command within Fauxpaas
@@ -57,9 +59,14 @@ module Fauxpaas
 
     def execute
       signature = instance.signature(reference)
-      release = ReleaseBuilder.new(Fauxpaas.ref_repo).build(signature)
+
+      release = Release.new(
+        artifact: Artifact.new(signature: signature, ref_repo: Fauxpaas.ref_repo),
+        deploy_config: DeployConfig.from_ref(signature.deploy, Fauxpaas.ref_repo)
+      )
       status = release.deploy
       report(status, action: "deploy")
+
       if status.success?
         instance.log_release(LoggedRelease.new(user, Time.now, signature))
         Fauxpaas.instance_repo.save_releases(instance)

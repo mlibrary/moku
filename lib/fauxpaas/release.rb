@@ -6,33 +6,22 @@ module Fauxpaas
   # operations first create a release, and then attempt to deploy it.
   class Release
 
+    # @param artifact [Artifact]
     # @param deploy_config [DeployConfig]
-    # @param source_path [Pathname]
-    # @param shared_path [Pathname]
-    # @param unshared_path [Pathname]
-    def initialize(deploy_config:, source_path:, shared_path:, unshared_path:)
+    def initialize(artifact:, deploy_config:)
+      @artifact = artifact
       @deploy_config = deploy_config
-      @source_path = source_path
-      @shared_path = shared_path
-      @unshared_path = unshared_path
     end
 
     def deploy
       deploy_config
         .runner
-        .deploy(source_path, shared_path, unshared_path)
-    end
-
-    def eql?(other)
-      [:@shared_path, :@unshared, :@source_path, :@deploy_config].index do |var|
-        instance_variable_get(var) != other.instance_variable_get(var)
-      end.nil?
+        .deploy(artifact)
     end
 
     private
 
-    attr_reader :shared_path, :unshared_path, :source_path
-    attr_reader :deploy_config
+    attr_reader :artifact, :deploy_config
 
   end
 end

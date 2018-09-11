@@ -14,7 +14,7 @@ subshells will run in 2.4.x.
 
 `git clone, bundle install, bundle exec rspec`
 
-The tests should ass out of the box.
+The tests should pass out of the box.
 99% of the test run time is the integration tests, which are tagged as "integration".
 You can skip them by using rspec's tag feature, e.g. `--tag ~integration` will skip them,
 and just drop the tilde to only run the integration specs.

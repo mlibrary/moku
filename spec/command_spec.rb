@@ -2,6 +2,9 @@
 
 require_relative "spec_helper"
 require "fauxpaas/command"
+require "fauxpaas/artifact"
+require "fauxpaas/deploy_config"
+require "fauxpaas/release"
 
 module Fauxpaas
   RSpec.describe "commands" do
@@ -67,7 +70,9 @@ module Fauxpaas
 
       describe "#execute" do
         let(:release) { double(:release, deploy: status) }
-        let(:release_builder) { double(:release_builder) }
+        let(:artifact) { double(:artifact) }
+        let(:deploy_config) { double(:deploy_config) }
+        let(:signature) { double(:signature, deploy: double(:deploy_ref)) }
         let(:instance) do
           double(
             :instance,
@@ -78,14 +83,17 @@ module Fauxpaas
               restart: OpenStruct.new(success?: true)),
             source: double(:source, latest: double(:latest)),
             log_release: true,
-            signature: double(:signature),
+            signature: signature,
             releases: ["one", "two", "three"]
           )
         end
         before(:each) do
-          allow(ReleaseBuilder).to receive(:new).and_return(release_builder)
-          allow(release_builder).to receive(:build)
-            .with(instance.signature).and_return(release)
+          allow(DeployConfig).to receive(:from_ref).with(signature.deploy, Fauxpaas.ref_repo)
+            .and_return(deploy_config)
+          allow(Artifact).to receive(:new).with(signature: signature, ref_repo: Fauxpaas.ref_repo)
+            .and_return(artifact)
+          allow(Release).to receive(:new).with(artifact: artifact, deploy_config: deploy_config)
+            .and_return(release)
         end
         context "when it succeeds" do
           let(:status) { double(:status, success?: true) }

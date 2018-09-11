@@ -37,12 +37,12 @@ module Fauxpaas
 
     # Create a place to store a downloaded ref
     def dir_for(ref)
-      subdir = dir/hash(ref)
+      subdir = dir/unique_hash(ref)
       FileUtils.mkdir_p subdir
       subdir
     end
 
-    def hash(ref)
+    def unique_hash(ref)
       "#{ref.url}#{ref.commitish}".hash.to_s
     end
 
