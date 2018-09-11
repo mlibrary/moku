@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "fauxpaas/release_builder"
+require "fauxpaas/release"
 require "pathname"
 
 module Fauxpaas

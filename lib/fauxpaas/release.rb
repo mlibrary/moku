@@ -7,32 +7,29 @@ module Fauxpaas
   class Release
 
     # @param deploy_config [DeployConfig]
-    # @param source_path [Pathname]
-    # @param shared_path [Pathname]
-    # @param unshared_path [Pathname]
-    def initialize(deploy_config:, source_path:, shared_path:, unshared_path:)
-      @deploy_config = deploy_config
-      @source_path = source_path
-      @shared_path = shared_path
-      @unshared_path = unshared_path
+    # @param artifact [Artifact]
+    def initialize(signature:, fs:,
+      artifact_factory: Artifact,
+      deploy_config_factory: DeployConfig)
+      @artifact = artifact_factory.new(signature: signature, fs: fs)
+
+      @deploy_config = fs.mktmpdir do |dir|
+        signature.deploy.checkout(dir) do |working_dir|
+          contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
+          deploy_config_factory.from_hash(contents)
+        end
+      end
     end
 
     def deploy
       deploy_config
         .runner
-        .deploy(source_path, shared_path, unshared_path)
-    end
-
-    def eql?(other)
-      [:@shared_path, :@unshared, :@source_path, :@deploy_config].index do |var|
-        instance_variable_get(var) != other.instance_variable_get(var)
-      end.nil?
+        .deploy(artifact)
     end
 
     private
 
-    attr_reader :shared_path, :unshared_path, :source_path
-    attr_reader :deploy_config
+    attr_reader :artifact, :deploy_config
 
   end
 end

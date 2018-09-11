@@ -16,11 +16,11 @@ module Fauxpaas
     # @param source_path [Pathname]
     # @param shared_path [Pathname]
     # @param unshared_path [Pathname]
-    def deploy(source_path, shared_path, unshared_path)
+    def deploy(artifact)
       _, _, status = run("deploy",
-        source_path: source_path.to_s,
-        shared_config_path: shared_path.to_s,
-        unshared_config_path: unshared_path.to_s)
+        source_path: artifact.source_path.to_s,
+        shared_config_path: artifact.shared_path.to_s,
+        unshared_config_path: artifact.unshared_path.to_s)
       status
     end
 
@@ -44,7 +44,7 @@ module Fauxpaas
     # @param args [String] Optional arguments as a single string
     def exec(env:, role:, bin:, args: "")
       stdout, stderr, status = run("commands:run_one",
-        faux_vars: env.map{|pair| pair.join("=")}.join(":"),
+        faux_vars: env.map {|pair| pair.join("=") }.join(":"),
         faux_bin: bin,
         faux_args: args,
         faux_role: role)

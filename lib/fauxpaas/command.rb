@@ -57,7 +57,7 @@ module Fauxpaas
 
     def execute
       signature = instance.signature(reference)
-      release = ReleaseBuilder.new(Fauxpaas.filesystem).build(signature)
+      release = Release.new(signature: signature, fs: Fauxpaas.filesystem)
       status = release.deploy
       report(status, action: "deploy")
       if status.success?
