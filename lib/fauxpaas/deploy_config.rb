@@ -3,6 +3,7 @@
 require "core_extensions/hash/keys"
 require "fauxpaas/cap"
 require "ostruct"
+require "yaml"
 
 module Fauxpaas
 
@@ -10,8 +11,20 @@ module Fauxpaas
   # instance gets deployed.
   class DeployConfig < OpenStruct
 
+    # @param hash [Hash]
     def self.from_hash(hash)
       new(hash.symbolize_keys)
+    end
+
+    # @param dir [Lazy::Directory]
+    def self.from_dir(dir)
+      from_hash(YAML.load(File.read(dir.path/"deploy.yml")))
+    end
+
+    # @param ref [ArchiveReference]
+    # @param ref_repo [ReferenceRepo]
+    def self.from_ref(ref, ref_repo)
+      from_dir(ref_repo.resolve(ref))
     end
 
     def initialize(hash = {})
