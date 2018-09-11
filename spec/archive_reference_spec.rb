@@ -46,41 +46,6 @@ module Fauxpaas
       end
     end
 
-    describe "#checkout" do
-      let(:cloned_dir) { Pathname.new("/tmp/foo/fauxpaas") }
-      let(:relative_files) { [Pathname.new("out.txt"), Pathname.new("in.txt")] }
-      let(:real_files) { relative_files.map {|f| cloned_dir/f } }
-      let(:dir) { "fakedir" }
-      let(:wd) do
-        double(:wd,
-          dir: cloned_dir,
-          relative_files: relative_files,
-          real_files: real_files)
-      end
-      before(:each) { allow(runner).to receive(:safe_checkout).and_return(wd) }
-      it "yields a WorkingDirectory with correct relative_paths" do
-        reference.checkout(dir) do |wd|
-          expect(wd.relative_files).to match_array([
-            Pathname.new("out.txt"),
-            Pathname.new("in.txt")
-          ])
-        end
-      end
-      it "yields a WorkingDirectory with correct real_paths" do
-        reference.checkout(dir) do |wd|
-          expect(wd.real_files).to match_array([
-            cloned_dir/"out.txt",
-            cloned_dir/"in.txt"
-          ])
-        end
-      end
-      it "yields a WorkingDirectory with correct dir" do
-        reference.checkout(dir) do |wd|
-          expect(wd.dir).to eql(cloned_dir)
-        end
-      end
-    end
-
     describe "#latest" do
       it "resolves the default_branch to its latest commit" do
         expect(reference.latest).to eql(

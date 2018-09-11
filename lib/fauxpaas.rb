@@ -18,6 +18,7 @@ require "fauxpaas/logged_releases"
 require "fauxpaas/open3_capture"
 require "fauxpaas/passthrough_runner"
 require "fauxpaas/policy"
+require "fauxpaas/reference_repo"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
 require "fauxpaas/remote_git_resolver"
@@ -86,6 +87,12 @@ module Fauxpaas
             remote_resolver: Fauxpaas::RemoteGitResolver.new(c.system_runner)
           )
         end
+        container.register(:ref_repo) do |c|
+          Fauxpaas::ReferenceRepo.new(
+            c.ref_root,
+            c.git_runner
+          )
+        end
         container.register(:instance_repo) do |c|
           Fauxpaas::FileInstanceRepo.new(
             c.instance_root,
@@ -115,6 +122,9 @@ module Fauxpaas
         end
         container.register(:deployer_env_root) do
           Pathname.new(settings.deployer_env_root).expand_path(Fauxpaas.root)
+        end
+        container.register(:ref_root) do
+          Pathname.new(settings.ref_root).expand_path(Fauxpaas.root)
         end
         container.register(:split_token) { settings.split_token.chomp }
         container.register(:unshared_name) { settings.unshared_name.chomp }

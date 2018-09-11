@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
-require "fauxpaas/release_signature"
 require "fauxpaas/release"
-require "fauxpaas/filesystem"
+require "fauxpaas/deploy_config"
+require "pathname"
 
 module Fauxpaas
 
   # Build a release from a signature
   class ReleaseBuilder
 
-    # @param fs [Filesystem]
-    def initialize(fs)
-      @fs = fs
+    # @param ref_repo [ReferenceRepo]
+    def initialize(ref_repo)
+      @ref_repo = ref_repo
     end
 
     # @param signature [ReleaseSignature]
     # @return [Release]
     def build(signature)
-      dir = fs.mktmpdir
+      dir = Pathname.new(Dir.mktmpdir)
       Release.new(
         shared_path: extract_ref(signature.shared, dir/"shared"),
         unshared_path: extract_ref(signature.unshared, dir/"unshared"),
@@ -28,37 +28,17 @@ module Fauxpaas
 
     private
 
-    attr_reader :fs
+    attr_reader :ref_repo
 
     def deploy_config(signature)
-      @deploy_config ||= fs.mktmpdir do |dir|
-        signature.deploy.checkout(dir) do |working_dir|
-          contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
-          DeployConfig.from_hash(contents)
-        end
-      end
+      @deploy_config ||= DeployConfig.from_ref(signature.deploy, ref_repo)
     end
 
     def extract_ref(ref, path)
-      fs.mkdir_p path
-      add_reference(ref, path)
-      path
-    end
-
-    def add_reference(reference, base)
-      fs.mkdir_p(base)
-      fs.mktmpdir do |dir|
-        reference.checkout(dir) do |working_dir|
-          working_dir
-            .relative_files
-            .reject {|path| fs.directory?(path) }
-            .map {|file| [working_dir.dir/file, base/file] }
-            .each do |src, dest|
-              fs.mkdir_p(dest.dirname)
-              fs.cp(src, dest)
-            end
-        end
-      end
+      ref_repo.resolve(ref)
+        .cp(path)
+        .write
+        .path
     end
 
   end
