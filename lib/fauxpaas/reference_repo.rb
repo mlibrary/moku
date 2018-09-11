@@ -1,7 +1,12 @@
+# frozen_string_literal: true
+
 require "fauxpaas/lazy/directory"
 require "fileutils"
 
 module Fauxpaas
+
+  # Responsible for downloading references and converting them to files.
+  # Provides an anchor point for features such as reference caching.
   class ReferenceRepo
 
     # @param dir [Pathname] A directory in which to store

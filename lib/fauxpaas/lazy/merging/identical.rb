@@ -1,9 +1,14 @@
+# frozen_string_literal: true
+
 require "fauxpaas/lazy/origin"
 
 module Fauxpaas
   module Lazy
     module Merging
 
+      # Controls the identify property for merging origins. I.e. two
+      # origins with the same location are identical, and a single
+      # origin is identical to itself.
       class Identical < Origin
         register(self)
 
@@ -19,7 +24,7 @@ module Fauxpaas
           sources.first.read
         end
 
-        def is_merge?
+        def merge?
           false
         end
       end

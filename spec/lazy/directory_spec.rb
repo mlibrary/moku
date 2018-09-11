@@ -57,6 +57,7 @@ module Fauxpaas
         expect(described_class.for(path).path).to eql(path)
       end
 
+      # This behavior requires mocking the filesystem
       xit "stores the files" do
         expect(described_class.for(path).files).to contain_exactly(*files)
       end

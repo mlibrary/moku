@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/lazy/origin"
 require "yaml"
 require "ettin"
@@ -6,6 +8,7 @@ module Fauxpaas
   module Lazy
     module Merging
 
+      # A strategy for merging two yaml files.
       class Yaml < Origin
         register(self)
 

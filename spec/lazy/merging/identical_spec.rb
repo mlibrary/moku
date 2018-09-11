@@ -36,9 +36,9 @@ module Fauxpaas
       end
     end
 
-    describe "#is_merge?" do
+    describe "#merge?" do
       it "is false" do
-        expect(described_class.new(1,1).is_merge?).to be false
+        expect(described_class.new(1,1).merge?).to be false
       end
     end
 

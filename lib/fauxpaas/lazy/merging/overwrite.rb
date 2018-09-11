@@ -1,9 +1,13 @@
+# frozen_string_literal: true
+
 require "fauxpaas/lazy/origin"
 
 module Fauxpaas
   module Lazy
     module Merging
 
+      # The overwrite strategy; the lhs origin is preferred
+      # over the rhs. This is a default strategy.
       class Overwrite < Origin
         register_default(self)
 

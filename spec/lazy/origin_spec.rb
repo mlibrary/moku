@@ -44,17 +44,17 @@ module Fauxpaas
       end
     end
 
-    describe "#is_merge?" do
+    describe "#merge?" do
       context "with exactly one source" do
         let(:origin) { described_class.new(1) }
         it "is false" do
-          expect(origin.is_merge?).to be false
+          expect(origin.merge?).to be false
         end
       end
       context "with more than one source" do
         let(:origin) { described_class.new(1, 2) }
         it "is true" do
-          expect(origin.is_merge?).to be true
+          expect(origin.merge?).to be true
         end
       end
     end
@@ -76,14 +76,14 @@ module Fauxpaas
       end
 
       context "when it is a merge" do
-        before(:each) { allow(origin).to receive(:is_merge?).and_return(true) }
+        before(:each) { allow(origin).to receive(:merge?).and_return(true) }
         it "writes the contents" do
           expect(::File).to receive(:write).with(dest, contents)
           origin.write(dest)
         end
       end
       context "when it is not a merge" do
-        before(:each) { allow(origin).to receive(:is_merge?).and_return(false) }
+        before(:each) { allow(origin).to receive(:merge?).and_return(false) }
         it "copies the path" do
           expect(::FileUtils).to receive(:cp).with(source, dest)
           origin.write(dest)
