@@ -17,8 +17,6 @@ gem "ettin", "~> 1.1.0"
 gem "gli"
 gem "terminal-table"
 
-gem "fauxpaas", path: "."
-
 group :development, :test do
   gem "fakefs"
   gem "pry"
