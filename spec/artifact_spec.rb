@@ -2,55 +2,51 @@
 
 require_relative "spec_helper"
 require "fauxpaas/artifact"
+require "pathname"
 
 module Fauxpaas
-  class FakeWorkingDir
-    def initialize(dir, files)
-      @dir = dir
-      @files = files
+  class FakeLazyDir
+    attr_reader :path
+    def initialize(path)
+      @path = path
     end
-    attr_reader :dir
-    def relative_files
-      @files
+
+    def cp(base)
+      self.class.new(base)
+    end
+
+    def write
+      self
     end
   end
 
   RSpec.describe Artifact do
+    let(:ref_repo) { double(:ref_repo) }
+    let(:tmpdir) { Pathname.new "/tmp/dir" }
     let(:source) { double(:source) }
     let(:shared) { double(:shared) }
     let(:deploy) { double(:deploy) }
     let(:unshared) { double(:unshared) }
 
-    let(:runner) { Fauxpaas.git_runner }
-
-    let(:fs) do
-      MemoryFilesystem.new(
-        runner.tmpdir/"infrastructure.yml" => YAML.dump(a: 1, b: 2),
-        runner.tmpdir/"my_shared.yml" => YAML.dump("blahblah")
-)
-    end
-
     before(:each) do
-      allow(source).to receive(:checkout)
-        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("some_source.rb")]))
-      allow(unshared).to receive(:checkout)
-        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("unshared.yml")]))
-      allow(shared).to receive(:checkout)
-        .and_yield(FakeWorkingDir.new(fs.tmpdir, [Pathname.new("infrastructure.yml")]))
+      allow(Dir).to receive(:mktmpdir).and_return(tmpdir.to_s)
+      allow(ref_repo).to receive(:resolve).with(source).and_return(FakeLazyDir.new("/some_source"))
+      allow(ref_repo).to receive(:resolve).with(shared).and_return(FakeLazyDir.new("/some_shared"))
+      allow(ref_repo).to receive(:resolve).with(unshared).and_return(FakeLazyDir.new("/some_unshared"))
     end
 
     let(:signature) { double(:signature, shared: shared, unshared: unshared, source: source) }
 
-    let(:built_release) { described_class.new(signature: signature, fs: fs) }
+    let(:built_artifact) { described_class.new(signature: signature, ref_repo: ref_repo) }
 
     it "can be constructed" do
-      expect(built_release).not_to be_nil
+      expect(built_artifact).not_to be_nil
     end
 
     [:source, :shared, :unshared].each do |attr|
       describe "#{attr}_path" do
         it "returns the #{attr}_path corresponding to the signature" do
-          expect(built_release.public_send(:"#{attr}_path")).to eq(fs.tmpdir/attr.to_s)
+          expect(built_artifact.public_send(:"#{attr}_path")).to eq(tmpdir/attr.to_s)
         end
       end
     end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require "fauxpaas/release"
+require "fauxpaas/release_signature"
+require "fauxpaas/deploy_config"
 require "pathname"
 
 module Fauxpaas
@@ -40,8 +41,8 @@ module Fauxpaas
     end
 
     # @return [Cap] A deployer
-    def interrogator(fs = Filesystem.new)
-      deploy_config(fs).runner
+    def interrogator(ref_repo = Fauxpaas.ref_repo)
+      deploy_config(ref_repo).runner
     end
 
     # @return [String]
@@ -61,13 +62,8 @@ module Fauxpaas
 
     private
 
-    def deploy_config(fs)
-      @deploy_config ||= fs.mktmpdir do |dir|
-        deploy.latest.checkout(dir) do |working_dir|
-          contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
-          DeployConfig.from_hash(contents)
-        end
-      end
+    def deploy_config(ref_repo)
+      @deploy_config ||= DeployConfig.from_ref(deploy.latest, ref_repo)
     end
 
   end

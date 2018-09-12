@@ -6,19 +6,11 @@ module Fauxpaas
   # operations first create a release, and then attempt to deploy it.
   class Release
 
-    # @param deploy_config [DeployConfig]
     # @param artifact [Artifact]
-    def initialize(signature:, fs:,
-      artifact_factory: Artifact,
-      deploy_config_factory: DeployConfig)
-      @artifact = artifact_factory.new(signature: signature, fs: fs)
-
-      @deploy_config = fs.mktmpdir do |dir|
-        signature.deploy.checkout(dir) do |working_dir|
-          contents = YAML.safe_load(fs.read(working_dir.dir/"deploy.yml"))
-          deploy_config_factory.from_hash(contents)
-        end
-      end
+    # @param deploy_config [DeployConfig]
+    def initialize(artifact:, deploy_config:)
+      @artifact = artifact
+      @deploy_config = deploy_config
     end
 
     def deploy

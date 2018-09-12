@@ -62,17 +62,6 @@ module Fauxpaas
       self.class.new(url, new_branch, runner)
     end
 
-    # @yield [GitRunner::WorkingDirectory] The directory in which
-    #   the content has been checked out.
-    def checkout(dir)
-      working_dir = runner.safe_checkout(url, commitish, dir)
-      if block_given?
-        yield working_dir
-      else
-        working_dir
-      end
-    end
-
     def eql?(other)
       url == other.url && commitish == other.commitish
     end
