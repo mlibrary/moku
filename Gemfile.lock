@@ -1,16 +1,3 @@
-PATH
-  remote: .
-  specs:
-    fauxpaas (0.2.0)
-      canister
-      capistrano (~> 3.9.1)
-      capistrano-bundler
-      capistrano-rails
-      capistrano-rbenv
-      ettin (~> 1.1.0)
-      gli
-      terminal-table
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -103,7 +90,6 @@ DEPENDENCIES
   capistrano-rbenv
   ettin (~> 1.1.0)
   fakefs
-  fauxpaas!
   gli
   pry
   rake (~> 10.0)
