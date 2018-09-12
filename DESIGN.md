@@ -22,6 +22,9 @@ and just drop the tilde to only run the integration specs.
 Finally, the integration specs don't provide a lot of information when they fail by default.
 Set the environment variable `DEBUG` to `true` to see verbose output.
 
+When you create a PR, code climate will yell at you. Rubocop is built into repo, and can be
+run with `bundle exec rubocop`. Try `--help`
+
 
 ## Named Instance
 
