@@ -2,6 +2,7 @@
 
 require "fauxpaas/version"
 require "fauxpaas/archive_reference"
+require "fauxpaas/artifact"
 require "fauxpaas/auth_service"
 require "fauxpaas/cap"
 require "fauxpaas/cap_runner"

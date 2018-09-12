@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "fauxpaas/artifact"
+
 module Fauxpaas
 
   # Uniquely identifies a deployed instance at a point in time. All deployment

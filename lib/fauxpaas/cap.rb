@@ -13,14 +13,10 @@ module Fauxpaas
       @runner = runner
     end
 
-    # @param source_path [Pathname]
-    # @param shared_path [Pathname]
-    # @param unshared_path [Pathname]
+    # @param artifact [Artifact]
     def deploy(artifact)
       _, _, status = run("deploy",
-        source_path: artifact.source_path.to_s,
-        shared_config_path: artifact.shared_path.to_s,
-        unshared_config_path: artifact.unshared_path.to_s)
+        source_path: artifact.path.to_s)
       status
     end
 

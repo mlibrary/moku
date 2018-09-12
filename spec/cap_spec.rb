@@ -68,32 +68,12 @@ module Fauxpaas
     end
 
     describe "#deploy" do
-      let(:source_path) { Pathname.new("some/path/source") }
-      let(:shared_path) { Pathname.new("some/path/shared") }
-      let(:unshared_path) { Pathname.new("some/path/unshared") }
-      let(:artifact) { double(:artifact, source_path: source_path,
-                              shared_path: shared_path,
-                              unshared_path: unshared_path) }
+      let(:path) { Pathname.new("some/path") }
+      let(:artifact) { double(:artifact, path: path) }
 
       subject { cap.deploy(artifact) }
 
       it_behaves_like "a cap task", "deploy"
-
-      it "sets :shared_path" do
-        expect(backend_runner).to receive(:run)
-          .with(anything, anything, anything, a_hash_including(
-            shared_config_path: shared_path.to_s
-        ))
-        subject
-      end
-
-      it "sets :unshared_path" do
-        expect(backend_runner).to receive(:run)
-          .with(anything, anything, anything, a_hash_including(
-            unshared_config_path: unshared_path.to_s
-        ))
-        subject
-      end
     end
 
     describe "#caches" do
@@ -151,7 +131,7 @@ module Fauxpaas
       let(:role) { "app" }
       let(:bin) { "bundle" }
       let(:args) { "exec rake db:dostuff" }
-      let(:env) {{ foo: "bar", boom: "parrot" }}
+      let(:env) { { foo: "bar", boom: "parrot" } }
 
       subject { cap.exec(role: role, bin: bin, args: args, env: env) }
 
