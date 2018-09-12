@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "bundler/setup"
 require "fauxpaas/version"
 require "fauxpaas/archive_reference"
 require "fauxpaas/artifact"
