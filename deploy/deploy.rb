@@ -99,9 +99,7 @@ end
 
 after "deploy:updated", :open_public
 
-load File.join(File.dirname(__FILE__), "cap", "shared.rb")
 load File.join(File.dirname(__FILE__), "cap", "source.rb")
-load File.join(File.dirname(__FILE__), "cap", "unshared.rb")
 load File.join(File.dirname(__FILE__), "cap", "restart.rb")
 load File.join(File.dirname(__FILE__), "cap", "syslog.rb")
 load File.join(File.dirname(__FILE__), "cap", "commands.rb")

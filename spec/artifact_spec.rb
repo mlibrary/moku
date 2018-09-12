@@ -32,22 +32,28 @@ module Fauxpaas
       allow(Dir).to receive(:mktmpdir).and_return(tmpdir.to_s)
       allow(ref_repo).to receive(:resolve).with(source).and_return(FakeLazyDir.new("/some_source"))
       allow(ref_repo).to receive(:resolve).with(shared).and_return(FakeLazyDir.new("/some_shared"))
-      allow(ref_repo).to receive(:resolve).with(unshared).and_return(FakeLazyDir.new("/some_unshared"))
+      allow(ref_repo).to receive(:resolve).with(unshared)
+        .and_return(FakeLazyDir.new("/some_unshared"))
     end
 
     let(:signature) { double(:signature, shared: shared, unshared: unshared, source: source) }
 
-    let(:built_artifact) { described_class.new(signature: signature, ref_repo: ref_repo) }
+    let(:artifact) { described_class.new(signature: signature, ref_repo: ref_repo) }
 
     it "can be constructed" do
-      expect(built_artifact).not_to be_nil
+      expect(artifact).not_to be_nil
+    end
+
+    it "returns the temporary directory with the artifacts" do
+      expect(artifact.path).to eq(tmpdir)
     end
 
     [:source, :shared, :unshared].each do |attr|
-      describe "#{attr}_path" do
-        it "returns the #{attr}_path corresponding to the signature" do
-          expect(built_artifact.public_send(:"#{attr}_path")).to eq(tmpdir/attr.to_s)
-        end
+      it "resolves the #{attr} repository" do
+        expect(ref_repo).to receive(:resolve).with(send(attr))
+          .and_return(FakeLazyDir.new("/some_#{attr}"))
+
+        artifact
       end
     end
   end
