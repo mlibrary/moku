@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "fauxpaas/lazy/directory"
+require "fauxpaas/lazy"
 require "fileutils"
 
 module Fauxpaas
