@@ -61,7 +61,7 @@ module Fauxpaas
       signature = instance.signature(reference)
 
       release = Release.new(
-        artifact: Artifact.new(signature: signature, ref_repo: Fauxpaas.ref_repo),
+        artifact: Fauxpaas.artifact_builder.build(signature),
         deploy_config: DeployConfig.from_ref(signature.deploy, Fauxpaas.ref_repo)
       )
       status = release.deploy
