@@ -48,6 +48,9 @@ tags
 # testbed
 /sandbox
 
+# We're a gem
+/Gemfile.lock
+
 # These dirs are for users
 /data
 /data/instances/*
