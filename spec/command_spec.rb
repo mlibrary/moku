@@ -88,10 +88,10 @@ module Fauxpaas
           )
         end
         before(:each) do
+          allow(Fauxpaas.artifact_builder).to receive(:build).with(signature)
+            .and_return(artifact)
           allow(DeployConfig).to receive(:from_ref).with(signature.deploy, Fauxpaas.ref_repo)
             .and_return(deploy_config)
-          allow(Artifact).to receive(:new).with(signature: signature, ref_repo: Fauxpaas.ref_repo)
-            .and_return(artifact)
           allow(Release).to receive(:new).with(artifact: artifact, deploy_config: deploy_config)
             .and_return(release)
         end
