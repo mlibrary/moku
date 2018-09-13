@@ -24,6 +24,7 @@ module Fauxpaas
       add_references!(signature, path)
       install_local_gems(path)
       finish_build!(path)
+			set_access_control(path)
       factory.new(path)
     end
 
@@ -69,6 +70,36 @@ module Fauxpaas
           end
         end
       end
+    end
+
+		# Set the mode bits on all files in the Artifact
+		# @param path [Pathname]
+		# @param asset_dir [String]
+		def set_access_control(path, asset_dir = "public")
+			asset_path = path/asset_dir
+
+      # Set permissions on artifact
+      if Dir.exist?(path)
+        Find.find(path) do |found_path|
+          if File.directory?(found_path)
+            FileUtils.chmod(2770, found_path)
+          else
+            FileUtils.chmod(0660, found_path)
+          end
+        end
+      end
+
+      # If asset directory exists set permissions on it also
+      if Dir.exists?(asset_path)
+        Find.find(asset_path) do |found_path|
+          if File.directory?(found_path)
+            FileUtils.chmod(2775, found_path)
+          else
+            FileUtils.chmod(0664, found_path)
+          end
+        end
+      end
+
     end
 
   end
