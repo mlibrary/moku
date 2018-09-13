@@ -8,8 +8,10 @@ modify or query the program's state. It has no notion of sessions.
 
 ## Getting Up and Running
 
-This project currently requires ruby 2.4.x, and doesn't quite support ruby 2.5.x. If you have
-rbenv and rbenv-aliases installed, it will pin to 2.4. Otherwise, ensure that the shell and
+This project currently requires ruby 2.4.x, and doesn't quite support ruby 2.5.x. Ruby
+must be installed with rbenv, and the environment RBENV\_ROOT needs to point to your
+installation. Your rbenv install should handle that automatically. If you have
+rbenv-aliases installed, the project will pin to 2.4. Otherwise, ensure that the shell and
 subshells will run in 2.4.x.
 
 `git clone, bundle install, bundle exec rspec`
