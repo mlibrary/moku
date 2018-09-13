@@ -8,8 +8,6 @@ deploy_to = File.join(Dir.tmpdir, "fauxpaas", "sandbox", "test-rails")
 
 set :deploy_to, deploy_to
 
-set :rbenv_custom_path, "/usr/local/rbenv"
-
 server "localhost",
   roles: ["app"],
   user: ENV["USER"],

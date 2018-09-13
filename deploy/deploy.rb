@@ -36,7 +36,7 @@ set :bundle_jobs, 4                                             # default: nil
 # intentionally omit setting :rbenv_ruby
 set :rbenv_type, :system
 set :rbenv_map_bins, ["rake", "gem", "bundle", "ruby", "rails", "pry"]
-set :rbenv_custom_path, "/l/local/rbenv"
+set :rbenv_custom_path, ENV["RBENV_ROOT"]
 set :rbenv_prefix, lambda {
   "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} " \
     "#{fetch(:rbenv_path)}/bin/rbenv exec"
