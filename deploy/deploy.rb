@@ -18,20 +18,14 @@ set :keep_releases, 5
 set :local_user, "faux"
 set :pty, false
 
-# Configure capistrano-bundler
-set :bundle_roles, :all                                         # this is default
-set :bundle_servers, -> { release_roles(fetch(:bundle_roles)) } # this is default
-set :bundle_path, -> { shared_path.join("bundle") }             # this is default
-set :bundle_without, (["development", "test"] - [ENV["RAILS_ENV"]]).join(" ")
-set :bundle_flags, "--deployment"
-set :bundle_env_variables, {}                                   # this is default
-set :bundle_clean_options, ""                                   # this is default
-set :bundle_jobs, 4                                             # default: nil
+# We only link files that would be non-sensical to be release-specific.
+# This notably does not contain developer configuration.
+append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
 # Configure capistrano-rbenv
 # intentionally omit setting :rbenv_ruby
 set :rbenv_type, :system
-set :rbenv_map_bins, ["rake", "gem", "bundle", "ruby", "rails", "pry"]
+set :rbenv_map_bins, ["rake", "gem", "ruby", "rails", "pry"]
 set :rbenv_custom_path, ENV["RBENV_ROOT"]
 set :rbenv_prefix, lambda {
   "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} " \

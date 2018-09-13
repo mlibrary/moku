@@ -46,6 +46,7 @@ module Fauxpaas
       let(:deploy) { double(:deploy) }
       let(:unshared) { double(:unshared) }
       let(:signature) { double(:signature, shared: shared, unshared: unshared, source: source) }
+      let(:bundle_exit) { double(:bundle_exit) }
 
       before(:each) do
         allow(Dir).to receive(:mktmpdir).and_return(tmpdir.to_s)
@@ -55,6 +56,10 @@ module Fauxpaas
           .and_return(FakeLazyDir.new("/some_shared"))
         allow(ref_repo).to receive(:resolve).with(unshared)
           .and_return(FakeLazyDir.new("/some_unshared"))
+
+        allow(Dir).to receive(:chdir) { |path, &block| block.call }
+        allow(Fauxpaas.system_runner).to receive(:run).and_return([nil, nil, bundle_exit])
+        allow(bundle_exit).to receive(:success?).and_return(true)
       end
 
       it "constructs artifacts" do
@@ -71,6 +76,16 @@ module Fauxpaas
             .and_return(FakeLazyDir.new("/some_#{attr}"))
 
           builder.build(signature)
+        end
+      end
+
+      context "when bundle install fails" do
+        before(:each) do
+          allow(bundle_exit).to receive(:success?).and_return(false)
+        end
+
+        it "raises an error containing the word 'bundle'" do
+          expect { builder.build(signature) }.to raise_error(/bundle/)
         end
       end
     end

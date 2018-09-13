@@ -4,7 +4,6 @@ PATH
     fauxpaas (0.2.0)
       canister
       capistrano (~> 3.9.1)
-      capistrano-bundler
       capistrano-rails
       capistrano-rbenv
       ettin (~> 1.1.0)
@@ -108,4 +107,4 @@ DEPENDENCIES
   simplecov
 
 BUNDLED WITH
-   1.16.3
+   1.16.4
