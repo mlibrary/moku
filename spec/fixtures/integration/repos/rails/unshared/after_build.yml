@@ -10,3 +10,7 @@
     - app
   bin: touch
   opts: "eureka_2.txt"
+- roles:
+    - app
+  bin: rake
+  opts: "bundle exec db:migrate RAILS_ENV=production"

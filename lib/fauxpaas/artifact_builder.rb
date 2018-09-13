@@ -2,6 +2,7 @@
 
 require "fauxpaas/artifact"
 require "pathname"
+require "pry"
 
 module Fauxpaas
 
@@ -17,24 +18,41 @@ module Fauxpaas
     # @param signature [ReleaseSignature]
     # @return The result of factory.new, pointing at the path
     def build(signature)
-      path = Pathname.new(Dir.mktmpdir)
-      add_references!(signature, path)
-      factory.new(path)
+      @artifact = factory.new
+
+      add_references!(signature)
+      run_command("/usr/bin/env")
+      run_command("bundle install --deployment --without development test --path vendor/bundle")
+      run_command("bundle exec rake assets:precompile RAILS_ENV=production")
+
+      binding.pry
+
+      @artifact
     end
+
+    attr_reader :artifact
 
     private
 
     attr_reader :ref_repo, :factory
 
-    def add_references!(signature, path)
+    def add_references!(signature)
       [signature.source, signature.shared, signature.unshared].each do |ref|
-        add_reference(ref, path)
+        merge_path(ref_repo.resolve(ref),artifact.path)
       end
     end
 
-    def add_reference(ref, path)
-      ref_repo.resolve(ref)
-        .cp(path)
+    def run_command(command)
+      Dir.chdir(artifact.path.to_s) do
+        Bundler.with_clean_env do
+          Fauxpaas.system_runner.run(command)
+        end
+      end
+    end
+
+    def merge_path(source,dst)
+      source
+        .cp(dst)
         .write
     end
 

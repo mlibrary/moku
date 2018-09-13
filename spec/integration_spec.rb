@@ -135,7 +135,7 @@ module Fauxpaas
         end
       end
 
-      context "without rails" do
+      xcontext "without rails" do
         include_context "deploy setup", "test-norails"
         let(:gem) { "pry" }
         let(:source) { Pathname.new("some_source_file.txt") }
@@ -150,14 +150,12 @@ module Fauxpaas
 
         include_examples "a successful deploy"
 
-        it "shared/public/assets 2775" do
-          expect((shared_dir/"public"/"assets").stat.mode & 0o7777).to eql(0o2775)
+        it "current/public/assets 2775" do
+          expect((current_dir/"public"/"assets").stat.mode & 0o7777).to eql(0o2775)
         end
 
-        it "current/public/assets is a symlink to shared/public/assets" do
-          dir = current_dir/"public"/"assets"
-          expect(dir.symlink?).to be true
-          expect(dir.realpath).to eql(shared_dir/"public"/"assets")
+        it "precompiles the assets" do
+          expect(current_dir/"public"/"assets".entries.map { |p| p.to_s }).to contain(a_string_matching(/^application-.*.css.gz$/), a_string_matching(/^application-.*.js.gz$/))
         end
 
         it "runs the migrations" do

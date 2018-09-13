@@ -70,9 +70,7 @@ module Fauxpaas
 
       describe "#execute" do
         let(:release) { double(:release, deploy: status) }
-        let(:artifact) { double(:artifact) }
-        let(:deploy_config) { double(:deploy_config) }
-        let(:signature) { double(:signature, deploy: double(:deploy_ref)) }
+        let(:signature) { double(:signature) }
         let(:instance) do
           double(
             :instance,
@@ -88,11 +86,7 @@ module Fauxpaas
           )
         end
         before(:each) do
-          allow(Fauxpaas.artifact_builder).to receive(:build).with(signature)
-            .and_return(artifact)
-          allow(DeployConfig).to receive(:from_ref).with(signature.deploy, Fauxpaas.ref_repo)
-            .and_return(deploy_config)
-          allow(Release).to receive(:new).with(artifact: artifact, deploy_config: deploy_config)
+          allow(Release).to receive(:new).with(signature)
             .and_return(release)
         end
         context "when it succeeds" do
