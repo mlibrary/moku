@@ -46,7 +46,7 @@ module Fauxpaas
       command :deploy do |c|
         c.action do |global_options, _options, args|
           invoker.add_command(
-            Deploy.new(
+            Commands::Deploy.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user],
               reference: args.first
@@ -61,13 +61,13 @@ module Fauxpaas
       command :default_branch do |c|
         c.action do |global_options, _options, args|
           command = if args.first
-            SetDefaultBranch.new(
+            Commands::SetDefaultBranch.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user],
               new_branch: args.first
             )
           else
-            ReadDefaultBranch.new(
+            Commands::ReadDefaultBranch.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user]
             )
@@ -81,7 +81,7 @@ module Fauxpaas
       command :caches do |c|
         c.action do |global_options, _options, _args|
           invoker.add_command(
-            Caches.new(
+            Commands::Caches.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user]
             )
@@ -93,7 +93,7 @@ module Fauxpaas
       command :releases do |c|
         c.action do |global_options, _options, _args|
           invoker.add_command(
-            Releases.new(
+            Commands::Releases.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user]
             )
@@ -105,7 +105,7 @@ module Fauxpaas
       command :releases do |c|
         c.action do |global_options, _options, _args|
           invoker.add_command(
-            Restart.new(
+            Commands::Restart.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user]
             )
@@ -128,7 +128,7 @@ module Fauxpaas
           role = args.first
           full = [args[1..-1].join(" ").split].flatten
           invoker.add_command(
-            Exec.new(
+            Commands::Exec.new(
               instance_name: options[:instance_name],
               user: global_options[:user],
               env: global_options[:env],
@@ -148,7 +148,7 @@ module Fauxpaas
           sub.action do |global_options, _options, _args|
             Fauxpaas.config.register(:system_runner) { KernelSystem.new }
             invoker.add_command(
-              SyslogView.new(
+              Commands::SyslogView.new(
                 instance_name: global_options[:instance_name],
                 user: global_options[:user]
               )
@@ -163,7 +163,7 @@ module Fauxpaas
           sub.action do |global_options, _options, args|
             Fauxpaas.config.register(:system_runner) { KernelSystem.new }
             invoker.add_command(
-              SyslogGrep.new(
+              Commands::SyslogGrep.new(
                 instance_name: global_options[:instance_name],
                 user: global_options[:user],
                 pattern: args.first || "."
@@ -178,7 +178,7 @@ module Fauxpaas
           sub.action do |global_options, _options, _args|
             Fauxpaas.config.register(:system_runner) { KernelSystem.new }
             invoker.add_command(
-              SyslogFollow.new(
+              Commands::SyslogFollow.new(
                 instance_name: global_options[:instance_name],
                 user: global_options[:user]
               )
