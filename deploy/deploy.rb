@@ -2,6 +2,8 @@
 
 lock "~> 3.9.1"
 
+# The tarball_scm plugin uses repo_url as the artifact directory to package up
+set :repo_url, ENV["SOURCE_PATH"] || fetch(:repo_url)
 set :deploy_to, ENV["DEPLOY_DIR"] || fetch(:deploy_to)
 set :rails_env, ENV["RAILS_ENV"]
 set :assets_prefix, ENV["ASSETS_PREFIX"]
@@ -99,7 +101,6 @@ end
 
 after "deploy:updated", :open_public
 
-load File.join(File.dirname(__FILE__), "cap", "source.rb")
 load File.join(File.dirname(__FILE__), "cap", "restart.rb")
 load File.join(File.dirname(__FILE__), "cap", "syslog.rb")
 load File.join(File.dirname(__FILE__), "cap", "commands.rb")
