@@ -2,6 +2,8 @@
 
 require "fauxpaas/artifact"
 require "fauxpaas/step_list"
+require "fileutils"
+require "find"
 require "pathname"
 require "yaml"
 
@@ -24,7 +26,7 @@ module Fauxpaas
       add_references!(signature, path)
       install_local_gems(path)
       finish_build!(path)
-			set_access_control(path)
+      set_access_control!(path)
       factory.new(path)
     end
 
@@ -72,34 +74,26 @@ module Fauxpaas
       end
     end
 
-		# Set the mode bits on all files in the Artifact
-		# @param path [Pathname]
-		# @param asset_dir [String]
-		def set_access_control(path, asset_dir = "public")
-			asset_path = path/asset_dir
+    # Set the mode bits on all files in the Artifact
+    # @param path [Pathname]
+    def set_access_control!(path)
+      chmod_path(path,          file_mode: 0o660, dir_mode: 0o2770)
+      chmod_path(path/"log",    file_mode: 0o660, dir_mode: 0o2770)
+      chmod_path(path/"public", file_mode: 0o664, dir_mode: 0o2775)
+      chmod_path(path/"public"/"assets", file_mode: 0o664, dir_mode: 0o2775)
+    end
 
-      # Set permissions on artifact
-      if Dir.exist?(path)
-        Find.find(path) do |found_path|
-          if File.directory?(found_path)
-            FileUtils.chmod(2770, found_path)
-          else
-            FileUtils.chmod(0660, found_path)
-          end
+    # @param base_dir [Pathname]
+    def chmod_path(base_dir, file_mode:, dir_mode:)
+      # Create the directory to prevent it being overriden by capistrano
+      FileUtils.mkdir_p base_dir
+      Find.find(base_dir) do |path|
+        if File.directory?(path)
+          FileUtils.chmod(dir_mode, path)
+        else
+          FileUtils.chmod(file_mode, path)
         end
       end
-
-      # If asset directory exists set permissions on it also
-      if Dir.exists?(asset_path)
-        Find.find(asset_path) do |found_path|
-          if File.directory?(found_path)
-            FileUtils.chmod(2775, found_path)
-          else
-            FileUtils.chmod(0664, found_path)
-          end
-        end
-      end
-
     end
 
   end
