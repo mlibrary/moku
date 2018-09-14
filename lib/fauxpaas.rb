@@ -97,8 +97,9 @@ module Fauxpaas
         end
         container.register(:artifact_builder) do |c|
           Fauxpaas::ArtifactBuilder.new(
+            factory: Artifact,
             ref_repo: c.ref_repo,
-            factory: Artifact
+            runner: c.system_runner
           )
         end
         container.register(:instance_repo) do |c|
