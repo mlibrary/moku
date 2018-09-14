@@ -3,6 +3,7 @@
 require_relative "spec_helper"
 require "fauxpaas/artifact_builder"
 require "pathname"
+require "fakefs/spec_helpers"
 
 module Fauxpaas
   class FakeLazyDir
@@ -22,13 +23,14 @@ module Fauxpaas
 
   class TestArtifact
     attr_reader :path
-    def initialize(path)
+    def initialize(path = Pathname.new("/tmp/dir"))
       @path = path
     end
   end
 
   # require "fauxpaas/artifact_builder"
   RSpec.describe ArtifactBuilder do
+
     let(:ref_repo) { double(:ref_repo) }
     let(:builder) { described_class.new(ref_repo: ref_repo) }
     let(:builder) do
@@ -39,7 +41,9 @@ module Fauxpaas
     end
 
     describe "#build" do
-      let(:tmpdir) { Pathname.new "/tmp/dir" }
+      include FakeFS::SpecHelpers
+
+      let(:build_path) { Pathname.new "/tmp/dir" }
       let(:source) { double(:source) }
       let(:shared) { double(:shared) }
       let(:deploy) { double(:deploy) }
@@ -47,7 +51,8 @@ module Fauxpaas
       let(:signature) { double(:signature, shared: shared, unshared: unshared, source: source) }
 
       before(:each) do
-        allow(Dir).to receive(:mktmpdir).and_return(tmpdir.to_s)
+        FileUtils.mkdir_p(build_path)
+        allow(Dir).to receive(:mkbuild_path).and_return(build_path.to_s)
         allow(ref_repo).to receive(:resolve).with(source)
           .and_return(FakeLazyDir.new("/some_source"))
         allow(ref_repo).to receive(:resolve).with(shared)
@@ -61,7 +66,7 @@ module Fauxpaas
       end
 
       it "returns the temporary directory with the artifacts" do
-        expect(builder.build(signature).path).to eq(tmpdir)
+        expect(builder.build(signature).path).to eq(build_path)
       end
 
       [:source, :shared, :unshared].each do |attr|

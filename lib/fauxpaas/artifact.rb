@@ -5,7 +5,7 @@ module Fauxpaas
   # application server. Pending work on AEIM-1361, AEIM-1362,
   # AEIM-1375, AEIM-1363, etc to fully expose the proper shape of this.
   class Artifact
-    def initialize(path)
+    def initialize(path = Pathname.new(Dir.mktmpdir))
       @path = path
     end
 

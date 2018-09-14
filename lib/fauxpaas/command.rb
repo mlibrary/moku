@@ -59,12 +59,7 @@ module Fauxpaas
 
     def execute
       signature = instance.signature(reference)
-
-      release = Release.new(
-        artifact: Fauxpaas.artifact_builder.build(signature),
-        deploy_config: DeployConfig.from_ref(signature.deploy, Fauxpaas.ref_repo)
-      )
-      status = release.deploy
+      status = Release.new(signature).deploy
       report(status, action: "deploy")
 
       if status.success?
@@ -147,7 +142,7 @@ module Fauxpaas
 
     def execute
       string = if long
-        LoggedReleases.new(instance.releases).to_s
+                 LoggedReleases.new(instance.releases).to_s
       else
         LoggedReleases.new(instance.releases).to_short_s
       end
@@ -192,8 +187,7 @@ module Fauxpaas
           role: role,
           bin: bin,
           args: args.join(" ")
-        )
-      )
+        ))
     end
   end
 

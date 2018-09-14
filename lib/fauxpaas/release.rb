@@ -8,11 +8,17 @@ module Fauxpaas
   # operations first create a release, and then attempt to deploy it.
   class Release
 
-    # @param artifact [Artifact]
-    # @param deploy_config [DeployConfig]
-    def initialize(artifact:, deploy_config:)
-      @artifact = artifact
-      @deploy_config = deploy_config
+    # @param signature [ReleaseSignature]
+    def initialize(signature)
+      @signature = signature
+    end
+
+    def deploy_config
+      @deploy_config ||= DeployConfig.from_ref(signature.deploy, Fauxpaas.ref_repo)
+    end
+
+    def artifact
+      @artifact ||= Fauxpaas.artifact_builder.build(signature)
     end
 
     def deploy
@@ -23,7 +29,7 @@ module Fauxpaas
 
     private
 
-    attr_reader :artifact, :deploy_config
+    attr_reader :signature
 
   end
 end
