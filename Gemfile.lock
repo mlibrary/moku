@@ -7,6 +7,7 @@ PATH
       capistrano-bundler
       capistrano-rails
       capistrano-rbenv
+      capistrano-tarball_scm
       ettin (~> 1.1.0)
       gli
       terminal-table
@@ -32,6 +33,8 @@ GEM
     capistrano-rbenv (2.1.4)
       capistrano (~> 3.1)
       sshkit (~> 1.3)
+    capistrano-tarball_scm (0.2.1)
+      capistrano (>= 3.7.0, < 4.0.0)
     coderay (1.1.2)
     concurrent-ruby (1.0.5)
     deep_merge (1.2.1)
