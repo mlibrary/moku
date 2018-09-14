@@ -22,16 +22,6 @@ set :pty, false
 # This notably does not contain developer configuration.
 append :linked_dirs, "bundle", "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 
-# Configure capistrano-bundler
-set :bundle_roles, :all                                         # this is default
-set :bundle_servers, -> { release_roles(fetch(:bundle_roles)) } # this is default
-set :bundle_path, -> { shared_path.join("bundle") }             # this is default
-set :bundle_without, (["development", "test"] - [ENV["RAILS_ENV"]]).join(" ")
-set :bundle_flags, "--deployment"
-set :bundle_env_variables, {}                                   # this is default
-set :bundle_clean_options, ""                                   # this is default
-set :bundle_jobs, 4                                             # default: nil
-
 # Configure capistrano-rbenv
 # intentionally omit setting :rbenv_ruby
 set :rbenv_type, :system

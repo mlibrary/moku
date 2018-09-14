@@ -135,7 +135,7 @@ module Fauxpaas
         end
       end
 
-      xcontext "without rails" do
+      context "without rails" do
         include_context "deploy setup", "test-norails"
         let(:gem) { "pry" }
         let(:source) { Pathname.new("some_source_file.txt") }
@@ -155,7 +155,9 @@ module Fauxpaas
         end
 
         it "precompiles the assets" do
-          expect(current_dir/"public"/"assets".entries.map { |p| p.to_s }).to contain(a_string_matching(/^application-.*.css.gz$/), a_string_matching(/^application-.*.js.gz$/))
+          expect((current_dir/"public"/"assets").entries.map(&:to_s))
+            .to include(a_string_matching(/^application-.*.css.gz$/),
+              a_string_matching(/^application-.*.js.gz$/))
         end
 
         it "runs the migrations" do

@@ -2,7 +2,6 @@
 
 require "fauxpaas/artifact"
 require "pathname"
-require "pry"
 
 module Fauxpaas
 
@@ -22,10 +21,9 @@ module Fauxpaas
 
       add_references!(signature)
       run_command("/usr/bin/env")
-      run_command("bundle install --deployment --without development test --path vendor/bundle")
+      # run_command("bundle install --deployment --without development test --path vendor/bundle")
+      run_command("bundle install")
       run_command("bundle exec rake assets:precompile RAILS_ENV=production")
-
-      binding.pry
 
       @artifact
     end
@@ -38,7 +36,7 @@ module Fauxpaas
 
     def add_references!(signature)
       [signature.source, signature.shared, signature.unshared].each do |ref|
-        merge_path(ref_repo.resolve(ref),artifact.path)
+        merge_path(ref_repo.resolve(ref), artifact.path)
       end
     end
 
@@ -50,7 +48,7 @@ module Fauxpaas
       end
     end
 
-    def merge_path(source,dst)
+    def merge_path(source, dst)
       source
         .cp(dst)
         .write

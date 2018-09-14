@@ -13,4 +13,4 @@
 - roles:
     - app
   bin: rake
-  opts: "bundle exec db:migrate RAILS_ENV=production"
+  opts: "db:migrate RAILS_ENV=production"
