@@ -22,6 +22,7 @@ module Fauxpaas
     def build(signature)
       path = Pathname.new(Dir.mktmpdir)
       add_references!(signature, path)
+      install_local_gems(path)
       finish_build!(path)
       factory.new(path)
     end
@@ -42,6 +43,18 @@ module Fauxpaas
       ref_repo.resolve(ref)
         .cp(path)
         .write
+    end
+
+    def install_local_gems(path)
+      Bundler.with_clean_env do
+        Dir.chdir(path) do
+          Fauxpaas.system_runner.run("bundle package")
+          _, _, status = Fauxpaas.system_runner.run(
+            "bundle install --deployment '--without=development test'"
+          )
+          raise "bundler failed to install gems in #{path}" unless status.success?
+        end
+      end
     end
 
     # Run the finish_build commands, if they exist. Should any fail,

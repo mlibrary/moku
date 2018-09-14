@@ -27,6 +27,35 @@ Set the environment variable `DEBUG` to `true` to see verbose output.
 When you create a PR, code climate will yell at you. Rubocop is built into repo, and can be
 run with `bundle exec rubocop`. Try `--help`
 
+### Running integration on a Mac
+
+You need SSHD running, and you need a particular key file. You also need
+a symlink to rbenv. Replace references to mattlach with your own stuff.
+
+    $ sudo systemsetup -setremotelogin on
+    $ ssh-keygen
+    Generating public/private rsa key pair.
+    Enter file in which to save the key: /Users/mattlach/.ssh/id_rsa-fauxpaas
+    Enter passphrase (empty for no passphrase):
+    Enter same passphrase again:
+    Your identification has been saved in id_rsa-fauxpaas.
+    Your public key has been saved in id_rsa-fauxpaas.pub.
+    The key fingerprint is:
+    The key's randomart image is:
+    +---[RSA 2048]----+
+    |                 |
+    |                 |
+    | .  .            |
+    |o. . .           |
+    |=oo . . S        |
+    |+=.o . .         |
+    |X.+ =..          |
+    |BE.Oo+.          |
+    |%%^B=..          |
+    +----[SHA256]-----+
+    $ cat ~/id_rsa-fauxpaas.pub >> ~/authorized_keys
+    $ mkdir ~/.rbenv/bin
+    $ ln -s /usr/local/bin/rbenv ~/.rbenv/bin/rbenv
 
 ## Named Instance
 

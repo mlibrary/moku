@@ -72,6 +72,17 @@ module Fauxpaas
           expect(File.read(current_dir/"some"/"shared"/"file.txt"))
             .to eql("with some shared contents\n")
         end
+        it "bundles gems in ./vendor/bundle" do
+          expect(File.read(current_dir/".bundle"/"config"))
+            .to match(%r{^BUNDLE_PATH: "vendor/bundle"$})
+        end
+        it "freezes the gems" do
+          expect(File.read(current_dir/".bundle"/"config"))
+            .to match(%r{^BUNDLE_FROZEN: "true"$})
+        end
+        it "packages a cache in ./vendor/cache" do
+          expect((current_dir/"vendor"/"cache").exist?).to be true
+        end
 
         xdescribe "permissions" do
           it "releases 2775" do
@@ -125,8 +136,10 @@ module Fauxpaas
         end
         it "installs the gems" do
           # The expect {}-to-output syntax didn't like this test
-          Dir.chdir(current_dir) do
-            expect(`BUNDLE_GEMFILE=#{current_dir/"Gemfile"} bundle list`).to match(/#{gem}/)
+          Bundler.with_clean_env do
+            Dir.chdir(current_dir) do
+              expect(`bundle list`).to match(/#{gem}/)
+            end
           end
         end
         it "installs the source files" do
@@ -138,9 +151,27 @@ module Fauxpaas
       context "without rails" do
         include_context "deploy setup", "test-norails"
         let(:gem) { "pry" }
+        let(:development_gem) { "faker" }
+        let(:test_gem) { "rspec" }
         let(:source) { Pathname.new("some_source_file.txt") }
 
         include_examples "a successful deploy"
+
+        it "doesn't install development gems" do
+          Bundler.with_clean_env do
+            Dir.chdir(current_dir) do
+              expect(`bundle list`).not_to match(/#{development_gem}/)
+            end
+          end
+        end
+
+        it "doesn't install test gems" do
+          Bundler.with_clean_env do
+            Dir.chdir(current_dir) do
+              expect(`bundle list`).not_to match(/#{test_gem}/)
+            end
+          end
+        end
       end
 
       context "with rails" do
@@ -168,10 +199,14 @@ module Fauxpaas
         end
 
         it "installs a working project" do
-          _, _, status = Open3.capture3(
-            "BUNDLE_GEMFILE=#{current_dir/"Gemfile"} bundle exec rails runner 'Post.new.valid?'"
-          )
-          expect(status.success?).to be true
+          Bundler.with_clean_env do
+            Dir.chdir(current_dir) do
+              _, _, status = Open3.capture3(
+                "bin/rails runner -e production 'Post.new.valid?'"
+              )
+              expect(status.success?).to be true
+            end
+          end
         end
       end
     end
