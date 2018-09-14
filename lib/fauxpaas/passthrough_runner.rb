@@ -10,16 +10,26 @@ module Fauxpaas
       @stream = stream
     end
 
-    def run(command)
-      output = []
-      Bundler.with_clean_env do
-        Open3.popen2e(command) do |_stdin, cmd_output, thread|
-          while line = cmd_output.gets
-            stream.puts line
-            output << line
-          end
-          [output.join, output.join, thread.value]
+    def run(command, clean_env: true)
+      if clean_env
+        Bundler.with_clean_env do
+          run!(command)
         end
+      else
+        run!(command)
+      end
+    end
+
+    private
+
+    def run!(command)
+      output = []
+      Open3.popen2e(command) do |_stdin, cmd_output, thread|
+        while line = cmd_output.gets
+          stream.puts line
+          output << line
+        end
+        [output.join, output.join, thread.value]
       end
     end
 
