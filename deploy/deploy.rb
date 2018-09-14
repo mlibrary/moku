@@ -18,10 +18,6 @@ set :keep_releases, 5
 set :local_user, "faux"
 set :pty, false
 
-# We only link files that would be non-sensical to be release-specific.
-# This notably does not contain developer configuration.
-append :linked_dirs, "bundle", "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
-
 # Configure capistrano-bundler
 set :bundle_roles, :all                                         # this is default
 set :bundle_servers, -> { release_roles(fetch(:bundle_roles)) } # this is default
