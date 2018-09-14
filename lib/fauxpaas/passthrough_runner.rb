@@ -12,14 +12,12 @@ module Fauxpaas
 
     def run(command)
       output = []
-      Bundler.with_clean_env do
-        Open3.popen2e(command) do |_stdin, cmd_output, thread|
-          while line = cmd_output.gets
-            stream.puts line
-            output << line
-          end
-          [output.join, output.join, thread.value]
+      Open3.popen2e(command) do |_stdin, cmd_output, thread|
+        while line = cmd_output.gets
+          stream.puts line
+          output << line
         end
+        [output.join, output.join, thread.value]
       end
     end
 

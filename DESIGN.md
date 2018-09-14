@@ -203,19 +203,23 @@ assets_prefix: assets
 
 ```
 /
- |- finish_build.yml             contains finish_build commands
+ |- after_build.yml             contains after_build commands
  |- after_release.yml           contains after_release commands
  |- yourdir
  |  |- yourfile.cfg             will be installed to yourdir/yourfile.cfg
  |- yourotherfile.txt           will be installed to /yourotherfile.txt
 ```
 
-The structure of `finish_build.yml` and `after_release.yml` is as follows:
+The structure of `after_build.yml` and `after_release.yml` is as follows:
 
 ```yaml
 ---
-- cmd: FOO=bar somebin.sh -f --target=sandwich # The full command to run
-- cmd: bundle exec rake some_other_command
+- bin: somebin.sh # The command to run
+  opts: 1 2 -v    # Options to the bin
+  roles:          # Host roles on which to run the command (set)
+    - db
+    - app
+    - web
 ```
 
 # Examples

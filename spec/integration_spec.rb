@@ -119,7 +119,7 @@ module Fauxpaas
           end
         end
 
-        it "runs finish_build commands" do
+        it "runs after_build commands" do
           expect((current_dir/"eureka_2.txt").exist?).to be true
           expect(File.read(current_dir/"eureka_1.txt")).to eql("eureka!\n")
         end

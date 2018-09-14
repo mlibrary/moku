@@ -33,9 +33,8 @@ module Fauxpaas
     let(:builder) { described_class.new(ref_repo: ref_repo) }
     let(:builder) do
       described_class.new(
-        factory: TestArtifact,
         ref_repo: ref_repo,
-        runner: double(:runner)
+        factory: TestArtifact
       )
     end
 
