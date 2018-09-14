@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "rsync"
+
+RSYNC_OPTIONS = ["-v", "-r", "-l", "-p", "-z"].freeze
 
 namespace :source do
   task :setup do
@@ -10,9 +13,7 @@ namespace :source do
   desc "Upload source"
   task upload: [:setup] do
     on roles(:all) do
-      Pathname.new(fetch(:source_local_path)).children.each do |path|
-        upload! path.to_s, fetch(:release_path), recursive: path.directory?
-      end
+      Rsync.run("#{fetch(:source_local_path)}/.", "#{fetch(:release_path)}/", RSYNC_OPTIONS)
 
       # We refrain from chmoding the files here because unshared:upload
       # will do it for us.
