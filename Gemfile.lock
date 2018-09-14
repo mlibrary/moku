@@ -9,6 +9,7 @@ PATH
       capistrano-rbenv
       ettin (~> 1.1.0)
       gli
+      rsync
       terminal-table
 
 GEM
@@ -71,6 +72,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.0)
+    rsync (1.0.9)
     rubocop (0.59.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
