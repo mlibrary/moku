@@ -16,7 +16,8 @@ module Fauxpaas
     describe "#run" do
       it "runs the correct command" do
         expect(kernel).to receive(:run).with(
-          "cap -f #{capfile_path} myapp-mystage test:task --trace FOO=foo BAR=5 ZIP=zop"
+          "cap -f #{capfile_path} myapp-mystage test:task --trace FOO=foo BAR=5 ZIP=zop",
+          clean_env: false
         )
         runner.run(capfile_path, "myapp-mystage", "test:task",
           foo: "foo",
@@ -28,7 +29,8 @@ module Fauxpaas
         expect(kernel).to receive(:run).with(
           "cap -f #{capfile_path} " + 'myapp-mystage test:task --trace FOO=with\\ spaces ' \
           'BAR=with\\ double\\"\\ quotes BAZ=\\$horrible\\ \\`arg\\` ' \
-          'QUUX=with\\\\backslash'
+          'QUUX=with\\\\backslash',
+          clean_env: false
         )
         runner.run(capfile_path, "myapp-mystage", "test:task",
           foo: "with spaces",

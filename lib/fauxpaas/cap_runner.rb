@@ -16,7 +16,8 @@ module Fauxpaas
     def run(capfile_path, stage, task, options)
       system_runner.run(
         "cap -f #{capfile_path} #{stage} #{task} --trace " \
-          "#{capify_options(options).join(" ")}".strip
+          "#{capify_options(options).join(" ")}".strip,
+          clean_env: false
       )
     end
 
