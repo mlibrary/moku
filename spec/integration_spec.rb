@@ -80,9 +80,6 @@ module Fauxpaas
           expect(File.read(current_dir/".bundle"/"config"))
             .to match(%r{^BUNDLE_FROZEN: "true"$})
         end
-        it "packages a cache in ./vendor/cache" do
-          expect((current_dir/"vendor"/"cache").exist?).to be true
-        end
 
         xdescribe "permissions" do
           it "releases 2775" do

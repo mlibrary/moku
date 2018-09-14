@@ -48,7 +48,6 @@ module Fauxpaas
     def install_local_gems(path)
       Bundler.with_clean_env do
         Dir.chdir(path) do
-          Fauxpaas.system_runner.run("bundle package")
           _, _, status = Fauxpaas.system_runner.run(
             "bundle install --deployment '--without=development test'"
           )
