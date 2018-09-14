@@ -6,7 +6,7 @@ module Fauxpaas
   # This class is specifcally for outputting a collection of
   # LoggedRelease, which it knows too much about. Its primary
   # purpose right now is to remove the need to test the functionality
-  # in ReleasesCommand
+  # in Releases
   class LoggedReleases
     def initialize(releases)
       @releases = releases

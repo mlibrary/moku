@@ -38,7 +38,7 @@ module Fauxpaas
             end
           end
           Fauxpaas.invoker.add_command(
-            DeployCommand.new(
+            Commands::Deploy.new(
               user: ENV["USER"],
               instance_name: instance_name,
               reference: nil
