@@ -32,10 +32,6 @@ module Fauxpaas
       )
     end
 
-    def save_instance(instance)
-      write_instance(instance)
-    end
-
     def save_releases(instance)
       write_releases(instance.name, instance.releases)
     end
@@ -43,16 +39,6 @@ module Fauxpaas
     private
 
     attr_reader :instances_path, :releases_path, :fs, :git_runner
-
-    def write_instance(instance)
-      fs.mkdir_p(path_to_instance(instance.name).dirname)
-      fs.write(path_to_instance(instance.name), YAML.dump(
-        "deploy" => instance.deploy.to_hash,
-        "source" => instance.source.to_hash,
-        "shared" => instance.shared.to_hash,
-        "unshared" => instance.unshared.to_hash
-      ))
-    end
 
     def write_releases(name, releases)
       fs.mkdir_p(path_to_release(name).dirname)
