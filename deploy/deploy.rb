@@ -18,6 +18,12 @@ set :keep_releases, 5
 set :local_user, "faux"
 set :pty, false
 
+# Configure capistrano-bundler; required only while we are still running rake
+# via Cap, since the assets / migration plugins run system rake otherwise.
+# Alternatively, we could use a binstub and put bin/ on the path to ensure
+# that the bundle is activated.
+set :bundle_roles, :none
+
 # We only link files that would be non-sensical to be release-specific.
 # This notably does not contain developer configuration.
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
