@@ -52,7 +52,7 @@ module Fauxpaas
         end
         let(:root) { @root }
         let(:current_dir) { root/"current" }
-        let(:shared_dir) { root/"shared" }
+        let(:shared_dir) { current_dir }
       end
 
       # Expects
@@ -81,7 +81,7 @@ module Fauxpaas
             .to match(%r{^BUNDLE_FROZEN: "true"$})
         end
 
-        xdescribe "permissions" do
+        describe "permissions" do
           it "releases 2775" do
             expect((root/"releases").stat.mode & 0o7777).to eql(0o2775)
           end
@@ -89,10 +89,13 @@ module Fauxpaas
             release_dir = (root/"releases").children.first
             expect(release_dir.stat.mode & 0o7777).to eql(0o2775)
           end
+          it "current 2775" do
+            expect(current_dir.stat.mode & 0o7777).to eql(0o2775)
+          end
           it "current/public 2775" do
             expect((current_dir/"public").stat.mode & 0o7777).to eql(0o2775)
           end
-          it "current/<some_unshared> 660" do
+          it "current/<some_unshared_file> 660" do
             file = current_dir/"some"/"dev"/"file.txt"
             expect(file.stat.mode & 0o777).to eql(0o660)
           end
@@ -104,26 +107,11 @@ module Fauxpaas
             file = (current_dir/"public").children.find(&:file?)
             expect(file.stat.mode & 0o777).to eql(0o664)
           end
-          it "shared 2775" do
-            expect(shared_dir.stat.mode & 0o7777).to eql(0o2775)
-          end
-          it "shared/public 2775" do
-            expect((shared_dir/"public").stat.mode & 0o7777).to eql(0o2775)
-          end
-          it "shared/public/<file> 664" do
-            file = (shared_dir/"public").children.find(&:file?)
-            expect(file.stat.mode & 0o777).to eql(0o664)
-          end
-          it "shared/log 2770" do
+          it "current/log 2770" do
             dir = current_dir/"log"
             expect(dir.exist?).to be true
             expect(dir.directory?).to be true
             expect(dir.stat.mode & 0o7777).to eql(0o2770)
-          end
-          it "current/log is a symlink to shared/log" do
-            dir = current_dir/"log"
-            expect(dir.symlink?).to be true
-            expect(dir.realpath).to eql(shared_dir/"log")
           end
         end
 
@@ -178,14 +166,8 @@ module Fauxpaas
 
         include_examples "a successful deploy"
 
-        it "shared/public/assets 2775" do
-          expect((shared_dir/"public"/"assets").stat.mode & 0o7777).to eql(0o2775)
-        end
-
-        it "current/public/assets is a symlink to shared/public/assets" do
-          dir = current_dir/"public"/"assets"
-          expect(dir.symlink?).to be true
-          expect(dir.realpath).to eql(shared_dir/"public"/"assets")
+        it "current/public/assets 2775" do
+          expect((current_dir/"public"/"assets").stat.mode & 0o7777).to eql(0o2775)
         end
 
         it "runs the migrations" do

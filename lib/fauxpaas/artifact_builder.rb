@@ -2,6 +2,8 @@
 
 require "fauxpaas/artifact"
 require "fauxpaas/step_list"
+require "fileutils"
+require "find"
 require "pathname"
 require "yaml"
 
@@ -24,6 +26,7 @@ module Fauxpaas
       add_references!(signature, path)
       install_local_gems(path)
       finish_build!(path)
+      set_access_control!(path)
       factory.new(path)
     end
 
@@ -67,6 +70,28 @@ module Fauxpaas
             _, _, status = runner.run(step.cmd)
             raise "failure in finish_build command" unless status.success?
           end
+        end
+      end
+    end
+
+    # Set the mode bits on all files in the Artifact
+    # @param path [Pathname]
+    def set_access_control!(path)
+      chmod_path(path,          file_mode: 0o660, dir_mode: 0o2770)
+      chmod_path(path/"log",    file_mode: 0o660, dir_mode: 0o2770)
+      chmod_path(path/"public", file_mode: 0o664, dir_mode: 0o2775)
+      chmod_path(path/"public"/"assets", file_mode: 0o664, dir_mode: 0o2775)
+    end
+
+    # @param base_dir [Pathname]
+    def chmod_path(base_dir, file_mode:, dir_mode:)
+      # Create the directory to prevent it being overriden by capistrano
+      FileUtils.mkdir_p base_dir
+      Find.find(base_dir) do |path|
+        if File.directory?(path)
+          FileUtils.chmod(dir_mode, path)
+        else
+          FileUtils.chmod(file_mode, path)
         end
       end
     end

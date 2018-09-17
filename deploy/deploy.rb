@@ -65,35 +65,14 @@ namespace :caches do
   end
 end
 
-task :open_public do
+task :deploy_perms do
   on roles(:all) do
-    set :shared_path, File.join(fetch(:deploy_to), "shared")
     set :releases_path, File.join(fetch(:deploy_to), "releases")
-    execute :mkdir, "-p", "#{fetch(:shared_path)}/public"
-    execute :mkdir, "-p", "#{fetch(:release_path)}/public"
-    execute :chmod, "2775", fetch(:shared_path)
     execute :chmod, "2775", fetch(:releases_path)
     execute :chmod, "2775", fetch(:release_path)
-    execute :find, "#{fetch(:shared_path)}/public", %W(
-      -type d
-      -exec chmod 2775 '{}' \\;
-    )
-    execute :find, "#{fetch(:shared_path)}/public", %W(
-      -type f
-      -exec chmod 664 '{}' \\;
-    )
-    execute :find, "#{fetch(:release_path)}/public", %W(
-      -type d
-      -exec chmod 2775 '{}' \\;
-    )
-    execute :find, "#{fetch(:release_path)}/public", %W(
-      -type f
-      -exec chmod 664 '{}' \\;
-    )
   end
 end
-
-after "deploy:updated", :open_public
+after "deploy:updated", :deploy_perms
 
 load File.join(File.dirname(__FILE__), "cap", "source.rb")
 load File.join(File.dirname(__FILE__), "cap", "restart.rb")
