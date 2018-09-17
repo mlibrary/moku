@@ -25,11 +25,7 @@ module Fauxpaas
       releases = releases_content(name)
       Instance.new(
         name: name,
-        source: ArchiveReference.new(
-          contents["source"]["url"],
-          branch_for(name) || contents["source"]["commitish"],
-          git_runner
-        ),
+        source: instance_from_hash(name, contents),
         deploy: ArchiveReference.from_hash(contents["deploy"], git_runner),
         shared: ArchiveReference.from_hash([contents["shared"]].flatten.first, git_runner),
         unshared: ArchiveReference.from_hash([contents["unshared"]].flatten.first, git_runner),
@@ -49,6 +45,14 @@ module Fauxpaas
 
     attr_reader :instances_path, :releases_path, :fs, :git_runner, :branches_path
 
+    def instance_from_hash(name, hash)
+      ArchiveReference.new(
+        hash["source"]["url"],
+        branch_for(name) || hash["source"]["commitish"],
+        git_runner
+      )
+    end
+
     def branch_for(name)
       if fs.exists?(path_to_branch(name))
         fs.read(branches_path/name).strip
@@ -57,7 +61,7 @@ module Fauxpaas
 
     def write_branch(name, branch)
       fs.mkdir_p(path_to_branch(name).dirname)
-      fs.write(path_to_branch(name), instance.default_branch)
+      fs.write(path_to_branch(name), branch)
     end
 
     def write_releases(name, releases)
