@@ -9,34 +9,9 @@ module Fauxpaas
 
   RSpec.describe "integration tests", integration: true do
     describe "deploy" do
-      RSpec.shared_context "deploy setup" do |instance_name|
+      # This requires the context built by 'deploy setup'
+      RSpec.shared_context "run deploy" do |instance_name|
         before(:all) do
-          @root = Pathname.new(File.realpath(Dir.tmpdir))/"fauxpaas"/"sandbox"/instance_name
-          `mkdir -p #{@root}`
-          Fauxpaas.reset!
-          Fauxpaas.initialize!
-          Fauxpaas.config.tap do |config|
-            config.register(:instance_root) do
-              Pathname.new("spec/fixtures/integration/instances").expand_path(Fauxpaas.root)
-            end
-            config.register(:releases_root) do
-              Pathname.new("spec/fixtures/integration/releases").expand_path(Fauxpaas.root)
-            end
-            config.register(:deployer_env_root) do
-              Pathname.new("spec/fixtures/integration/capfiles").expand_path(Fauxpaas.root)
-            end
-
-            config.register(:project_root) { Pathname.new(__FILE__).parent.parent }
-            config.register(:fixtures_path) {|c| c.project_root/"spec"/"fixtures"/"integration" }
-            config.register(:git_runner) { FileRunner.new }
-
-            if ENV["DEBUG"]
-              config.register(:logger) { Logger.new(STDOUT, level: :debug) }
-              config.register(:system_runner) { Fauxpaas::PassthroughRunner.new(STDOUT) }
-            else
-              config.register(:logger) { Logger.new(StringIO.new, level: :info) }
-            end
-          end
           Fauxpaas.invoker.add_command(
             Commands::Deploy.new(
               user: ENV["USER"],
@@ -45,12 +20,47 @@ module Fauxpaas
             )
           )
         end
-        after(:all) do
-          `rm -rf #{@root}`
-          `git checkout -- spec/fixtures/integration/instances`
-          `git checkout -- spec/fixtures/integration/releases`
+      end
+
+      RSpec.shared_context "deploy setup" do |instance_name|
+        before(:all) do
+          Fauxpaas.reset!
+          Fauxpaas.initialize!
+          Fauxpaas.config.tap do |config|
+            # Locate fixtures and the test sandbox
+            config.register(:project_root) { Pathname.new(__FILE__).parent.parent }
+            config.register(:test_run_id) {|c| rand(999999).to_s }
+            config.register(:test_run_root) {|c| c.project_root/"sandbox"/c.test_run_id}
+            config.register(:fixtures_root) {|c| c.project_root/"spec"/"fixtures"/"integration" }
+            config.register(:fixtures_path) {|c| c.fixtures_root } # delete me
+
+            # Configure the application
+            config.register(:instance_root) {|c| c.test_run_root/"instances"}
+            config.register(:releases_root) {|c| c.test_run_root/"releases" }
+            config.register(:deployer_env_root) {|c| c.test_run_root/"capfiles" }
+
+            config.register(:deploy_root) { Pathname.new(Dir.tmpdir)/"fauxpaas"/"sandbox"/instance_name }
+
+            # Configure the logger
+            config.register(:git_runner) { FileRunner.new }
+            if ENV["DEBUG"]
+              config.register(:logger) { Logger.new(STDOUT, level: :debug) }
+              config.register(:system_runner) { Fauxpaas::PassthroughRunner.new(STDOUT) }
+            else
+              config.register(:logger) { Logger.new(StringIO.new, level: :info) }
+            end
+          end
+
+          @fauxpaas = Fauxpaas.config
+          FileUtils.mkdir_p Fauxpaas.deploy_root
+          FileUtils.cp_r(Fauxpaas.fixtures_root, Fauxpaas.test_run_root)
         end
-        let(:root) { @root }
+        after(:all) do
+          FileUtils.rm_rf @fauxpaas.test_run_root
+          FileUtils.rm_rf @fauxpaas.deploy_root
+          FileUtils.rm_rf @fauxpaas.ref_root
+        end
+        let(:root) { @fauxpaas.deploy_root }
         let(:current_dir) { root/"current" }
         let(:shared_dir) { root/"shared" }
       end
@@ -147,6 +157,7 @@ module Fauxpaas
 
       context "without rails" do
         include_context "deploy setup", "test-norails"
+        include_context "run deploy", "test-norails"
         let(:gem) { "pry" }
         let(:development_gem) { "faker" }
         let(:test_gem) { "rspec" }
@@ -173,6 +184,7 @@ module Fauxpaas
 
       context "with rails" do
         include_context "deploy setup", "test-rails"
+        include_context "run deploy", "test-rails"
         let(:gem) { "rails" }
         let(:source) { Pathname.new("config/environment.rb") }
 
