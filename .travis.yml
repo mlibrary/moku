@@ -16,6 +16,8 @@ before_install: gem install bundler
 before_script:
   - ssh-keygen -t "rsa" -f ~/.ssh/id_rsa-fauxpaas -N ""
   - cp ~/.ssh/{id_rsa-fauxpaas.pub,authorized_keys}
+  - cat ~/.ssh/config
+  - cat /etc/ssh/sshd_config
 
 script:
     - bundle exec rspec --tag ~broken_in_travis
