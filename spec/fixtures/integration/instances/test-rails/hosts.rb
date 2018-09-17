@@ -3,8 +3,8 @@
 require "tmpdir"
 require "pathname"
 
-deploy_locator_path = Pathname.new(__FILE__)/"../../../../../sandbox/test_deploy_root"
-deploy_to = File.read(deploy_locator_path).strip
+test_deploy_locator = Pathname.new(__FILE__)/"../../../../../sandbox/test_deploy_root"
+deploy_to = File.read(test_deploy_locator).strip
 `mkdir -p #{deploy_to}`
 
 set :deploy_to, deploy_to
