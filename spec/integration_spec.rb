@@ -33,13 +33,13 @@ module Fauxpaas
             config.register(:test_run_root) {|c| c.project_root/"sandbox"/c.test_run_id}
             config.register(:fixtures_root) {|c| c.project_root/"spec"/"fixtures"/"integration" }
             config.register(:fixtures_path) {|c| c.fixtures_root } # delete me
+            config.register(:deploy_root) {|c| c.test_run_root/"deploy"}
+            config.register(:test_deploy_locator) {|c| c.project_root/"sandbox"/"test_deploy_root"}
 
             # Configure the application
             config.register(:instance_root) {|c| c.test_run_root/"instances"}
             config.register(:releases_root) {|c| c.test_run_root/"releases" }
             config.register(:deployer_env_root) {|c| c.test_run_root/"capfiles" }
-
-            config.register(:deploy_root) { Pathname.new(Dir.tmpdir)/"fauxpaas"/"sandbox"/instance_name }
 
             # Configure the logger
             config.register(:git_runner) { FileRunner.new }
@@ -53,12 +53,18 @@ module Fauxpaas
 
           @fauxpaas = Fauxpaas.config
           FileUtils.mkdir_p Fauxpaas.deploy_root
-          FileUtils.cp_r(Fauxpaas.fixtures_root, Fauxpaas.test_run_root)
+          FileUtils.mkdir_p Fauxpaas.test_run_root
+          FileUtils.copy_entry("#{Fauxpaas.fixtures_root}/.", Fauxpaas.test_run_root)
+
+          # The integration capfiles use this file to find the deploy_root
+          File.write(Fauxpaas.test_deploy_locator, Fauxpaas.deploy_root)
+
         end
         after(:all) do
           FileUtils.rm_rf @fauxpaas.test_run_root
           FileUtils.rm_rf @fauxpaas.deploy_root
           FileUtils.rm_rf @fauxpaas.ref_root
+          FileUtils.rm @fauxpas.test_deploy_locator
         end
         let(:root) { @fauxpaas.deploy_root }
         let(:current_dir) { root/"current" }

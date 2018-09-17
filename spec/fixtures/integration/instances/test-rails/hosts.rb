@@ -3,7 +3,8 @@
 require "tmpdir"
 require "pathname"
 
-deploy_to = File.join(Dir.tmpdir, "fauxpaas", "sandbox", "test-rails")
+deploy_locator_path = Pathname.new(__FILE__)/"../../../../../sandbox/test_deploy_root"
+deploy_to = File.read(deploy_locator_path).strip
 `mkdir -p #{deploy_to}`
 
 set :deploy_to, deploy_to
