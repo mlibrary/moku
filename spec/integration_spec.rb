@@ -64,7 +64,7 @@ module Fauxpaas
           FileUtils.rm_rf @fauxpaas.test_run_root
           FileUtils.rm_rf @fauxpaas.deploy_root
           FileUtils.rm_rf @fauxpaas.ref_root
-          FileUtils.rm @fauxpas.test_deploy_locator
+          FileUtils.rm @fauxpaas.test_deploy_locator
         end
         let(:root) { @fauxpaas.deploy_root }
         let(:current_dir) { root/"current" }
