@@ -18,6 +18,9 @@ before_script:
   - cp ~/.ssh/{id_rsa-fauxpaas.pub,authorized_keys}
   - cat ~/.ssh/config
   - cat /etc/ssh/sshd_config
+  - cat /etc/ssh/ssh_config
+  - echo "Host *\nCiphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc" >> /etc/ssh/sshd_config
+
 
 script:
     - bundle exec rspec --tag ~broken_in_travis
