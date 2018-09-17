@@ -10,11 +10,12 @@ module Fauxpaas
   RSpec.describe FileInstanceRepo do
     let(:instance_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"instances" }
     let(:releases_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"releases" }
+    let(:branches_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"brances-cache" }
     let(:static_repo) do
-      described_class.new(instance_root, releases_root, Filesystem.new, Fauxpaas.git_runner)
+      described_class.new(instance_root, releases_root, Filesystem.new, Fauxpaas.git_runner, branches_root)
     end
     let(:mem_fs) { MemoryFilesystem.new }
-    let(:tmp_repo) { described_class.new("/instances", "/releases", mem_fs, Fauxpaas.git_runner) }
+    let(:tmp_repo) { described_class.new("/instances", "/releases", mem_fs, Fauxpaas.git_runner, "/branches") }
 
     describe "#find" do
       it "can find legacy instances" do

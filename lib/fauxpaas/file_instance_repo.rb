@@ -12,11 +12,12 @@ module Fauxpaas
 
   # Repository for persisting instances to files
   class FileInstanceRepo
-    def initialize(instances_path, releases_path, fs, git_runner)
+    def initialize(instances_path, releases_path, fs, git_runner, branches_path)
       @instances_path = Pathname.new(instances_path)
       @releases_path = Pathname.new(releases_path)
       @fs = fs
       @git_runner = git_runner
+      @branches_path = Pathname.new(branches_path)
     end
 
     def find(name)
@@ -24,7 +25,11 @@ module Fauxpaas
       releases = releases_content(name)
       Instance.new(
         name: name,
-        source: ArchiveReference.from_hash(contents["source"], git_runner),
+        source: ArchiveReference.new(
+          contents["source"]["url"],
+          branch_for(name) || contents["source"]["commitish"],
+          git_runner
+        ),
         deploy: ArchiveReference.from_hash(contents["deploy"], git_runner),
         shared: ArchiveReference.from_hash([contents["shared"]].flatten.first, git_runner),
         unshared: ArchiveReference.from_hash([contents["unshared"]].flatten.first, git_runner),
@@ -36,9 +41,24 @@ module Fauxpaas
       write_releases(instance.name, instance.releases)
     end
 
+    def save_instance(instance)
+      write_branch(instance.name, instance.default_branch)
+    end
+
     private
 
-    attr_reader :instances_path, :releases_path, :fs, :git_runner
+    attr_reader :instances_path, :releases_path, :fs, :git_runner, :branches_path
+
+    def branch_for(name)
+      if fs.exists?(path_to_branch(name))
+        fs.read(branches_path/name).strip
+      end
+    end
+
+    def write_branch(name, branch)
+      fs.mkdir_p(path_to_branch(name).dirname)
+      fs.write(path_to_branch(name), instance.default_branch)
+    end
 
     def write_releases(name, releases)
       fs.mkdir_p(path_to_release(name).dirname)
@@ -65,6 +85,10 @@ module Fauxpaas
 
     def path_to_release(name)
       releases_path/"#{name}.yml"
+    end
+
+    def path_to_branch(name)
+      branches_path/name
     end
 
   end
