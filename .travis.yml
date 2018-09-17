@@ -9,6 +9,9 @@ branches:
     - master
     - develop
 
+env:
+  - DEBUG=true
+
 before_install: gem install bundler
 
 script:
