@@ -3,7 +3,6 @@
 require "fauxpaas/version"
 require "fauxpaas/archive_reference"
 require "fauxpaas/artifact"
-require "fauxpaas/artifact_builder"
 require "fauxpaas/auth_service"
 require "fauxpaas/cap"
 require "fauxpaas/cap_runner"
@@ -93,13 +92,6 @@ module Fauxpaas
           Fauxpaas::ReferenceRepo.new(
             c.ref_root,
             c.git_runner
-          )
-        end
-        container.register(:artifact_builder) do |c|
-          Fauxpaas::ArtifactBuilder.new(
-            factory: Artifact,
-            ref_repo: c.ref_repo,
-            runner: c.system_runner
           )
         end
         container.register(:instance_repo) do |c|

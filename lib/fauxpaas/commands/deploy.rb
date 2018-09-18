@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 require "fauxpaas"
+require "fauxpaas/deploy_config"
+require "fauxpaas/logged_release"
 require "fauxpaas/commands/command"
 require "fauxpaas/commands/restart"
+require "fauxpaas/plans/basic_build"
 
 module Fauxpaas
 
@@ -18,11 +21,20 @@ module Fauxpaas
         :deploy
       end
 
+      def artifact
+        artifact = Artifact.new(
+          path: Pathname.new(Dir.mktmpdir),
+          signature: instance.signature(reference)
+        )
+        Plans::BasicBuild.new(artifact).call
+        artifact
+      end
+
       def execute
         signature = instance.signature(reference)
 
         release = Release.new(
-          artifact: Fauxpaas.artifact_builder.build(signature),
+          artifact: artifact,
           deploy_config: DeployConfig.from_ref(signature.deploy, Fauxpaas.ref_repo)
         )
         status = release.deploy
