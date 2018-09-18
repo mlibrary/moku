@@ -15,7 +15,6 @@ module Fauxpaas
         deploy_dir:       "/some/dir",
         deployer_env:     capfile_path,
         rails_env:        "prod",
-        assets_prefix:    "assets",
         systemd_services: ["foo.service", "bar.service"]
       }
     end
@@ -50,13 +49,6 @@ module Fauxpaas
         expect(backend_runner).to receive(:run)
           .with(anything, anything, anything, a_hash_including(
             rails_env: options[:rails_env]
-        ))
-        subject
-      end
-      it "sets :assets_prefix" do
-        expect(backend_runner).to receive(:run)
-          .with(anything, anything, anything, a_hash_including(
-            assets_prefix: options[:assets_prefix]
         ))
         subject
       end
@@ -181,7 +173,6 @@ module Fauxpaas
           deploy_dir:    "/some/dir",
           deployer_env:  capfile_path,
           rails_env:     "prod",
-          assets_prefix: "assets"
         }
       end
 

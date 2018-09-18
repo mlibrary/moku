@@ -70,7 +70,6 @@ module Fauxpaas
         application:      opts[:appname] || opts[:application],
         deploy_dir:       opts[:deploy_dir],
         rails_env:        opts[:rails_env],
-        assets_prefix:    opts[:assets_prefix],
         systemd_services: opts.fetch(:systemd_services, []).join(":")
       }
       [capfile_path, common_options]
