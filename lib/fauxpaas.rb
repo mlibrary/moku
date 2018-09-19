@@ -107,7 +107,8 @@ module Fauxpaas
             c.instance_root,
             c.releases_root,
             c.filesystem,
-            c.git_runner
+            c.git_runner,
+            c.branches_root
           )
         end
         container.register(:permissions_repo) do |c|
@@ -134,6 +135,9 @@ module Fauxpaas
         end
         container.register(:ref_root) do
           Pathname.new(settings.ref_root).expand_path(Fauxpaas.root)
+        end
+        container.register(:branches_root) do
+          Pathname.new(settings.branches_root).expand_path(Fauxpaas.root)
         end
         container.register(:split_token) { settings.split_token.chomp }
         container.register(:unshared_name) { settings.unshared_name.chomp }

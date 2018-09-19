@@ -1,3 +1,4 @@
+branches_root: data/cache/branches
 instance_root: data/instances
 releases_root: releases
 deployer_env_root: deploy/capfiles
