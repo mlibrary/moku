@@ -204,14 +204,13 @@ We keep a log of every successful deployment.
   calls it
 
 
-## Examle Deploy Config (deploy.yml)
+## Example Deploy Config (deploy.yml)
 
 ```
 appname: test-rails
 deployer_env: rails.capfile
 deploy_dir: null
 rails_env: production
-assets_prefix: assets
 ```
 
 ## Developer Config Repo Structure

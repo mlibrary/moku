@@ -18,7 +18,6 @@ module Fauxpaas
         "appname"       => name,
         "deployer_env"  => "foo.capfile",
         "rails_env"     => "testing",
-        "assets_prefix" => "asssets",
         "deploy_dir"    => "/some/deploy/dir"
       }
     end
