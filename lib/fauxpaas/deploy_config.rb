@@ -29,6 +29,7 @@ module Fauxpaas
 
     def initialize(hash = {})
       hash[:systemd_services] ||= []
+      hash[:deploy_dir] = Pathname.new(hash[:deploy_dir]).expand_path(Fauxpaas.project_root).to_s
       super(hash)
       freeze
     end

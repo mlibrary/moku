@@ -3,12 +3,6 @@
 require "tmpdir"
 require "pathname"
 
-test_deploy_locator = Pathname.new(__FILE__)/"../../../../../sandbox/test_deploy_root"
-deploy_to = File.read(test_deploy_locator).strip
-`mkdir -p #{deploy_to}`
-
-set :deploy_to, deploy_to
-
 server "localhost",
   roles: ["app"],
   user: ENV["USER"],

@@ -1,4 +1,4 @@
 appname: test-norails
 deployer_env: norails.capfile
-deploy_dir: null
+deploy_dir: sandbox/deploy
 rails_env: production

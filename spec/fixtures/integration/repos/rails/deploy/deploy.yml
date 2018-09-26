@@ -1,4 +1,4 @@
 appname: test-rails
 deployer_env: rails.capfile
-deploy_dir: null
+deploy_dir: sandbox/deploy
 rails_env: production

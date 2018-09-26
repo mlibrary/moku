@@ -29,12 +29,10 @@ module Fauxpaas
           Fauxpaas.config.tap do |config|
             # Locate fixtures and the test sandbox
             config.register(:project_root) { Pathname.new(__FILE__).parent.parent }
-            config.register(:test_run_id) {|c| rand(999999).to_s }
-            config.register(:test_run_root) {|c| c.project_root/"sandbox"/c.test_run_id}
+            config.register(:test_run_root) {|c| c.project_root/"sandbox"}
             config.register(:fixtures_root) {|c| c.project_root/"spec"/"fixtures"/"integration" }
             config.register(:fixtures_path) {|c| c.fixtures_root } # delete me
             config.register(:deploy_root) {|c| c.test_run_root/"deploy"}
-            config.register(:test_deploy_locator) {|c| c.project_root/"sandbox"/"test_deploy_root"}
 
             # Configure the application
             config.register(:instance_root) {|c| c.test_run_root/"instances"}
@@ -55,16 +53,11 @@ module Fauxpaas
           FileUtils.mkdir_p Fauxpaas.deploy_root
           FileUtils.mkdir_p Fauxpaas.test_run_root
           FileUtils.copy_entry("#{Fauxpaas.fixtures_root}/.", Fauxpaas.test_run_root)
-
-          # The integration capfiles use this file to find the deploy_root
-          File.write(Fauxpaas.test_deploy_locator, Fauxpaas.deploy_root)
-
         end
         after(:all) do
           FileUtils.rm_rf @fauxpaas.test_run_root
           FileUtils.rm_rf @fauxpaas.deploy_root
           FileUtils.rm_rf @fauxpaas.ref_root
-          FileUtils.rm @fauxpaas.test_deploy_locator
         end
         let(:root) { @fauxpaas.deploy_root }
         let(:current_dir) { root/"current" }
