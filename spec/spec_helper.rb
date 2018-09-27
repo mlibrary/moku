@@ -4,12 +4,17 @@ require "simplecov"
 require "bundler/setup"
 
 # We load these here to for fakefs compat
+require "fileutils"
+require "pathname"
 require "pp"
 require "pry"
 require "stringio"
+# require "fakefs/spec_helpers"
 
 # Load everything so that we can initialize
-require "fauxpaas"
+# require "fauxpaas"
+require "fauxpaas/config"
+require_relative "support/fake_remote_runner"
 require_relative "support/memory_filesystem"
 require_relative "support/spoofed_git_runner"
 
@@ -22,17 +27,5 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
-  end
-
-  config.before(:each) do
-    Fauxpaas.reset!
-    Fauxpaas.env = "test"
-    Fauxpaas.initialize!
-    Fauxpaas.config.tap do |container|
-      container.register(:filesystem) { Fauxpaas::MemoryFilesystem.new }
-      container.register(:git_runner) { Fauxpaas::SpoofedGitRunner.new }
-      container.register(:log_file) { StringIO.new }
-      container.register(:logger) {|c| Logger.new(c.log_file, level: :info) }
-    end
   end
 end

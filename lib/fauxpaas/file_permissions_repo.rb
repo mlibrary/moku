@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "fileutils"
 require "erb"
+require "fileutils"
 require "pathname"
 require "yaml"
 

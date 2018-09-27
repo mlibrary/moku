@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
+require_relative "./support/spoofed_git_runner"
 require "fauxpaas/instance"
 require "fauxpaas/archive_reference"
 require "fauxpaas/release_signature"
@@ -39,7 +39,7 @@ module Fauxpaas
       )
     end
 
-    let(:runner) { Fauxpaas.git_runner }
+    let(:runner) { SpoofedGitRunner.new }
 
     describe "#signature" do
       context "when no commitish given" do
@@ -65,21 +65,6 @@ module Fauxpaas
             )
           )
         end
-      end
-    end
-
-    describe "#interrogator" do
-      let(:contents) { { "foo" => "bar" } }
-      let(:interrogator) { double(:interrogator) }
-      let(:deploy_config) { double(:deploy_config, runner: interrogator) }
-      let(:ref_repo) { double(:ref_repo) }
-      let(:resolved_ref_dir) { double(:resolved_ref_dir, path: runner.tmpdir) }
-      before(:each) do
-        allow(DeployConfig).to receive(:from_ref).with(eql(deploy.latest), ref_repo)
-          .and_return(deploy_config)
-      end
-      it "returns a deployer for the latest version of the instance" do
-        expect(instance.interrogator(ref_repo)).to eql(interrogator)
       end
     end
 

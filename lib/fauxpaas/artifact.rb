@@ -45,6 +45,10 @@ module Fauxpaas
     #   @return [ArchiveReference]
     def_delegators :@signature, :source, :shared, :unshared
 
+    def env
+      []
+    end
+
     private
 
     attr_reader :plan, :signature

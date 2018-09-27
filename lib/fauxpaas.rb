@@ -4,88 +4,50 @@ require "fauxpaas/version"
 require "fauxpaas/archive_reference"
 require "fauxpaas/artifact"
 require "fauxpaas/auth_service"
-require "fauxpaas/cap"
-require "fauxpaas/cap_runner"
 require "fauxpaas/cli"
+require "fauxpaas/config"
 require "fauxpaas/deploy_config"
 require "fauxpaas/file_instance_repo"
 require "fauxpaas/file_permissions_repo"
 require "fauxpaas/filesystem"
-require "fauxpaas/git_runner"
 require "fauxpaas/instance"
-require "fauxpaas/local_git_resolver"
+require "fauxpaas/invoker"
 require "fauxpaas/logged_release"
 require "fauxpaas/logged_releases"
-require "fauxpaas/open3_capture"
-require "fauxpaas/passthrough_runner"
 require "fauxpaas/policy"
 require "fauxpaas/reference_repo"
 require "fauxpaas/release"
 require "fauxpaas/release_signature"
-require "fauxpaas/remote_git_resolver"
-require "fauxpaas/invoker"
-require "fauxpaas/file_runner"
+require "fauxpaas/scm/git"
+require "fauxpaas/shell/basic"
+require "fauxpaas/shell/passthrough"
+require "fauxpaas/shell/secure_remote"
 
 require "logger"
 require "pathname"
 require "canister"
-require "ettin"
 
 # Fake Platform As A Service
 module Fauxpaas
   class << self
-    attr_reader :config, :settings
-    attr_writer :config, :env
-
-    def respond_to_missing?(method_name, include_private = false)
-      config.respond_to?(method_name) || super
-    end
-
-    def method_missing(method, *args, &block)
-      if config.respond_to?(method)
-        config.send(method, *args, &block)
-      else
-        super
-      end
-    end
-
-    def root
-      @root ||= Pathname.new(__FILE__).dirname.parent
-    end
-
-    def env
-      @env ||= ENV["FAUXPAAS_ENV"] || ENV["RAILS_ENV"] || "development"
-    end
-
-    def reset!
-      @settings = nil
-      @loaded = false
-      @config = nil
-    end
-
-    def load_settings!(hash = {})
-      @settings = Ettin.for(Ettin.settings_files(root/"config", env))
-      @settings.merge!(hash)
-    end
 
     def initialize!
-      load_settings! unless @settings
-      @config ||= Canister.new.tap do |container|
+      settings # eager load
+      config.tap do |container|
         if settings.verbose
           container.register(:logger) { Logger.new(STDOUT, level: :debug) }
-          container.register(:system_runner) { Fauxpaas::PassthroughRunner.new(STDOUT) }
+          container.register(:system_runner) { Fauxpaas::Shell::Passthrough.new(STDOUT) }
         else
           container.register(:logger) { Logger.new(STDOUT, level: :info) }
-          container.register(:system_runner) { Fauxpaas::Open3Capture.new }
+          container.register(:system_runner) { Fauxpaas::Shell::Basic.new }
         end
+        container.register(:remote_runner) {|c| Fauxpaas::Shell::SecureRemote.new(c.system_runner) }
         container.register(:backend_runner) {|c| Fauxpaas::CapRunner.new(c.system_runner) }
         container.register(:filesystem) { Fauxpaas::Filesystem.new }
         container.register(:git_runner) do |c|
           Fauxpaas::GitRunner.new(
             system_runner: c.system_runner,
-            fs: c.filesystem,
-            local_resolver: Fauxpaas::LocalGitResolver.new(c.system_runner),
-            remote_resolver: Fauxpaas::RemoteGitResolver.new(c.system_runner)
+            fs: c.filesystem
           )
         end
         container.register(:ref_repo) do |c|
@@ -96,11 +58,11 @@ module Fauxpaas
         end
         container.register(:instance_repo) do |c|
           Fauxpaas::FileInstanceRepo.new(
-            c.instance_root,
-            c.releases_root,
-            c.filesystem,
-            c.git_runner,
-            c.branches_root
+            instances_path: c.instance_root,
+            releases_path: c.releases_root,
+            branches_path: c.branches_root,
+            fs: c.filesystem,
+            git_runner: c.git_runner
           )
         end
         container.register(:permissions_repo) do |c|
@@ -131,9 +93,13 @@ module Fauxpaas
         container.register(:branches_root) do
           Pathname.new(settings.branches_root).expand_path(Fauxpaas.root)
         end
-        container.register(:split_token) { settings.split_token.chomp }
-        container.register(:unshared_name) { settings.unshared_name.chomp }
-        container.register(:shared_name) { settings.shared_name.chomp }
+        container.register(:split_token) { settings.split_token.strip }
+        container.register(:unshared_name) { settings.unshared_name.strip }
+        container.register(:shared_name) { settings.shared_name.strip }
+        container.register(:user) { settings.user.strip }
+        container.register(:deploy_config_filename) { settings.deploy_config_filename.strip }
+        container.register(:finish_build_filename) { settings.finish_build_filename.strip }
+        container.register(:finish_deploy_filename) { settings.finish_deploy_filename.strip }
       end
     end
 

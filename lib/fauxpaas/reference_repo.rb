@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "fauxpaas/lazy"
+require "fauxpaas/lazy/directory"
 require "fileutils"
 
 module Fauxpaas
@@ -34,7 +34,7 @@ module Fauxpaas
 
     attr_reader :dir, :runner
 
-    # @yield [GitRunner::WorkingDirectory] The directory in which
+    # @yield [SCM::WorkingDirectory] The directory in which
     #   the content has been checked out.
     def checkout(ref, subdir)
       runner.safe_checkout(ref.url, ref.commitish, subdir)

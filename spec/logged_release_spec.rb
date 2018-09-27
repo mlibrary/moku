@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
 require "fauxpaas/logged_release"
 require "fauxpaas/release_signature"
 

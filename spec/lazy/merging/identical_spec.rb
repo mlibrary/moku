@@ -1,4 +1,3 @@
-require_relative "../../spec_helper"
 require "fauxpaas/lazy/merging/identical"
 
 module Fauxpaas

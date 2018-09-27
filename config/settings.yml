@@ -6,3 +6,7 @@ ref_root: data/cache/references
 split_token: 1239810_fauxpaas_split_token_678303
 shared_name: infrastructure
 unshared_name: dev
+user: faux
+finish_build_filename: finish_build.yml
+finish_deploy_filename: finish_deploy.yml
+deploy_config_filename: deploy.yml

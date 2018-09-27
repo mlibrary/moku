@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "pathname"
-require "fauxpaas/working_directory"
+require "fauxpaas/scm/working_directory"
 
 module Fauxpaas
   class SpoofedGitRunner

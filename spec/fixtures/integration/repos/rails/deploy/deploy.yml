@@ -1,4 +1,8 @@
-appname: test-rails
-deployer_env: rails.capfile
 deploy_dir: sandbox/deploy
-rails_env: production
+env:
+  rack_env: production
+systemd_services: []
+sites:
+  local_site:
+    - localhost
+

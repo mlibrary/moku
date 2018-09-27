@@ -8,8 +8,10 @@ module Fauxpaas
   # purpose right now is to remove the need to test the functionality
   # in Releases
   class LoggedReleases
-    def initialize(releases)
+    def initialize(releases, shared_name: nil, unshared_name: nil)
       @releases = releases
+      @shared_name = shared_name || Fauxpaas.shared_name
+      @unshared_name = unshared_name || Fauxpaas.unshared_name
     end
 
     def to_s
@@ -39,6 +41,7 @@ module Fauxpaas
     private
 
     attr_reader :releases
+    attr_reader :shared_name, :unshared_name
 
     def short_rows
       releases.map(&:to_brief_hash).map do |hash|
@@ -72,8 +75,8 @@ module Fauxpaas
         "user",
         "source",
         "deployed w/",
-        Fauxpaas.unshared_name,
-        Fauxpaas.shared_name
+        unshared_name,
+        shared_name
       ]
     end
 

@@ -65,7 +65,7 @@ module Fauxpaas
     attr_reader :user, :time
 
     def formatted_time
-      time.strftime(LoggedRelease.time_format)
+      time.strftime(self.class.time_format)
     end
 
   end

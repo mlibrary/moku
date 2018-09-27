@@ -15,6 +15,7 @@ module Fauxpaas
       # @param path [Pathname]
       def self.for(path)
         return path if path.is_a?(self)
+
         path = Pathname.new(path)
         new(Origin.for(path), path)
       end

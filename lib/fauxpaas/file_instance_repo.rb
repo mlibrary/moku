@@ -12,12 +12,18 @@ module Fauxpaas
 
   # Repository for persisting instances to files
   class FileInstanceRepo
-    def initialize(instances_path, releases_path, fs, git_runner, branches_path)
+    def initialize(
+      instances_path: Fauxpaas.instance_root,
+      releases_path: Fauxpaas.releases_root,
+      branches_path: Fauxpaas.branches_root,
+      fs: Fauxpaas.filesystem,
+      git_runner: Fauxpaas.git_runner
+    )
       @instances_path = Pathname.new(instances_path)
       @releases_path = Pathname.new(releases_path)
+      @branches_path = Pathname.new(branches_path)
       @fs = fs
       @git_runner = git_runner
-      @branches_path = Pathname.new(branches_path)
     end
 
     def find(name)

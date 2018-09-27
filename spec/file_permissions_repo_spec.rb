@@ -1,9 +1,9 @@
-
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
-require "fakefs/spec_helpers"
 require "fauxpaas/file_permissions_repo"
+require "fakefs/spec_helpers"
+require "pathname"
+require "yaml"
 
 module Fauxpaas
   RSpec.describe FilePermissionsRepo do

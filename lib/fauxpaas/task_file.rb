@@ -1,30 +1,34 @@
 # frozen_string_literal: true
 
-require "fauxpaas/tasks/shell"
 require "yaml"
 
 module Fauxpaas
 
-  # A list of tasks encoded in a file. This is typically used to
-  # translate e.g. finish_build.yml into a list of tasks.
+  # A list of tasks encoded in a file.
   class TaskFile
+    include Enumerable
 
-    # @param path [Pathname] The pat to the file
-    def initialize(path, task_type: Tasks::Shell)
-      @content = YAML.safe_load(File.read(path))
-      @task_type = task_type
+    def initialize(path)
+      @path = path
     end
 
-    # The tasks encoded in the file
-    # @return [Array<Task::Shell>]
-    def tasks
-      content.map do |raw_step|
-        task_type.new(raw_step["cmd"])
-      end
+    def each
+      raw_tasks.each {|task| yield(task) }
     end
 
     private
 
-    attr_reader :content, :task_type
+    attr_reader :path
+
+    # The tasks encoded in the file
+    # @return [Array<Hash>]
+    def raw_tasks
+      @raw_tasks ||= if path.exist?
+        YAML.safe_load(File.read(path)) || []
+      else
+        []
+      end
+    end
+
   end
 end

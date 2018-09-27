@@ -1,24 +1,34 @@
 # frozen_string_literal: true
 
 require "core_extensions/hash/keys"
-require "fauxpaas/cap"
-require "ostruct"
+require "fauxpaas/sites"
+require "pathname"
 require "yaml"
 
 module Fauxpaas
 
   # The deploy configuration used in the deployment of the instance. I.e. _how_ the
   # instance gets deployed.
-  class DeployConfig < OpenStruct
+  class DeployConfig
 
     # @param hash [Hash]
     def self.from_hash(hash)
-      new(hash.symbolize_keys)
+      tmp = hash.symbolize_keys
+      tmp.default_proc = proc {|h, key| h[key] = {} }
+      rack_env = tmp[:env][:rack_env] || tmp[:rack_env] || tmp[:rails_env]
+      env = tmp[:env].merge(rack_env: rack_env)
+
+      new(
+        deploy_dir: tmp[:deploy_dir],
+        env: env,
+        systemd_services: tmp[:systemd_services] || [],
+        sites: Sites.new(tmp[:sites])
+      )
     end
 
     # @param dir [Lazy::Directory]
-    def self.from_dir(dir)
-      from_hash(YAML.load(File.read(dir.path/"deploy.yml")))
+    def self.from_dir(dir, filename: Fauxpaas.deploy_config_filename)
+      from_hash(YAML.load(File.read((dir.path/filename).to_s)))
     end
 
     # @param ref [ArchiveReference]
@@ -27,24 +37,31 @@ module Fauxpaas
       from_dir(ref_repo.resolve(ref))
     end
 
-    def initialize(hash = {})
-      hash[:systemd_services] ||= []
-      hash[:deploy_dir] = Pathname.new(hash[:deploy_dir]).expand_path(Fauxpaas.project_root).to_s
-      super(hash)
-      freeze
+    def initialize(deploy_dir:, env:, systemd_services:, sites:)
+      @deploy_dir = Pathname.new(deploy_dir).expand_path(Fauxpaas.root)
+      @env = env
+      @systemd_services = systemd_services
+      @sites = sites
     end
 
-    def runner
-      Cap.new(
-        to_hash.merge("deployer_env" => Fauxpaas.deployer_env_root + deployer_env),
-        appname,
-        Fauxpaas.backend_runner
-      )
+    attr_reader :deploy_dir, :sites, :systemd_services
+
+    def shell_env
+      @shell_env ||= env.keep_if {|_key, value| value }
+        .map {|key, value| "#{key.to_s.upcase}=#{Shellwords.escape(value)}" }
+        .join(" ")
     end
 
-    def to_hash
-      marshal_dump.stringify_keys
+    def eql?(other)
+      deploy_dir == other.deploy_dir &&
+        systemd_services == other.systemd_services &&
+        sites.hosts == other.sites.hosts &&
+        shell_env == other.shell_env
     end
-    alias_method :to_h, :to_hash
+
+    private
+
+    attr_reader :env
+
   end
 end

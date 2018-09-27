@@ -21,6 +21,7 @@ module Fauxpaas
 
     def authorized?(user:, entity:, action:)
       return false unless user && entity && action
+
       policy(user, entity).authorized?(action)
     end
 
