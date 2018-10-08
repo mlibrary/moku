@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
+require "fauxpaas/config"
+require "fauxpaas/filesystem"
 require "fauxpaas/file_instance_repo"
 require "yaml"
 
@@ -10,12 +11,31 @@ module Fauxpaas
   RSpec.describe FileInstanceRepo do
     let(:instance_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"instances" }
     let(:releases_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"releases" }
-    let(:branches_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"brances-cache" }
+    let(:branches_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"branches-cache" }
+    let(:git_runner) { SpoofedGitRunner.new }
     let(:static_repo) do
-      described_class.new(instance_root, releases_root, Filesystem.new, Fauxpaas.git_runner, branches_root)
+      described_class.new(
+        instances_path: instance_root,
+        releases_path: releases_root,
+        branches_path: branches_root,
+        fs: Filesystem.new,
+        git_runner: git_runner
+      )
     end
     let(:mem_fs) { MemoryFilesystem.new }
-    let(:tmp_repo) { described_class.new("/instances", "/releases", mem_fs, Fauxpaas.git_runner, "/branches") }
+    let(:tmp_repo) do
+      described_class.new(
+        instances_path: "/instances",
+        releases_path: "/releases",
+        branches_path: "/branches",
+        fs: mem_fs,
+        git_runner: git_runner
+      )
+    end
+
+    before(:each) do
+      Fauxpaas.config.register(:git_runner) { git_runner }
+    end
 
     describe "#find" do
       it "can find legacy instances" do

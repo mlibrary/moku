@@ -1,7 +1,6 @@
 
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
 require "fauxpaas/auth_service"
 
 module Fauxpaas

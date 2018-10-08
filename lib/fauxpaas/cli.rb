@@ -2,8 +2,7 @@
 
 require "gli"
 require "fauxpaas"
-require "fauxpaas/kernel_system"
-require "fauxpaas/commands"
+require "fauxpaas/command"
 
 module Fauxpaas
 
@@ -76,19 +75,6 @@ module Fauxpaas
         end
       end
 
-      desc "List cached releases"
-      arg "instance"
-      command :caches do |c|
-        c.action do |global_options, _options, _args|
-          invoker.add_command(
-            Commands::Caches.new(
-              instance_name: global_options[:instance_name],
-              user: global_options[:user]
-            )
-          )
-        end
-      end
-
       desc "List release history"
       command :releases do |c|
         c.action do |global_options, _options, _args|
@@ -98,92 +84,6 @@ module Fauxpaas
               user: global_options[:user]
             )
           )
-        end
-      end
-
-      desc "Restart the instance's applications"
-      command :releases do |c|
-        c.action do |global_options, _options, _args|
-          invoker.add_command(
-            Commands::Restart.new(
-              instance_name: global_options[:instance_name],
-              user: global_options[:user]
-            )
-          )
-        end
-      end
-
-      desc "Run an arbitrary command on matching hosts"
-      long_desc "Run an arbitrary command from the root of the deployed " \
-        "release. The command is only run on hosts that match the supplied " \
-        "role. Legal values for <role> are app, web, db, or all. For best " \
-        "results, quote the full command."
-      arg "instance"
-      arg "role"
-      arg "bin"
-      arg "arg", [:optional, :multiple]
-      command :exec do |c|
-        c.flag :env, type: Hash, desc: "Specify environment variables"
-        c.action do |global_options, options, args|
-          role = args.first
-          full = [args[1..-1].join(" ").split].flatten
-          invoker.add_command(
-            Commands::Exec.new(
-              instance_name: options[:instance_name],
-              user: global_options[:user],
-              env: global_options[:env],
-              role: role,
-              bin: full.first,
-              args: full[1..-1]
-            )
-          )
-        end
-      end
-
-      desc "Interact with system logs"
-      command :syslog do |c|
-        c.desc "View the system logs for the instance"
-        c.arg "instance"
-        c.command :view do |sub|
-          sub.action do |global_options, _options, _args|
-            Fauxpaas.config.register(:system_runner) { KernelSystem.new }
-            invoker.add_command(
-              Commands::SyslogView.new(
-                instance_name: global_options[:instance_name],
-                user: global_options[:user]
-              )
-            )
-          end
-        end
-
-        c.desc "Grep the system logs for the instance"
-        c.arg "instance"
-        c.arg "pattern"
-        c.command :grep do |sub|
-          sub.action do |global_options, _options, args|
-            Fauxpaas.config.register(:system_runner) { KernelSystem.new }
-            invoker.add_command(
-              Commands::SyslogGrep.new(
-                instance_name: global_options[:instance_name],
-                user: global_options[:user],
-                pattern: args.first || "."
-              )
-            )
-          end
-        end
-
-        c.desc "Follow the system logs for the instance"
-        c.arg "instance"
-        c.command :follow do |sub|
-          sub.action do |global_options, _options, _args|
-            Fauxpaas.config.register(:system_runner) { KernelSystem.new }
-            invoker.add_command(
-              Commands::SyslogFollow.new(
-                instance_name: global_options[:instance_name],
-                user: global_options[:user]
-              )
-            )
-          end
         end
       end
     end

@@ -52,6 +52,7 @@ module Fauxpaas
     # @return [ArchiveReference]
     def at(new_commitish)
       return latest unless new_commitish
+
       self.class.at(url, new_commitish, runner)
     end
 

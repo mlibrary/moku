@@ -40,11 +40,6 @@ module Fauxpaas
       )
     end
 
-    # @return [Cap] A deployer
-    def interrogator(ref_repo = Fauxpaas.ref_repo)
-      deploy_config(ref_repo).runner
-    end
-
     # @return [String]
     def default_branch
       source.commitish

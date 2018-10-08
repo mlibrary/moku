@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "fauxpaas"
+require "fauxpaas/scm/file"
+require_relative "support/fake_remote_runner"
 require "tmpdir"
 require "pathname"
 require "open3"
@@ -13,7 +15,7 @@ module Fauxpaas
       RSpec.shared_context "run deploy" do |instance_name|
         before(:all) do
           Fauxpaas.invoker.add_command(
-            Commands::Deploy.new(
+            Command::Deploy.new(
               user: ENV["USER"],
               instance_name: instance_name,
               reference: nil
@@ -28,24 +30,23 @@ module Fauxpaas
           Fauxpaas.initialize!
           Fauxpaas.config.tap do |config|
             # Locate fixtures and the test sandbox
-            config.register(:project_root) { Pathname.new(__FILE__).parent.parent }
-            config.register(:test_run_id) {|c| rand(999999).to_s }
-            config.register(:test_run_root) {|c| c.project_root/"sandbox"/c.test_run_id}
-            config.register(:fixtures_root) {|c| c.project_root/"spec"/"fixtures"/"integration" }
+            config.register(:test_run_root) {|c| Fauxpaas.root/"sandbox"}
+            config.register(:fixtures_root) {|c| Fauxpaas.root/"spec"/"fixtures"/"integration" }
             config.register(:fixtures_path) {|c| c.fixtures_root } # delete me
             config.register(:deploy_root) {|c| c.test_run_root/"deploy"}
-            config.register(:test_deploy_locator) {|c| c.project_root/"sandbox"/"test_deploy_root"}
 
             # Configure the application
+            config.register(:user) { ENV["USER"] }
             config.register(:instance_root) {|c| c.test_run_root/"instances"}
             config.register(:releases_root) {|c| c.test_run_root/"releases" }
             config.register(:deployer_env_root) {|c| c.test_run_root/"capfiles" }
 
             # Configure the logger
-            config.register(:git_runner) { FileRunner.new }
+            config.register(:git_runner) { SCM::File.new }
+            config.register(:remote_runner) {|c| FakeRemoteRunner.new(c.system_runner) }
             if ENV["DEBUG"]
               config.register(:logger) { Logger.new(STDOUT, level: :debug) }
-              config.register(:system_runner) { Fauxpaas::PassthroughRunner.new(STDOUT) }
+              config.register(:system_runner) { Shell::Passthrough.new(STDOUT) }
             else
               config.register(:logger) { Logger.new(StringIO.new, level: :info) }
             end
@@ -55,16 +56,11 @@ module Fauxpaas
           FileUtils.mkdir_p Fauxpaas.deploy_root
           FileUtils.mkdir_p Fauxpaas.test_run_root
           FileUtils.copy_entry("#{Fauxpaas.fixtures_root}/.", Fauxpaas.test_run_root)
-
-          # The integration capfiles use this file to find the deploy_root
-          File.write(Fauxpaas.test_deploy_locator, Fauxpaas.deploy_root)
-
         end
         after(:all) do
           FileUtils.rm_rf @fauxpaas.test_run_root
           FileUtils.rm_rf @fauxpaas.deploy_root
           FileUtils.rm_rf @fauxpaas.ref_root
-          FileUtils.rm @fauxpaas.test_deploy_locator
         end
         let(:root) { @fauxpaas.deploy_root }
         let(:current_dir) { root/"current" }

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
 require "fauxpaas/archive_reference"
+require_relative "support/spoofed_git_runner"
 require "pathname"
 
 module Fauxpaas
   RSpec.describe ArchiveReference do
     let(:url) { "https://example.com/fake.git" }
-    let(:runner) { Fauxpaas.git_runner }
+    let(:runner) { SpoofedGitRunner.new }
     let(:reference) { described_class.new(url, runner.branch, runner) }
 
     describe "#at" do

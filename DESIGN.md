@@ -207,10 +207,20 @@ We keep a log of every successful deployment.
 ## Example Deploy Config (deploy.yml)
 
 ```
-appname: test-rails
-deployer_env: rails.capfile
-deploy_dir: null
-rails_env: production
+deploy_dir: "/hydra/dromedary-production"
+env:
+  rack_env: production
+  some_var: some_val
+systemd_services:
+  - dromedary-production.target
+sites:
+  macc:
+    - macc1
+    - hostname: macc2
+  hatcher:
+    - hostname: hatcher1
+    - hostname: hatcher2
+    - hostname: hatcher3
 ```
 
 ## Developer Config Repo Structure

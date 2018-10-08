@@ -1,4 +1,8 @@
-appname: test-norails
-deployer_env: norails.capfile
-deploy_dir: null
-rails_env: production
+deploy_dir: sandbox/deploy
+env:
+  rack_env: production
+systemd_services: []
+sites:
+  local_site:
+    - localhost
+

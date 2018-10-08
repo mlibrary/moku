@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
 require "fauxpaas/logged_releases"
+require "fauxpaas/config"
 
 module Fauxpaas
   RSpec.describe LoggedReleases do
@@ -18,9 +18,17 @@ module Fauxpaas
         }
       )
     end
+    let(:shared_name) { "infrastructure" }
+    let(:unshared_name) { "dev" }
+    let(:instance) do
+      described_class.new(
+        [release1],
+        shared_name: shared_name,
+        unshared_name: unshared_name
+      )
+    end
 
     describe "#to_s" do
-      let(:instance) { described_class.new([release1]) }
       let(:expected) do
         File.read(Fauxpaas.root/"spec"/"fixtures"/"unit"/"releases_output_long.txt").chomp
       end
@@ -30,7 +38,6 @@ module Fauxpaas
     end
 
     describe "#to_short_s" do
-      let(:instance) { described_class.new([release1]) }
       let(:expected) do
         "| timestamp           | user  | source  | deployed w/ | dev     | infrastructure |\n" \
         "+---------------------+-------+---------+-------------+---------+----------------+\n" \

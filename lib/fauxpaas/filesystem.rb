@@ -82,6 +82,7 @@ module Fauxpaas
     # @param [Pathname] path
     def rm_empty_tree(path)
       raise ArgumentError, "path cannot be a non-directory file" if path.file?
+
       FileUtils.rmdir path, parents: true
     end
 
