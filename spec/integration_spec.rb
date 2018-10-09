@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "spec_helper"
 require "fauxpaas"
 require "fauxpaas/scm/file"
 require_relative "support/fake_remote_runner"
@@ -64,7 +65,6 @@ module Fauxpaas
         end
         let(:root) { @fauxpaas.deploy_root }
         let(:current_dir) { root/"current" }
-        let(:shared_dir) { root/"shared" }
       end
 
       # Expects
@@ -93,49 +93,38 @@ module Fauxpaas
             .to match(%r{^BUNDLE_FROZEN: "true"$})
         end
 
-        xdescribe "permissions" do
+        describe "permissions" do
           it "releases 2775" do
-            expect((root/"releases").stat.mode & 0o7777).to eql(0o2775)
+            expect(root/"releases").to have_permissions("2775")
           end
           it "releases/<release> 2775" do
             release_dir = (root/"releases").children.first
-            expect(release_dir.stat.mode & 0o7777).to eql(0o2775)
+            expect(release_dir).to have_permissions("2775")
           end
           it "current/public 2775" do
-            expect((current_dir/"public").stat.mode & 0o7777).to eql(0o2775)
-          end
-          it "current/<some_unshared> 660" do
-            file = current_dir/"some"/"dev"/"file.txt"
-            expect(file.stat.mode & 0o777).to eql(0o660)
-          end
-          it "current/<some_shared_file> 660" do
-            file = current_dir/"some"/"shared"/"file.txt"
-            expect(file.stat.mode & 0o777).to eql(0o660)
+            expect(current_dir/"public").to have_permissions("2775")
           end
           it "current/public/<file> 664" do
             file = (current_dir/"public").children.find(&:file?)
-            expect(file.stat.mode & 0o777).to eql(0o664)
+            expect(file).to have_permissions("664")
           end
-          it "shared 2775" do
-            expect(shared_dir.stat.mode & 0o7777).to eql(0o2775)
+          it "current/<some_unshared> 660" do
+            file = current_dir/"some"/"dev"/"file.txt"
+            expect(file).to have_permissions("660")
           end
-          it "shared/public 2775" do
-            expect((shared_dir/"public").stat.mode & 0o7777).to eql(0o2775)
+          it "current/<some_shared_file> 660" do
+            file = current_dir/"some"/"shared"/"file.txt"
+            expect(file).to have_permissions("660")
           end
-          it "shared/public/<file> 664" do
-            file = (shared_dir/"public").children.find(&:file?)
-            expect(file.stat.mode & 0o777).to eql(0o664)
+          it "current/public/<file> 664" do
+            file = (current_dir/"public").children.find(&:file?)
+            expect(file).to have_permissions("664")
           end
-          it "shared/log 2770" do
+          it "current/log 2770" do
             dir = current_dir/"log"
             expect(dir.exist?).to be true
             expect(dir.directory?).to be true
-            expect(dir.stat.mode & 0o7777).to eql(0o2770)
-          end
-          it "current/log is a symlink to shared/log" do
-            dir = current_dir/"log"
-            expect(dir.symlink?).to be true
-            expect(dir.realpath).to eql(shared_dir/"log")
+            expect(dir).to have_permissions("2770")
           end
         end
 
@@ -192,14 +181,12 @@ module Fauxpaas
 
         include_examples "a successful deploy"
 
-        xit "shared/public/assets 2775" do
-          expect((shared_dir/"public"/"assets").stat.mode & 0o7777).to eql(0o2775)
+        it "current/public/assets 2775" do
+          expect(current_dir/"public"/"assets").to have_permissions("2775")
         end
 
-        xit "current/public/assets is a symlink to shared/public/assets" do
-          dir = current_dir/"public"/"assets"
-          expect(dir.symlink?).to be true
-          expect(dir.realpath).to eql(shared_dir/"public"/"assets")
+        it "current/bin/rails 6770" do
+          expect(current_dir/"bin"/"rails").to have_permissions("6770")
         end
 
         it "runs the migrations" do
