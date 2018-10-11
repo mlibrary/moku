@@ -46,7 +46,7 @@ module Fauxpaas
     def short_rows
       releases.map(&:to_brief_hash).map do |hash|
         [
-          hash[:time],
+          hash[:id],
           hash[:user],
           hash[:source].slice(0, 7),
           hash[:deploy].slice(0, 7),
@@ -59,7 +59,7 @@ module Fauxpaas
     def rows
       releases.map(&:to_brief_hash).map do |hash|
         [
-          hash[:time],
+          hash[:id],
           hash[:user],
           hash[:source],
           hash[:deploy],
@@ -71,7 +71,7 @@ module Fauxpaas
 
     def headings
       [
-        "timestamp",
+        "id",
         "user",
         "source",
         "deployed w/",

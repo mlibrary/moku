@@ -34,6 +34,7 @@ module Fauxpaas
     end
 
     before(:each) do
+      Fauxpaas.config.register(:release_time_format) { Fauxpaas.settings.release_time_format }
       Fauxpaas.config.register(:git_runner) { git_runner }
     end
 

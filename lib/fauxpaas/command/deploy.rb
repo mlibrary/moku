@@ -43,7 +43,7 @@ module Fauxpaas
         report(status, action: "deploy")
 
         if status.success?
-          instance.log_release(LoggedRelease.new(user, Time.now, signature))
+          instance.log_release(LoggedRelease.new(release.id, user, Time.now, signature))
           Fauxpaas.instance_repo.save_releases(instance)
           Plan::Restart.new(release).call
         end

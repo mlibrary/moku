@@ -11,9 +11,11 @@ module Fauxpaas
 
     class << self
       def from_hash(hash)
+        time = Time.strptime(hash[:time], time_format)
         new(
+          hash[:id] || (time+0.001).strftime(Fauxpaas.release_time_format),
           hash[:user],
-          Time.strptime(hash[:time], time_format),
+          time,
           ReleaseSignature.from_hash(hash[:signature])
         )
       end
@@ -25,10 +27,12 @@ module Fauxpaas
 
     attr_reader :signature
 
-    # @param user [#to_s]
+    # @param id [String]
+    # @param user [String]
     # @param time [Time]
     # @param signature [ReleaseSignature]
-    def initialize(user, time, signature)
+    def initialize(id, user, time, signature)
+      @id = id
       @user = user
       @time = time
       @signature = signature
@@ -36,6 +40,7 @@ module Fauxpaas
 
     def to_brief_hash
       {
+        id:       id,
         time:     formatted_time,
         user:     user,
         source:   signature.source.commitish,
@@ -46,7 +51,7 @@ module Fauxpaas
     end
 
     def to_s
-      "#{formatted_time}: #{user} #{signature.source.commitish} " \
+      "#{formatted_time}: #{user} #{id} #{signature.source.commitish} " \
         "w/ #{signature.deploy.commitish}\n" \
         "  #{signature.unshared.commitish}\n" \
         "  #{signature.shared.commitish}"
@@ -54,6 +59,7 @@ module Fauxpaas
 
     def to_hash
       {
+        id:        id,
         user:      user,
         time:      formatted_time,
         signature: signature.to_hash
@@ -62,7 +68,7 @@ module Fauxpaas
 
     private
 
-    attr_reader :user, :time
+    attr_reader :id, :user, :time
 
     def formatted_time
       time.strftime(self.class.time_format)

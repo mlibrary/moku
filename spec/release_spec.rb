@@ -1,23 +1,18 @@
 # frozen_string_literal: true
 
+require_relative "spec_helper"
 require "fauxpaas/release"
 require "fauxpaas/shell/basic"
 require "fauxpaas/sites"
-require_relative "support/fake_remote_runner"
 
 module Fauxpaas
-  # class FakeWorkingDir
-  #   def initialize(dir, files)
-  #     @dir = dir
-  #     @files = files
-  #   end
-  #   attr_reader :dir
-  #   def relative_files
-  #     @files
-  #   end
-  # end
-
   RSpec.describe Release do
+    before(:each) do
+      Fauxpaas.config.tap do |canister|
+        canister.register(:release_time_format) { Fauxpaas.settings.release_time_format }
+      end
+    end
+
     let(:deploy_dir) { Pathname.new("/deploy/dir") }
     let(:artifact) { double(:artifact, path: "somepath") }
     let(:remote_runner) { FakeRemoteRunner.new(Shell::Basic.new) }

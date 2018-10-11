@@ -100,6 +100,7 @@ module Fauxpaas
         container.register(:deploy_config_filename) { settings.deploy_config_filename.strip }
         container.register(:finish_build_filename) { settings.finish_build_filename.strip }
         container.register(:finish_deploy_filename) { settings.finish_deploy_filename.strip }
+        container.register(:release_time_format) { settings.release_time_format.strip }
       end
     end
 
