@@ -48,6 +48,7 @@ module Fauxpaas
         [
           hash[:id],
           hash[:user],
+          hash[:version].slice(0, 11),
           hash[:source].slice(0, 7),
           hash[:deploy].slice(0, 7),
           hash[:unshared].slice(0, 7),
@@ -61,6 +62,7 @@ module Fauxpaas
         [
           hash[:id],
           hash[:user],
+          hash[:version],
           hash[:source],
           hash[:deploy],
           hash[:unshared],
@@ -73,6 +75,7 @@ module Fauxpaas
       [
         "id",
         "user",
+        "version",
         "source",
         "deployed w/",
         unshared_name,

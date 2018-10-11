@@ -12,11 +12,13 @@ module Fauxpaas
     class << self
       def from_hash(hash)
         time = Time.strptime(hash[:time], time_format)
+        signature = ReleaseSignature.from_hash(hash[:signature])
         new(
-          hash[:id] || (time+0.001).strftime(Fauxpaas.release_time_format),
-          hash[:user],
-          time,
-          ReleaseSignature.from_hash(hash[:signature])
+          id: hash[:id] || (time+0.001).strftime(Fauxpaas.release_time_format),
+          user: hash[:user],
+          time: time,
+          version: hash[:version] || signature.source.commitish,
+          signature: signature
         )
       end
 
@@ -28,19 +30,22 @@ module Fauxpaas
     attr_reader :signature
 
     # @param id [String]
-    # @param user [String]
-    # @param time [Time]
     # @param signature [ReleaseSignature]
-    def initialize(id, user, time, signature)
+    # @param time [Time]
+    # @param user [String]
+    # @param version [String]
+    def initialize(id:, signature:, time:, user:, version:)
       @id = id
-      @user = user
-      @time = time
       @signature = signature
+      @time = time
+      @user = user
+      @version = version
     end
 
     def to_brief_hash
       {
         id:       id,
+        version:  version,
         time:     formatted_time,
         user:     user,
         source:   signature.source.commitish,
@@ -51,8 +56,9 @@ module Fauxpaas
     end
 
     def to_s
-      "#{formatted_time}: #{user} #{id} #{signature.source.commitish} " \
+      "#{formatted_time}: #{user} #{id} #{version} " \
         "w/ #{signature.deploy.commitish}\n" \
+        "  #{signature.source.commitish}\n" \
         "  #{signature.unshared.commitish}\n" \
         "  #{signature.shared.commitish}"
     end
@@ -60,6 +66,7 @@ module Fauxpaas
     def to_hash
       {
         id:        id,
+        version:   version,
         user:      user,
         time:      formatted_time,
         signature: signature.to_hash
@@ -67,8 +74,7 @@ module Fauxpaas
     end
 
     private
-
-    attr_reader :id, :user, :time
+    attr_reader :id, :time, :user, :version
 
     def formatted_time
       time.strftime(self.class.time_format)

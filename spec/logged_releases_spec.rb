@@ -10,6 +10,7 @@ module Fauxpaas
         :release1,
         to_brief_hash: {
           id:       "20170131134411999",
+          version:  "v1.2.3",
           time:     "2017-01-31T13:44:11",
           user:     "alice",
           source:   "source7070a31ef4810af60b9df2d74bf09fb8e8",
@@ -40,9 +41,9 @@ module Fauxpaas
 
     describe "#to_short_s" do
       let(:expected) do
-        "| id                | user  | source  | deployed w/ | dev     | infrastructure |\n" \
-        "+-------------------+-------+---------+-------------+---------+----------------+\n" \
-        "| 20170131134411999 | alice | source7 | deploy7     | unsha17 | share17        |"
+        "| id                | user  | version | source  | deployed w/ | dev     | infrastructure |\n" \
+        "+-------------------+-------+---------+---------+-------------+---------+----------------+\n" \
+        "| 20170131134411999 | alice | v1.2.3  | source7 | deploy7     | unsha17 | share17        |"
       end
       it "returns a short table" do
         expect(instance.to_short_s).to eq(expected)
