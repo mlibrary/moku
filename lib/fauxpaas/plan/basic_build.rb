@@ -4,6 +4,7 @@ require "fauxpaas/plan/plan"
 require "fauxpaas/task_file"
 require "fauxpaas/task/bundle"
 require "fauxpaas/task/download_references"
+require "fauxpaas/task/build_permissions"
 require "fauxpaas/task/shell"
 
 module Fauxpaas
@@ -25,9 +26,12 @@ module Fauxpaas
       end
 
       def finish
-        TaskFile.new(task_file_path).map do |raw_task|
-          Task::Shell.new(raw_task["cmd"])
-        end
+        [
+          TaskFile.new(task_file_path).map do |raw_task|
+            Task::Shell.new(raw_task["cmd"])
+          end,
+          Task::BuildPermissions.new
+        ].flatten
       end
 
       private
