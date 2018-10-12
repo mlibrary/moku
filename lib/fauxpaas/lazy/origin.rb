@@ -17,7 +17,7 @@ module Fauxpaas
 
       # Used for subclass registration
       def self.registry
-        @@registry ||= []
+        @@registry ||= [] # rubocop:disable Style/ClassVars
       end
 
       # Used for subclass registration

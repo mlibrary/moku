@@ -10,6 +10,8 @@ module Fauxpaas
   class CLI
     include GLI::App
 
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize
     def initialize
       program_desc "Fake platform-as-a-service"
       synopsis_format :terminal
@@ -87,6 +89,8 @@ module Fauxpaas
         end
       end
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
 
     private
 

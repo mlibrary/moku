@@ -13,12 +13,12 @@ module Fauxpaas
     # Wraps git commands
     class Git
       # @param system_runner
-      # @param fs [Filesystem]
+      # @param filesystem [Filesystem]
       # @param local_resolver [LocalGitResolver]
       # @param remote_resolver [RemoteGitResolver]
-      def initialize(system_runner:, fs:, local_resolver:, remote_resolver:)
+      def initialize(system_runner:, filesystem:, local_resolver:, remote_resolver:)
         @system_runner = system_runner
-        @fs = fs
+        @filesystem = filesystem
         @local_resolver = local_resolver || LocalResolver.new(system_runner)
         @remote_resolver = remote_resolver || RemoteResolver.new(system_runner)
       end
@@ -27,7 +27,7 @@ module Fauxpaas
       # @param commitish [String]
       # @return [String]
       def sha(uri, commitish)
-        if fs.exists?(Pathname.new(uri))
+        if filesystem.exists?(Pathname.new(uri))
           local_resolver.sha(uri, commitish)
         else
           remote_resolver.sha(uri, commitish)
@@ -44,7 +44,7 @@ module Fauxpaas
       def safe_checkout(url, commitish, dir)
         cloned_dir = Pathname.new(dir)
         system_runner.run("git clone #{url} #{cloned_dir}")
-        working_directory = fs.chdir(cloned_dir) do
+        working_directory = filesystem.chdir(cloned_dir) do
           system_runner.run("git checkout #{commitish}")
           build_working_dir(cloned_dir)
         end
@@ -54,11 +54,11 @@ module Fauxpaas
 
       private
 
-      attr_reader :system_runner, :fs
+      attr_reader :system_runner, :filesystem
       attr_reader :remote_resolver, :local_resolver
 
       def build_working_dir(dir)
-        files = fs.chdir(dir) do
+        files = filesystem.chdir(dir) do
           stdout = system_runner.run("git ls-files").output
           stdout
             .split("\n")

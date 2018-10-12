@@ -16,18 +16,18 @@ module Fauxpaas
     describe "#sha" do
       let(:local_resolver) { double(:local, sha: "localresult") }
       let(:remote_resolver) { double(:remote, sha: "remoteresult") }
-      let(:fs) { MemoryFilesystem.new }
+      let(:filesystem) { MemoryFilesystem.new }
       let(:runner) do
         described_class.new(
           system_runner: double(:system_runner, run: ""),
           local_resolver: local_resolver,
           remote_resolver: remote_resolver,
-          fs: fs
+          filesystem: filesystem
         )
       end
       context "repo does not exist on local disk" do
         before(:each) do
-          allow(fs).to receive(:exists?).with(url).and_return(false)
+          allow(filesystem).to receive(:exists?).with(url).and_return(false)
         end
         it "resolves the ref remotely" do
           expect(runner.sha(url, commit)).to eql("remoteresult")
@@ -35,7 +35,7 @@ module Fauxpaas
       end
       context "repo exists on local disk" do
         before(:each) do
-          allow(fs).to receive(:exists?).with(url).and_return(true)
+          allow(filesystem).to receive(:exists?).with(url).and_return(true)
         end
         it "resolves the ref locally" do
           expect(runner.sha(url, commit)).to eql("localresult")
@@ -46,13 +46,13 @@ module Fauxpaas
     describe "#safe_checkout" do
       context "fully mocked" do
         let(:system_runner) { double(:system_runner, run: "") }
-        let(:fs) { MemoryFilesystem.new }
+        let(:filesystem) { MemoryFilesystem.new }
         let(:runner) do
           described_class.new(
             system_runner: system_runner,
             local_resolver: double(:local_resolver),
             remote_resolver: double(:remote_resolver),
-            fs: fs
+            filesystem: filesystem
           )
         end
         it "yields a working_directory with paths of the contents" do
@@ -64,12 +64,12 @@ module Fauxpaas
               error: "",
               output: "one.txt\ntwo.txt\n"
             ))
-          fs.mktmpdir do |dir|
+          filesystem.mktmpdir do |dir|
             runner.safe_checkout(url, commit, dir) do |working_dir|
-              expect(working_dir.dir).to eql(fs.tmpdir)
+              expect(working_dir.dir).to eql(filesystem.tmpdir)
               expect(working_dir.real_files).to match_array([
-                fs.tmpdir/"one.txt",
-                fs.tmpdir/"two.txt"
+                filesystem.tmpdir/"one.txt",
+                filesystem.tmpdir/"two.txt"
               ])
             end
           end
@@ -86,7 +86,7 @@ module Fauxpaas
             local_resolver: SCM::Git::LocalResolver.new(Shell::Basic.new),
             remote_resolver: SCM::Git::RemoteResolver.new(Shell::Basic.new),
             system_runner: Shell::Basic.new,
-            fs: Filesystem.new
+            filesystem: Filesystem.new
           )
         end
         it "checks out the ref" do

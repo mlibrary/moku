@@ -31,9 +31,12 @@ require "canister"
 module Fauxpaas
   class << self
 
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/BlockLength
+    # rubocop:disable Metrics/MethodLength
     def initialize!
       settings # eager load
-      config.tap do |container|
+      config.tap do |container| # rubocoop:
         if settings.verbose
           container.register(:logger) { Logger.new(STDOUT, level: :debug) }
           container.register(:system_runner) { Fauxpaas::Shell::Passthrough.new(STDOUT) }
@@ -47,7 +50,7 @@ module Fauxpaas
         container.register(:git_runner) do |c|
           Fauxpaas::GitRunner.new(
             system_runner: c.system_runner,
-            fs: c.filesystem
+            filesystem: c.filesystem
           )
         end
         container.register(:ref_repo) do |c|
@@ -61,7 +64,7 @@ module Fauxpaas
             instances_path: c.instance_root,
             releases_path: c.releases_root,
             branches_path: c.branches_root,
-            fs: c.filesystem,
+            filesystem: c.filesystem,
             git_runner: c.git_runner
           )
         end
@@ -95,6 +98,9 @@ module Fauxpaas
         end
       end
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/BlockLength
+    # rubocop:enable Metrics/MethodLength
 
   end
 end

@@ -18,7 +18,7 @@ module Fauxpaas
         instances_path: instance_root,
         releases_path: releases_root,
         branches_path: branches_root,
-        fs: Filesystem.new,
+        filesystem: Filesystem.new,
         git_runner: git_runner
       )
     end
@@ -28,7 +28,7 @@ module Fauxpaas
         instances_path: "/instances",
         releases_path: "/releases",
         branches_path: "/branches",
-        fs: mem_fs,
+        filesystem: mem_fs,
         git_runner: git_runner
       )
     end

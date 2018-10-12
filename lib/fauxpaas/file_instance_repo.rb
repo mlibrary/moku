@@ -16,13 +16,13 @@ module Fauxpaas
       instances_path: Fauxpaas.instance_root,
       releases_path: Fauxpaas.releases_root,
       branches_path: Fauxpaas.branches_root,
-      fs: Fauxpaas.filesystem,
+      filesystem: Fauxpaas.filesystem,
       git_runner: Fauxpaas.git_runner
     )
       @instances_path = Pathname.new(instances_path)
       @releases_path = Pathname.new(releases_path)
       @branches_path = Pathname.new(branches_path)
-      @fs = fs
+      @filesystem = filesystem
       @git_runner = git_runner
     end
 
@@ -49,7 +49,7 @@ module Fauxpaas
 
     private
 
-    attr_reader :instances_path, :releases_path, :fs, :git_runner, :branches_path
+    attr_reader :instances_path, :releases_path, :filesystem, :git_runner, :branches_path
 
     def instance_from_hash(name, hash)
       ArchiveReference.new(
@@ -60,30 +60,30 @@ module Fauxpaas
     end
 
     def branch_for(name)
-      if fs.exists?(path_to_branch(name))
-        fs.read(branches_path/name).strip
+      if filesystem.exists?(path_to_branch(name))
+        filesystem.read(branches_path/name).strip
       end
     end
 
     def write_branch(name, branch)
-      fs.mkdir_p(path_to_branch(name).dirname)
-      fs.write(path_to_branch(name), branch)
+      filesystem.mkdir_p(path_to_branch(name).dirname)
+      filesystem.write(path_to_branch(name), branch)
     end
 
     def write_releases(name, releases)
-      fs.mkdir_p(path_to_release(name).dirname)
-      fs.write(path_to_release(name), YAML.dump(
+      filesystem.mkdir_p(path_to_release(name).dirname)
+      filesystem.write(path_to_release(name), YAML.dump(
         "releases" => releases.map(&:to_hash)
       ))
     end
 
     def instance_content(name)
-      YAML.load(ERB.new(fs.read(path_to_instance(name))).result)
+      YAML.load(ERB.new(filesystem.read(path_to_instance(name))).result)
     end
 
     def releases_content(name)
-      if fs.exists?(path_to_release(name))
-        YAML.load(fs.read(path_to_release(name)))
+      if filesystem.exists?(path_to_release(name))
+        YAML.load(filesystem.read(path_to_release(name)))
       else
         { "releases" => [] }
       end

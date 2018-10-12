@@ -10,6 +10,8 @@ AllCops:
 Naming/FileName:
   ExpectMatchingDefinition: true
   Exclude:
+    - 'lib/fauxpaas/scm/**/*'
+    - 'lib/core_extensions/**/*'
     - 'spec/**/*'
     - 'lib/*/version.rb'
     - 'bin/console'

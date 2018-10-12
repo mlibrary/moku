@@ -28,7 +28,7 @@ module Fauxpaas
 
     # @param dir [Lazy::Directory]
     def self.from_dir(dir, filename: Fauxpaas.deploy_config_filename)
-      from_hash(YAML.load(File.read((dir.path/filename).to_s)))
+      from_hash(YAML.load(File.read((dir.path/filename).to_s))) # rubocop:disable Security/YAMLLoad
     end
 
     # @param ref [ArchiveReference]

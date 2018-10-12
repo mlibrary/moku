@@ -53,7 +53,7 @@ module Fauxpaas
 
       # @param artifact [Artifact]
       # @return [Status]
-      def call(artifact)
+      def call(artifact) # rubocop:disable Metrics/AbcSize
         with_env(artifact.path) do
           private_permissions.apply(artifact.path)
           sensitive_permissions.apply(artifact.path/"log")
