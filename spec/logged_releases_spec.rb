@@ -34,17 +34,21 @@ module Fauxpaas
       let(:expected) do
         File.read(Fauxpaas.root/"spec"/"fixtures"/"unit"/"releases_output_long.txt").chomp
       end
+
       it "returns a table" do
         expect(instance.to_s).to eq(expected)
       end
     end
 
     describe "#to_short_s" do
+      # rubocop:disable Metrics/LineLength
       let(:expected) do
         "| id                | user  | version | source  | deployed w/ | dev     | infrastructure |\n" \
         "+-------------------+-------+---------+---------+-------------+---------+----------------+\n" \
         "| 20170131134411999 | alice | v1.2.3  | source7 | deploy7     | unsha17 | share17        |"
       end
+      # rubocop:enable Metrics/LineLength
+
       it "returns a short table" do
         expect(instance.to_short_s).to eq(expected)
       end

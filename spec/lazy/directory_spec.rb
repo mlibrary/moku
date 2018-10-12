@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/lazy/directory"
 require "pathname"
 require "fileutils"
@@ -19,7 +21,7 @@ module Fauxpaas
         self.class.new(path.relative_path_from(base))
       end
 
-      def merge(other)
+      def merge(_other)
         self.class.new(path/"MERGED")
       end
 
@@ -32,7 +34,7 @@ module Fauxpaas
     let(:files) do
       [
         TestFile.new(path/"bar.txt"),
-        TestFile.new(path/"collide.txt"),
+        TestFile.new(path/"collide.txt")
       ]
     end
     let(:base_path) { Pathname.new("lhs") }
@@ -41,6 +43,7 @@ module Fauxpaas
 
     describe "::for" do
       before(:each) { allow(Find).to receive(:find).and_return(raw_files) }
+
       let(:raw_files) do
         [
           "#{path}/bar.txt",
@@ -70,14 +73,14 @@ module Fauxpaas
 
       it "does not change the files" do
         expect(directory.relative_from(base_path).files)
-          .to eql(files.map{|f| f.relative_from(base_path)})
+          .to eql(files.map {|f| f.relative_from(base_path) })
       end
     end
-
 
     describe "#add" do
       let(:new_path) { Pathname.new("new/path") }
       let(:new_file) { TestFile.new(new_path/"baz.txt") }
+
       it "returns a new instance" do
         expect(directory.add(new_file)).to be_an_instance_of described_class
       end
@@ -98,7 +101,7 @@ module Fauxpaas
       it "copies the files" do
         expect(directory.cp(new_path).files).to contain_exactly(
           TestFile.new("new/path/bar.txt"),
-          TestFile.new("new/path/collide.txt"),
+          TestFile.new("new/path/collide.txt")
         )
       end
     end
@@ -110,6 +113,7 @@ module Fauxpaas
           double(:file2, write: "wrote2")
         ]
       end
+
       before(:each) { allow(::FileUtils).to receive(:mkdir_p) }
 
       it "creates the directory" do
@@ -131,14 +135,14 @@ module Fauxpaas
       let(:files) do
         [
           TestFile.new(path/"bar.txt"),
-          TestFile.new(path/"collide.txt"),
+          TestFile.new(path/"collide.txt")
         ]
       end
       let(:other_path) { Pathname.new("rhs") }
       let(:other_files) do
         [
           TestFile.new(other_path/"foobar.txt"),
-          TestFile.new(other_path/"collide.txt"),
+          TestFile.new(other_path/"collide.txt")
         ]
       end
       let(:directory) { described_class.new(path, files) }
@@ -164,6 +168,5 @@ module Fauxpaas
           )
       end
     end
-
   end
 end

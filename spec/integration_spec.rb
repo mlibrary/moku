@@ -13,8 +13,8 @@ module Fauxpaas
   RSpec.describe "integration tests", integration: true do
     describe "deploy" do
       # This requires the context built by 'deploy setup'
-      RSpec.shared_context "run deploy" do |instance_name|
-        before(:all) do
+      RSpec.shared_context "with deploy run" do |instance_name|
+        before(:all) do # rubocop:disable RSpec/BeforeAfterAll
           Fauxpaas.invoker.add_command(
             Command::Deploy.new(
               user: ENV["USER"],
@@ -25,20 +25,20 @@ module Fauxpaas
         end
       end
 
-      RSpec.shared_context "deploy setup" do |instance_name|
-        before(:all) do
+      RSpec.shared_context "with deploy set up" do |_instance_name|
+        before(:all) do # rubocop:disable RSpec/BeforeAfterAll
           Fauxpaas.reset!
           Fauxpaas.initialize!
           Fauxpaas.config.tap do |config|
             # Locate fixtures and the test sandbox
-            config.register(:test_run_root) {|c| Fauxpaas.root/"sandbox"}
-            config.register(:fixtures_root) {|c| Fauxpaas.root/"spec"/"fixtures"/"integration" }
-            config.register(:fixtures_path) {|c| c.fixtures_root } # delete me
-            config.register(:deploy_root) {|c| c.test_run_root/"deploy"}
+            config.register(:test_run_root) { Fauxpaas.root/"sandbox" }
+            config.register(:fixtures_root) { Fauxpaas.root/"spec"/"fixtures"/"integration" }
+            config.register(:fixtures_path, &:fixtures_root) # delete me
+            config.register(:deploy_root) {|c| c.test_run_root/"deploy" }
 
             # Configure the application
             config.register(:user) { ENV["USER"] }
-            config.register(:instance_root) {|c| c.test_run_root/"instances"}
+            config.register(:instance_root) {|c| c.test_run_root/"instances" }
             config.register(:releases_root) {|c| c.test_run_root/"releases" }
             config.register(:deployer_env_root) {|c| c.test_run_root/"capfiles" }
 
@@ -58,12 +58,16 @@ module Fauxpaas
           FileUtils.mkdir_p Fauxpaas.test_run_root
           FileUtils.copy_entry("#{Fauxpaas.fixtures_root}/.", Fauxpaas.test_run_root)
         end
-        after(:all) do
+
+        # rubocop:disable RSpec/InstanceVariable
+        after(:all) do # rubocop:disable RSpec/BeforeAfterAll
           FileUtils.rm_rf @fauxpaas.test_run_root
           FileUtils.rm_rf @fauxpaas.deploy_root
           FileUtils.rm_rf @fauxpaas.ref_root
         end
-        let(:root) { @fauxpaas.deploy_root }
+        # rubocop:enable RSpec/InstanceVariable
+
+        let(:root) { @fauxpaas.deploy_root } # rubocop:disable RSpec/InstanceVariable
         let(:current_dir) { root/"current" }
       end
 
@@ -86,11 +90,11 @@ module Fauxpaas
         end
         it "bundles gems in ./vendor/bundle" do
           expect(File.read(current_dir/".bundle"/"config"))
-            .to match(%r{^BUNDLE_PATH: "vendor/bundle"$})
+            .to match(/^BUNDLE_PATH: "vendor\/bundle"$/)
         end
         it "freezes the gems" do
           expect(File.read(current_dir/".bundle"/"config"))
-            .to match(%r{^BUNDLE_FROZEN: "true"$})
+            .to match(/^BUNDLE_FROZEN: "true"$/)
         end
 
         describe "permissions" do
@@ -115,10 +119,6 @@ module Fauxpaas
           it "current/<some_shared_file> 660" do
             file = current_dir/"some"/"shared"/"file.txt"
             expect(file).to have_permissions("660")
-          end
-          it "current/public/<file> 664" do
-            file = (current_dir/"public").children.find(&:file?)
-            expect(file).to have_permissions("664")
           end
           it "current/log 2770" do
             dir = current_dir/"log"
@@ -147,8 +147,8 @@ module Fauxpaas
       end
 
       context "without rails" do
-        include_context "deploy setup", "test-norails"
-        include_context "run deploy", "test-norails"
+        include_context "with deploy set up", "test-norails"
+        include_context "with deploy run", "test-norails"
         let(:gem) { "pry" }
         let(:development_gem) { "faker" }
         let(:test_gem) { "rspec" }
@@ -174,8 +174,8 @@ module Fauxpaas
       end
 
       context "with rails" do
-        include_context "deploy setup", "test-rails"
-        include_context "run deploy", "test-rails"
+        include_context "with deploy set up", "test-rails"
+        include_context "with deploy run", "test-rails"
         let(:gem) { "rails" }
         let(:source) { Pathname.new("config/environment.rb") }
 

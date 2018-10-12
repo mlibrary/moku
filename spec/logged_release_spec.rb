@@ -98,12 +98,13 @@ module Fauxpaas
       let(:hash) do
         {
           id:        id,
-          version: version,
+          version:   version,
           user:      user,
           time:      formatted_time,
           signature: sig.to_hash
         }
       end
+
       it "exports its elements" do
         expect(logged_release.to_hash).to eql(hash)
       end
@@ -114,6 +115,7 @@ module Fauxpaas
         allow(ReleaseSignature).to receive(:from_hash).with(sig.to_hash)
           .and_return(sig)
       end
+
       it "instantiates from a hash" do
         expect(described_class.from_hash(logged_release.to_hash).to_hash)
           .to eql(logged_release.to_hash)

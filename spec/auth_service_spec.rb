@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 require "fauxpaas/auth_service"
@@ -38,6 +37,7 @@ module Fauxpaas
             }
           )
         end
+
         it "handles missing users" do
           expect(service.authorized?(
             user: nil,
@@ -79,39 +79,51 @@ module Fauxpaas
         end
       end
 
-      it "propogates top level permissions downward" do
-        service = described_class.new(
-          policy_factory: TestPolicy,
-          global: { "global" => ["bhock"] },
-          instances: {
-            entity.name => { "instance" => ["bhock"] }
-          }
-        )
-        expect(service.authorized?(
-          user: user,
-          action: :global,
-          entity: entity
-        )).to be true
+      context "with only top level permissions" do
+        let(:service) do
+          described_class.new(
+            policy_factory: TestPolicy,
+            global: { "global" => ["bhock"] },
+            instances: {
+              entity.name => { "instance" => ["bhock"] }
+            }
+          )
+        end
+
+        it "propogates top level permissions downward" do
+          expect(service.authorized?(
+            user: user,
+            action: :global,
+            entity: entity
+          )).to be true
+        end
       end
 
-      it "properly merges permissions" do
-        service = described_class.new(
-          policy_factory: TestPolicy,
-          global: { "global" => ["bhock"] },
-          instances: {
-            entity.name => { "instance" => [], "local" => [] }
-          }
-        )
-        expect(service.authorized?(
-          user: user,
-          action: :local,
-          entity: entity
-        )).to be false
-        expect(service.authorized?(
-          user: user,
-          action: :global,
-          entity: entity
-        )).to be true
+      context "with both permission types" do
+        let(:service) do
+          described_class.new(
+            policy_factory: TestPolicy,
+            global: { "global" => ["bhock"] },
+            instances: {
+              entity.name => { "instance" => [], "local" => [] }
+            }
+          )
+        end
+
+        it "doesn't merge global permissions" do
+          expect(service.authorized?(
+            user: user,
+            action: :local,
+            entity: entity
+          )).to be false
+        end
+        it "doesn't override global permissions" do
+          expect(service.authorized?(
+            user: user,
+            action: :global,
+            entity: entity
+          )).to be true
+        end
       end
     end
   end

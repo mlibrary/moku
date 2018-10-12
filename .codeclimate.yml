@@ -17,6 +17,7 @@ plugins:
       strings:
         - FIXME
         - TODO
+        - pry
 
 ratings:
   paths:

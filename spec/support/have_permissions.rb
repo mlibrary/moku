@@ -8,7 +8,7 @@ RSpec::Matchers.define :have_permissions do |expected|
   end
 
   def mode(path)
-    format("%o", path.stat.mode & 0o7777)
+    format("%<perms>o", perms: path.stat.mode & 0o7777)
   rescue Errno::ENOENT
     "file does not exist"
   end

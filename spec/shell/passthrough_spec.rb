@@ -8,6 +8,7 @@ module Fauxpaas
   RSpec.describe Shell::Passthrough do
     let(:log) { StringIO.new }
     let(:runner) { described_class.new(log) }
+
     describe "#run" do
       it "returns a status object" do
         status = runner.run("echo foo")

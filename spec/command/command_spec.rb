@@ -7,8 +7,9 @@ require "fauxpaas/command/command"
 module Fauxpaas
 
   RSpec.describe Command::Command do
-    include_context "a command spec"
+    include_context "when running a command spec"
     let(:command) { described_class.new(instance_name: instance_name, user: user) }
+
     it_behaves_like "a command"
   end
 

@@ -7,23 +7,24 @@ require "fauxpaas/command/releases"
 module Fauxpaas
 
   RSpec.describe Command::Releases do
-    include_context "a command spec"
+    include_context "when running a command spec"
     let(:command) do
       described_class.new(
         instance_name: instance_name,
-        user: user,
+        user: user
       )
     end
+
     it_behaves_like "a command"
 
     it "action is :releases" do
-      expect(command.action).to eql(:releases)
+      expect(command.action).to be(:releases)
     end
 
     describe "#execute" do
       let(:instance) do
         double(:instance,
-               releases: [1, 2, 3, 4])
+          releases: [1, 2, 3, 4])
       end
       let(:logged_releases) do
         double(
@@ -33,10 +34,9 @@ module Fauxpaas
       end
 
       before(:each) do
-        allow(LoggedReleases).to receive(:new).with([1,2,3,4])
+        allow(LoggedReleases).to receive(:new).with([1, 2, 3, 4])
           .and_return(logged_releases)
       end
-
 
       # TODO: convert this to print to stdout, inserted via stringio
       it "logs the releases" do

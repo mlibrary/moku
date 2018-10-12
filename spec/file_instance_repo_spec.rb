@@ -38,31 +38,36 @@ module Fauxpaas
     end
 
     describe "#find" do
-      it "can find legacy instances" do
-        instance = static_repo.find("test-legacypersistence")
-        expect(instance.deploy.url).to   eql("git@github.com:mlibrary/faux-deploy")
-        expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git")
-        expect(instance.shared.url).to   eql("git@github.com:mlibrary/faux-infrastructure")
-        expect(instance.unshared.url).to eql("git@github.com:mlibrary/faux-dev")
-        expect(instance.deploy.commitish).to   eql("test-norails")
-        expect(instance.source.commitish).to   eql("master")
-        expect(instance.shared.commitish).to   eql("test-norails")
-        expect(instance.unshared.commitish).to eql("test-norails")
+      context "when finding legacy instances" do
+        let(:instance) { static_repo.find("test-legacypersistence") }
+
+        it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/faux-deploy") }
+        it { expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git") }
+        it { expect(instance.shared.url).to   eql("git@github.com:mlibrary/faux-infrastructure") }
+        it { expect(instance.unshared.url).to eql("git@github.com:mlibrary/faux-dev") }
+        it { expect(instance.deploy.commitish).to   eql("test-norails") }
+        it { expect(instance.source.commitish).to   eql("master") }
+        it { expect(instance.shared.commitish).to   eql("test-norails") }
+        it { expect(instance.unshared.commitish).to eql("test-norails") }
       end
-      it "can find instances" do
-        instance = static_repo.find("test-legacypersistence")
-        expect(instance.deploy.url).to   eql("git@github.com:mlibrary/faux-deploy")
-        expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git")
-        expect(instance.shared.url).to   eql("git@github.com:mlibrary/faux-infrastructure")
-        expect(instance.unshared.url).to eql("git@github.com:mlibrary/faux-dev")
-        expect(instance.deploy.commitish).to   eql("test-norails")
-        expect(instance.source.commitish).to   eql("master")
-        expect(instance.shared.commitish).to   eql("test-norails")
-        expect(instance.unshared.commitish).to eql("test-norails")
+
+      context "when finding non-legacy instances" do
+        let(:instance) { static_repo.find("test-legacypersistence") }
+
+        it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/faux-deploy") }
+        it { expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git") }
+        it { expect(instance.shared.url).to   eql("git@github.com:mlibrary/faux-infrastructure") }
+        it { expect(instance.unshared.url).to eql("git@github.com:mlibrary/faux-dev") }
+        it { expect(instance.deploy.commitish).to   eql("test-norails") }
+        it { expect(instance.source.commitish).to   eql("master") }
+        it { expect(instance.shared.commitish).to   eql("test-norails") }
+        it { expect(instance.unshared.commitish).to eql("test-norails") }
       end
     end
 
     describe "#save_releases" do
+      let(:instance) { static_repo.find("test-persistence") }
+
       it "can save releases" do
         contents_before = YAML.load(File.read(releases_root/"test-persistence.yml"))
         instance = static_repo.find("test-persistence")
@@ -72,7 +77,6 @@ module Fauxpaas
 
       it "creates the directories to save in" do
         expect(mem_fs).to receive(:mkdir_p).with(Pathname.new("/releases"))
-        instance = static_repo.find("test-persistence")
         tmp_repo.save_releases(instance)
       end
     end

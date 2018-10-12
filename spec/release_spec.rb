@@ -11,7 +11,7 @@ module Fauxpaas
     let(:artifact) { double(:artifact, path: "somepath") }
     let(:remote_runner) { FakeRemoteRunner.new(Shell::Basic.new) }
     let(:user) { "faux" }
-    let(:sites) { Sites.new({ "site1" => ["host1"], "site2" => ["host2"] }) }
+    let(:sites) { Sites.new("site1" => ["host1"], "site2" => ["host2"]) }
     let(:deploy_config) do
       double(
         :deploy_config,
@@ -31,21 +31,22 @@ module Fauxpaas
     end
 
     describe "#id" do
+      let(:release_proc) do
+        proc do
+          described_class.new(
+            artifact: artifact,
+            deploy_config: deploy_config,
+            remote_runner: remote_runner,
+            user: user
+          )
+        end
+      end
+
       it "mints a unique id" do
-        one = described_class.new(
-          artifact: artifact,
-          deploy_config: deploy_config,
-          remote_runner: remote_runner,
-          user: user
-        )
+        one = release_proc.call
         sleep 0.002
-        two = described_class.new(
-          artifact: artifact,
-          deploy_config: deploy_config,
-          remote_runner: remote_runner,
-          user: user
-        )
-        expect(one.id).to_not eql(two.id)
+        two = release_proc.call
+        expect(one.id).not_to eql(two.id)
       end
     end
 
@@ -69,29 +70,29 @@ module Fauxpaas
       let(:remote_runner) { double(:remote_runner, run: double(:status, success?: true)) }
       let(:command) { "somecommand" }
       let(:sites) do
-        Sites.new({
+        Sites.new(
           "site1" => ["host1", "host2"],
           "site2" => ["host3", "host4"]
-        })
+        )
       end
 
       describe "#run_per_host" do
         it "runs the command at each host" do
-          %w{host1 host2 host3 host4}.each do |hostname|
+          ["host1", "host2", "host3", "host4"].each do |hostname|
             expect(remote_runner)
               .to receive(:run).with(user: user, host: hostname, command: /#{command}/)
+            release.run_per_host(command)
           end
-          release.run_per_host(command)
         end
       end
 
       describe "#run_per_site" do
         it "runs the command at one host per site" do
-          %w{host1 host3}.each do |hostname|
+          ["host1", "host3"].each do |hostname|
             expect(remote_runner)
               .to receive(:run).with(user: user, host: hostname, command: /#{command}/)
+            release.run_per_host(command)
           end
-          release.run_per_host(command)
         end
       end
 
@@ -103,6 +104,5 @@ module Fauxpaas
         end
       end
     end
-
   end
 end

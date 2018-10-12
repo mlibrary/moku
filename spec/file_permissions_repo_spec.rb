@@ -27,49 +27,65 @@ module Fauxpaas
     before(:each) { instances_root.mkpath }
 
     describe "#find" do
-      it "finds the permissions" do
-        (instances_root/"myapp-staging").mkpath
-        (instances_root/"yourapp-testing").mkpath
-        File.write(instances_root/"permissions.yml", YAML.dump(all))
-        File.write(instances_root/"myapp-staging"/"permissions.yml", YAML.dump(myapp_staging))
-        File.write(instances_root/"yourapp-testing"/"permissions.yml", YAML.dump(yourapp_testing))
+      context "when permissions files are present" do
+        before(:each) do
+          (instances_root/"myapp-staging").mkpath
+          (instances_root/"yourapp-testing").mkpath
+          File.write(instances_root/"permissions.yml", YAML.dump(all))
+          File.write(instances_root/"myapp-staging"/"permissions.yml", YAML.dump(myapp_staging))
+          File.write(instances_root/"yourapp-testing"/"permissions.yml", YAML.dump(yourapp_testing))
+        end
 
-        data = described_class.new(instances_root).find
+        let(:data) { described_class.new(instances_root).find }
 
-        expect(data[:all]).to eql("edit" => ["bhock"])
-        expect(data[:instances]).to eql(
-          "myapp-staging"=>{
-            "deploy" => ["bhock"],
-            "edit"   => ["aelkiss"]
-          },
-          "yourapp-testing"=>{
-            "admin" => ["bhock", "aelkiss"],
-            "edit"  => []
-          }
-        )
+        it "finds global permissions" do
+          expect(data[:all]).to eql("edit" => ["bhock"])
+        end
+        it "finds the non-global permissions" do
+          expect(data[:instances]).to eql(
+            "myapp-staging"=>{
+              "deploy" => ["bhock"],
+              "edit"   => ["aelkiss"]
+            },
+            "yourapp-testing"=>{
+              "admin" => ["bhock", "aelkiss"],
+              "edit"  => []
+            }
+          )
+        end
       end
 
-      it "can handle uninitialized file structure" do
-        data = described_class.new(instances_root).find
-        expect(data[:all]).to eql({})
-        expect(data[:instances]).to eql({})
+      context "when file structure uninitialized" do
+        let(:data) { described_class.new(instances_root).find }
+
+        it "global permissions are empty" do
+          expect(data[:all]).to eql({})
+        end
+        it "non-global permissions are empty" do
+          expect(data[:instances]).to eql({})
+        end
       end
 
-      it "can handle empty permissions files" do
-        (instances_root/"myapp-staging").mkpath
-        (instances_root/"yourapp-testing").mkpath
+      context "when permission files present but empty" do
+        before(:each) do
+          (instances_root/"myapp-staging").mkpath
+          (instances_root/"yourapp-testing").mkpath
+          File.write(instances_root/"permissions.yml", "")
+          File.write(instances_root/"myapp-staging"/"permissions.yml", "")
+          File.write(instances_root/"yourapp-testing"/"permissions.yml", "")
+        end
 
-        File.write(instances_root/"permissions.yml", "")
-        File.write(instances_root/"myapp-staging"/"permissions.yml", "")
-        File.write(instances_root/"yourapp-testing"/"permissions.yml", "")
+        let(:data) { described_class.new(instances_root).find }
 
-        data = described_class.new(instances_root).find
-
-        expect(data[:all]).to eql({})
-        expect(data[:instances]).to eql(
-          "myapp-staging"=>{},
-          "yourapp-testing"=>{}
-        )
+        it "global permissions are empty" do
+          expect(data[:all]).to eql({})
+        end
+        it "non-global permissions are present but not allowed" do
+          expect(data[:instances]).to eql(
+            "myapp-staging"=>{},
+            "yourapp-testing"=>{}
+          )
+        end
       end
     end
 

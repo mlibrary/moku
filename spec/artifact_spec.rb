@@ -26,6 +26,5 @@ module Fauxpaas
     it { expect(artifact.source).to eql(signature.source) }
     it { expect(artifact.shared).to eql(signature.shared) }
     it { expect(artifact.unshared).to eql(signature.unshared) }
-
   end
 end
