@@ -66,12 +66,6 @@ module Fauxpaas
       )
     end
 
-    before(:each) do
-      Fauxpaas.config.tap do |canister|
-        canister.register(:release_time_format) { Fauxpaas.settings.release_time_format }
-      end
-    end
-
     describe "#to_s" do
       context "with single shared,unshared" do
         it "returns a formatted string" do

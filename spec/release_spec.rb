@@ -7,12 +7,6 @@ require "fauxpaas/sites"
 
 module Fauxpaas
   RSpec.describe Release do
-    before(:each) do
-      Fauxpaas.config.tap do |canister|
-        canister.register(:release_time_format) { Fauxpaas.settings.release_time_format }
-      end
-    end
-
     let(:deploy_dir) { Pathname.new("/deploy/dir") }
     let(:artifact) { double(:artifact, path: "somepath") }
     let(:remote_runner) { FakeRemoteRunner.new(Shell::Basic.new) }
