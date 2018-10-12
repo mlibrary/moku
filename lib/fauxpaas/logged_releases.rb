@@ -43,7 +43,7 @@ module Fauxpaas
     attr_reader :releases
     attr_reader :shared_name, :unshared_name
 
-    def short_rows
+    def short_rows # rubocop:disable Metrics/MethodLength
       releases.map(&:to_brief_hash).map do |hash|
         [
           hash[:id],
@@ -57,7 +57,7 @@ module Fauxpaas
       end
     end
 
-    def rows
+    def rows # rubocop:disable Metrics/MethodLength
       releases.map(&:to_brief_hash).map do |hash|
         [
           hash[:id],
