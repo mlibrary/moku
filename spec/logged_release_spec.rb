@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+require_relative "spec_helper"
 require "fauxpaas/logged_release"
 require "fauxpaas/release_signature"
 
 module Fauxpaas
   RSpec.describe LoggedRelease do
+    let(:id) { "20170131134411001" }
+    let(:version) { "v1.2.3" }
     let(:source_url) { "source_url" }
     let(:source_ref) { "source_ref" }
     let(:source) do
@@ -44,7 +47,15 @@ module Fauxpaas
     let(:user) { "foouser" }
     let(:time) { Time.new(2017, 1, 31, 13, 44, 11) }
     let(:formatted_time) { time.strftime("%FT%T") }
-    let(:logged_release) { described_class.new(user, time, sig) }
+    let(:logged_release) do
+      described_class.new(
+        id: id,
+        user: user,
+        time: time,
+        signature: sig,
+        version: version
+      )
+    end
 
     let(:sig) do
       ReleaseSignature.new(
@@ -59,7 +70,8 @@ module Fauxpaas
       context "with single shared,unshared" do
         it "returns a formatted string" do
           expect(logged_release.to_s).to eql(
-            "2017-01-31T13:44:11: foouser source_ref w/ deploy_ref\n" \
+            "2017-01-31T13:44:11: foouser 20170131134411001 v1.2.3 w/ deploy_ref\n" \
+            "  source_ref\n" \
             "  unshared_ref\n" \
             "  shared_ref"
           )
@@ -70,6 +82,8 @@ module Fauxpaas
     describe "#to_brief_hash" do
       it "returns a hash of shas" do
         expect(logged_release.to_brief_hash).to eql(
+          id: id,
+          version: version,
           user: user,
           time: formatted_time,
           source: source_ref,
@@ -83,6 +97,8 @@ module Fauxpaas
     describe "#to_hash" do
       let(:hash) do
         {
+          id:        id,
+          version: version,
           user:      user,
           time:      formatted_time,
           signature: sig.to_hash
@@ -101,6 +117,14 @@ module Fauxpaas
       it "instantiates from a hash" do
         expect(described_class.from_hash(logged_release.to_hash).to_hash)
           .to eql(logged_release.to_hash)
+      end
+      it "instantiates from a hash missing an id" do
+        expect(described_class.from_hash(logged_release.to_hash.merge(id: nil)).to_hash)
+          .to eql(logged_release.to_hash)
+      end
+      it "instantiates from a hash missing a version" do
+        expect(described_class.from_hash(logged_release.to_hash.merge(version: nil)).to_hash)
+          .to eql(logged_release.to_hash.merge(version: source_ref))
       end
     end
   end

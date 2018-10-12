@@ -43,11 +43,12 @@ module Fauxpaas
     attr_reader :releases
     attr_reader :shared_name, :unshared_name
 
-    def short_rows
+    def short_rows # rubocop:disable Metrics/MethodLength
       releases.map(&:to_brief_hash).map do |hash|
         [
-          hash[:time],
+          hash[:id],
           hash[:user],
+          hash[:version].slice(0, 11),
           hash[:source].slice(0, 7),
           hash[:deploy].slice(0, 7),
           hash[:unshared].slice(0, 7),
@@ -56,11 +57,12 @@ module Fauxpaas
       end
     end
 
-    def rows
+    def rows # rubocop:disable Metrics/MethodLength
       releases.map(&:to_brief_hash).map do |hash|
         [
-          hash[:time],
+          hash[:id],
           hash[:user],
+          hash[:version],
           hash[:source],
           hash[:deploy],
           hash[:unshared],
@@ -71,8 +73,9 @@ module Fauxpaas
 
     def headings
       [
-        "timestamp",
+        "id",
         "user",
+        "version",
         "source",
         "deployed w/",
         unshared_name,

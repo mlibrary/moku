@@ -93,13 +93,6 @@ module Fauxpaas
         container.register(:branches_root) do
           Pathname.new(settings.branches_root).expand_path(Fauxpaas.root)
         end
-        container.register(:split_token) { settings.split_token.strip }
-        container.register(:unshared_name) { settings.unshared_name.strip }
-        container.register(:shared_name) { settings.shared_name.strip }
-        container.register(:user) { settings.user.strip }
-        container.register(:deploy_config_filename) { settings.deploy_config_filename.strip }
-        container.register(:finish_build_filename) { settings.finish_build_filename.strip }
-        container.register(:finish_deploy_filename) { settings.finish_deploy_filename.strip }
       end
     end
 

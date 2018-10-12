@@ -17,7 +17,7 @@ module Fauxpaas
       @deploy_config = deploy_config
       @remote_runner = remote_runner || Fauxpaas.remote_runner
       @user = user || Fauxpaas.user
-      @id = Time.now.strftime("%Y%m%d%H%M%S%L")
+      @id = Time.now.strftime(Fauxpaas.release_time_format)
     end
 
     attr_reader :id

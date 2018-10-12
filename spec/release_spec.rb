@@ -1,22 +1,11 @@
 # frozen_string_literal: true
 
+require_relative "spec_helper"
 require "fauxpaas/release"
 require "fauxpaas/shell/basic"
 require "fauxpaas/sites"
-require_relative "support/fake_remote_runner"
 
 module Fauxpaas
-  # class FakeWorkingDir
-  #   def initialize(dir, files)
-  #     @dir = dir
-  #     @files = files
-  #   end
-  #   attr_reader :dir
-  #   def relative_files
-  #     @files
-  #   end
-  # end
-
   RSpec.describe Release do
     let(:deploy_dir) { Pathname.new("/deploy/dir") }
     let(:artifact) { double(:artifact, path: "somepath") }

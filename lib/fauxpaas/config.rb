@@ -27,7 +27,9 @@ module Fauxpaas
     end
 
     def config
-      @config ||= Canister.new
+      @config ||= Canister.new.tap do |canister|
+        settings.each {|k, v| canister.register(k) { v } }
+      end
     end
 
     def settings
@@ -40,7 +42,7 @@ module Fauxpaas
 
     def reset!
       @settings = nil
-      @config = Canister.new
+      @config = nil
     end
 
     def env
