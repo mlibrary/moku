@@ -37,6 +37,7 @@ module Fauxpaas
 
       context "when the reference cannot be resolved" do
         let(:raw) { "\n" }
+
         it "returns nil if the reference cannot be resolved" do
           expect(runner.sha(url, "12345")).to be_nil
         end

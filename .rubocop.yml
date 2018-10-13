@@ -1,3 +1,4 @@
+require: rubocop-rspec
 inherit_from: .rubocop_todo.yml
 
 AllCops:
@@ -10,6 +11,7 @@ AllCops:
 Naming/FileName:
   ExpectMatchingDefinition: true
   Exclude:
+    - 'bin/**/*'
     - 'lib/fauxpaas/scm/**/*'
     - 'lib/core_extensions/**/*'
     - 'spec/**/*'
@@ -67,6 +69,10 @@ Layout/ClosingParenthesisIndentation:
 
 Style/ClassAndModuleChildren:
   EnforcedStyle: nested
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'spec/**/*_spec.rb'
 
 Style/CommentAnnotation:
   Enabled: false
@@ -151,3 +157,33 @@ Performance/RedundantMerge:
 Style/WordArray:
   EnforcedStyle: brackets
 
+RSpec/BeEql:
+  Enabled: false
+
+RSpec/ExampleWithoutDescription:
+  EnforcedStyle: single_line_only
+
+RSpec/HookArgument:
+  EnforcedStyle: each
+
+RSpec/ImplicitSubject:
+  EnforcedStyle: disallow
+
+RSpec/LeadingSubject:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: true
+  Max: 3
+
+RSpec/NestedGroups:
+  Max: 2
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 10
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive

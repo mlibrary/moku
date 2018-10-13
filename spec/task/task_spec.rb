@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 require "fauxpaas/task/task"
 require "pathname"
 
 module Fauxpaas
   RSpec.describe Task::Task do
-
     class TestTask < described_class
       def test_with_env(path)
         with_env(path) { yield }
@@ -23,7 +24,6 @@ module Fauxpaas
         expect(Bundler).to receive(:with_clean_env).and_call_original
         task.test_with_env(path) { 1 }
       end
-
     end
   end
 end

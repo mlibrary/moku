@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/status"
 
 module Fauxpaas
@@ -23,6 +25,7 @@ module Fauxpaas
     describe "#output" do
       let(:output) { "foomp" }
       let(:status) { described_class.new(true, output) }
+
       it "returns the output" do
         expect(status.output).to eql(output)
       end
@@ -31,6 +34,7 @@ module Fauxpaas
     describe "#error" do
       let(:error) { "some_error" }
       let(:failure) { described_class.new(false, "", error) }
+
       it "returns the error" do
         expect(failure.error).to eql(error)
       end
@@ -40,6 +44,5 @@ module Fauxpaas
       it { expect(described_class.new(true).success?).to be true }
       it { expect(described_class.new(false).success?).to be false }
     end
-
   end
 end

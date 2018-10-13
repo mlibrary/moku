@@ -9,7 +9,7 @@ require "ostruct"
 
 module Fauxpaas
   RSpec.describe Command::Deploy do
-    include_context "a command spec"
+    include_context "when running a command spec"
     let(:command) do
       described_class.new(
         instance_name: instance_name,
@@ -17,10 +17,11 @@ module Fauxpaas
         reference: nil
       )
     end
+
     it_behaves_like "a command"
 
     it "action is :deploy" do
-      expect(command.action).to eql(:deploy)
+      expect(command.action).to be(:deploy)
     end
   end
 

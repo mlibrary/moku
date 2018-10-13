@@ -25,18 +25,22 @@ module Fauxpaas
           filesystem: filesystem
         )
       end
-      context "repo does not exist on local disk" do
+
+      context "when repo does not exist on local disk" do
         before(:each) do
           allow(filesystem).to receive(:exists?).with(url).and_return(false)
         end
+
         it "resolves the ref remotely" do
           expect(runner.sha(url, commit)).to eql("remoteresult")
         end
       end
-      context "repo exists on local disk" do
+
+      context "when repo exists on local disk" do
         before(:each) do
           allow(filesystem).to receive(:exists?).with(url).and_return(true)
         end
+
         it "resolves the ref locally" do
           expect(runner.sha(url, commit)).to eql("localresult")
         end
@@ -44,7 +48,7 @@ module Fauxpaas
     end
 
     describe "#safe_checkout" do
-      context "fully mocked" do
+      context "with full mocking" do
         let(:system_runner) { double(:system_runner, run: "") }
         let(:filesystem) { MemoryFilesystem.new }
         let(:runner) do
@@ -55,7 +59,8 @@ module Fauxpaas
             filesystem: filesystem
           )
         end
-        it "yields a working_directory with paths of the contents" do
+
+        before(:each) do
           allow(system_runner).to receive(:run)
             .with(a_string_matching("git ls-files"))
             .and_return(double(
@@ -64,6 +69,9 @@ module Fauxpaas
               error: "",
               output: "one.txt\ntwo.txt\n"
             ))
+        end
+
+        it "yields a working_directory with paths of the contents" do
           filesystem.mktmpdir do |dir|
             runner.safe_checkout(url, commit, dir) do |working_dir|
               expect(working_dir.dir).to eql(filesystem.tmpdir)
@@ -89,6 +97,7 @@ module Fauxpaas
             filesystem: Filesystem.new
           )
         end
+
         it "checks out the ref" do
           Dir.mktmpdir do |dir|
             runner.safe_checkout(url, commit, dir) do |working_dir|

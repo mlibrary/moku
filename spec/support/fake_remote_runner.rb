@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Fauxpaas
   class FakeRemoteRunner
     def initialize(system_runner)
       @system_runner = system_runner
     end
 
-    def run(host:, command:, user: Fauxpaas.user)
+    def run(host:, command:, user: Fauxpaas.user) # rubocop:disable Lint/UnusedMethodArgument
       system_runner.run(command)
     end
 

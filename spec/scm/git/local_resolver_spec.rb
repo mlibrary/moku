@@ -15,6 +15,7 @@ module Fauxpaas
     describe "#sha" do
       let(:raw) { "5753224412a302aeedfdd73e7b04d914c298c169\n" }
       let(:expected) { raw.strip }
+
       it "executes git rev-parse <args>" do
         expect(system_runner).to receive(:run)
           .with("git -C #{url} rev-parse #{commitish}")

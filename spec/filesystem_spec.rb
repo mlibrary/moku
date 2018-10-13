@@ -17,11 +17,13 @@ module Fauxpaas
           expect(fs.directory?(Pathname.new(__FILE__))).to be false
         end
       end
+
       describe "#modify_time" do
         it "returns mtime as a Time object" do
           expect(fs.modify_time(Pathname.new("/tmp"))).to be < Time.now
         end
       end
+
       describe "#exists?" do
         it "is true when the file exists" do
           expect(fs.exists?(Pathname.new("/etc/passwd"))).to be true
@@ -34,25 +36,28 @@ module Fauxpaas
             .to be false
         end
       end
+
       describe "#chdir" do
-        before do
+        # rubocop:disable RSpec/InstanceVariable
+        around(:each) do |example|
           @dir = File.realpath(Dir.mktmpdir)
+          example.run
+          FileUtils.remove_entry @dir
         end
 
+        let(:dir) { @dir }
+        # rubocop:enable RSpec/InstanceVariable
+
         it "changes directory" do
-          fs.chdir(@dir) do
-            expect(`pwd`.strip).to eql(@dir)
+          fs.chdir(dir) do
+            expect(`pwd`.strip).to eql(dir)
           end
         end
 
         it "changes back afterwards" do
           starting_dir = `pwd`.strip
-          fs.chdir(@dir) {}
+          fs.chdir(dir) {}
           expect(`pwd`.strip).to eql(starting_dir)
-        end
-
-        after do
-          FileUtils.remove_entry @dir
         end
       end
     end
@@ -63,14 +68,17 @@ module Fauxpaas
         FileUtils.mkpath TMPPATH
         FileUtils.rm_rf("#{TMPPATH}/.", secure: true)
       end
-      after(:all) { FileUtils.remove_entry_secure TMPPATH }
+
+      after(:all) do # rubocop:disable RSpec/BeforeAfterAll
+        FileUtils.remove_entry_secure TMPPATH
+      end
 
       describe "#mktmpdir" do
         context "when given a block" do
           it "creates a new directory" do
             before = Pathname.new(File.realpath(Dir.tmpdir)).children
             fs.mktmpdir do |dir|
-              expect(before).to_not include(dir.realpath)
+              expect(before).not_to include(dir.realpath)
             end
           end
           it "yields the temporary dir" do
@@ -85,11 +93,12 @@ module Fauxpaas
             expect(x.exist?).to be false
           end
         end
+
         context "when no block given" do
           it "creates a new directory" do
             before = Pathname.new("/tmp").children
             dir = fs.mktmpdir
-            expect(before).to_not include(dir)
+            expect(before).not_to include(dir)
           end
           it "returns a temporary directory" do
             expect(fs.mktmpdir).to be_a Pathname
@@ -103,6 +112,7 @@ module Fauxpaas
       describe "#read" do
         let(:file) { TMPPATH + "somefile.txt" }
         let(:contents) { "some\ncontents\n\n\n\nmore" }
+
         it "returns the contents of a file" do
           File.write(file, contents)
           expect(fs.read(file)).to eql(contents)
@@ -112,6 +122,7 @@ module Fauxpaas
       describe "#write" do
         let(:path) { TMPPATH + "somefile.txt" }
         let(:contents) { "some\ncontents\n\n\n\nmore" }
+
         it "writes a file" do
           fs.write(path, contents)
           expect(File.read(path)).to eql(contents)
@@ -122,9 +133,11 @@ module Fauxpaas
         let(:contents) { "some\ncontents\n\n\n\nmore" }
         let(:original) { TMPPATH + "somefile.txt" }
         let(:copy) { TMPPATH + "somecopy.txt" }
+
         before(:each) do
           File.write(original, contents)
         end
+
         it "preserves the original" do
           fs.cp(original, copy)
           expect(File.read(original)).to eql(contents)
@@ -141,9 +154,11 @@ module Fauxpaas
         let(:contents) { "some\ncontents\n\n\n\nmore" }
         let(:original) { TMPPATH + "somefile.txt" }
         let(:copy) { TMPPATH + "somecopy.txt" }
+
         before(:each) do
           File.write(original, contents)
         end
+
         it "removes the original" do
           fs.mv(original, copy)
           expect(original.exist?).to be false
@@ -158,10 +173,12 @@ module Fauxpaas
       describe "#children" do
         let(:files) { [TMPPATH + "one_file.txt", TMPPATH + ".hidden.yml"] }
         let(:dirs) { [TMPPATH + "some_dir", TMPPATH + ".hidden_dir"] }
+
         before(:each) do
           files.each {|f| File.write(f, "dummy_contents") }
           dirs.each {|d| FileUtils.mkpath d }
         end
+
         it "returns the entries in the dir as pathnames" do
           expect(fs.children(TMPPATH)).to match_array((files + dirs))
         end
@@ -190,14 +207,14 @@ module Fauxpaas
           expect do
             fs.ln_s(src_file_path, dest_path)
             fs.ln_s(src_file_path, dest_path)
-          end.to_not raise_error
+          end.not_to raise_error
         end
         it "is successful if dest is already a file" do
           File.write(src_file_path, "contents")
           File.write(dest_path, "other contents")
           expect do
             fs.ln_s(src_file_path, dest_path)
-          end.to_not raise_error
+          end.not_to raise_error
         end
         it "creates a symlink when src does not exist" do
           fs.ln_s(src_file_path, dest_path)
@@ -211,6 +228,7 @@ module Fauxpaas
         let(:a_dir) { TMPPATH + "a" }
         let(:ab_dir) { a_dir + "b" }
         let(:abc_dir) { ab_dir + "c" }
+
         it "creates a directory tree" do
           fs.mkdir_p abc_dir
           expect(a_dir.directory?).to be true
@@ -221,12 +239,14 @@ module Fauxpaas
           expect do
             fs.mkdir_p abc_dir
             fs.mkdir_p abc_dir
-          end.to_not raise_error
+          end.not_to raise_error
         end
       end
+
       describe "#remove" do
         let(:file_path) { TMPPATH + "src.txt" }
         let(:dir_path) { TMPPATH + "src_dir" }
+
         it "removes a file" do
           File.write(file_path, "contents")
           fs.remove(file_path)
@@ -246,13 +266,15 @@ module Fauxpaas
         it "is idempotent" do
           expect do
             fs.remove(file_path)
-          end.to_not raise_error
+          end.not_to raise_error
         end
       end
+
       describe "#rm_empty_tree" do
         let(:a_dir) { TMPPATH + "a" }
         let(:ab_dir) { a_dir + "b" }
         let(:abc_dir) { ab_dir + "c" }
+
         it "removes empty directories starting at dest" do
           FileUtils.mkdir_p abc_dir
           fs.rm_empty_tree abc_dir
@@ -273,8 +295,6 @@ module Fauxpaas
           inside_file_path = a_dir + "inside.txt"
           File.write(inside_file_path, "contents")
           fs.rm_empty_tree abc_dir
-          expect(abc_dir.exist?).to be false
-          expect(ab_dir.exist?).to be false
           expect(a_dir.exist?).to be true
           expect(inside_file_path.exist?).to be true
         end
@@ -289,7 +309,7 @@ module Fauxpaas
         it "is idempotent" do
           expect do
             fs.rm_empty_tree abc_dir
-          end.to_not raise_error
+          end.not_to raise_error
         end
         it "raises an ArgumentError when given a filepath" do
           expect do

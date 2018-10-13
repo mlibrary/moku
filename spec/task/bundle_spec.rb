@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/task/bundle"
 require "fileutils"
 require "pathname"
@@ -32,17 +34,19 @@ module Fauxpaas
 
       context "when successful" do
         let(:status) { double(:status, success?: true, error: "") }
+
         it "returns success" do
           expect(task.call(artifact)).to eql(status)
         end
       end
+
       context "when unsuccessful" do
         let(:status) { double(:status, success?: false, error: "Failed to install gems") }
+
         it "returns failure" do
           expect(task.call(artifact)).to eql(status)
         end
       end
     end
-
   end
 end

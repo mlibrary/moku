@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/sites"
 
 module Fauxpaas
@@ -7,11 +9,11 @@ module Fauxpaas
         "macc" => [
           "macc1",
           { hostname: "macc2" }
-         ],
+        ],
         "ictc" => [
           { hostname: "ictc1" },
           "ictc2"
-         ]
+        ]
       }
     end
     let(:sites) { described_class.new(hash) }
@@ -35,7 +37,5 @@ module Fauxpaas
     it "#primary returns the first host only" do
       expect(sites.primary).to eql(Sites::Host.new("macc1"))
     end
-
-
   end
 end

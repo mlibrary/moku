@@ -22,7 +22,7 @@ RSpec.shared_examples "a command" do
   end
 end
 
-RSpec.shared_context "a command spec" do
+RSpec.shared_context "when running a command spec" do
   let(:instance_repo) do
     double(
       :instance_repo,

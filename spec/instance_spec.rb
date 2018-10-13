@@ -15,10 +15,10 @@ module Fauxpaas
 
     let(:deploy_content) do
       {
-        "appname"       => name,
-        "deployer_env"  => "foo.capfile",
-        "rails_env"     => "testing",
-        "deploy_dir"    => "/some/deploy/dir"
+        "appname"      => name,
+        "deployer_env" => "foo.capfile",
+        "rails_env"    => "testing",
+        "deploy_dir"   => "/some/deploy/dir"
       }
     end
     let(:shared) { ArchiveReference.new("infra.git", runner.branch, runner) }
@@ -54,6 +54,7 @@ module Fauxpaas
           )
         end
       end
+
       context "when commitish given" do
         it "returns an appropriate signature" do
           expect(instance.signature(runner.short)).to eql(

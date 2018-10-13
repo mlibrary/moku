@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fauxpaas/lazy/merging/yaml"
 
 module Fauxpaas
@@ -17,6 +19,7 @@ module Fauxpaas
 
     describe "#extname" do
       let(:origin) { described_class.new(foo_yml, bar_yaml) }
+
       it "is .yml" do
         expect(origin.extname).to eql(".yml")
       end

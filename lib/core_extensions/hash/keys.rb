@@ -3,6 +3,8 @@
 require "core_extensions/hash/deep_transform"
 
 module Fauxpaas
+
+  # Behavior from ActiveSupport's hash/keys
   module Keys
     unless method_defined?(:stringify_keys)
       def stringify_keys
