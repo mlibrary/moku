@@ -27,7 +27,7 @@ module Fauxpaas
       end
     end
 
-    attr_reader :signature
+    attr_reader :id, :signature
 
     # @param id [String]
     # @param signature [ReleaseSignature]
@@ -74,7 +74,7 @@ module Fauxpaas
 
     private
 
-    attr_reader :id, :time, :user, :version
+    attr_reader :time, :user, :version
 
     def deploy
       signature.deploy.commitish

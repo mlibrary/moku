@@ -25,8 +25,8 @@ module Fauxpaas
     let(:unshared) { ArchiveReference.new("dev.git", runner.branch, runner) }
     let(:deploy) { ArchiveReference.new("deploy.git", runner.branch, runner) }
     let(:source) { ArchiveReference.new("source.git", runner.branch, runner) }
-    let(:a_release) { double(:a_release) }
-    let(:another_release) { double(:another_release) }
+    let(:releases) { [a_release] }
+    let(:a_release) { double(:a_release, id: "1") }
 
     let(:instance) do
       described_class.new(
@@ -35,7 +35,7 @@ module Fauxpaas
         unshared: unshared,
         deploy: deploy,
         source: source,
-        releases: [a_release]
+        releases: releases
       )
     end
 
@@ -86,9 +86,35 @@ module Fauxpaas
     end
 
     describe "#releases #log_release" do
+      let(:releases) { [a_release] }
+      let(:another_release) { double(:another_release, id: "2") }
+
       it "returns logged releases" do
         instance.log_release(another_release)
         expect(instance.releases).to contain_exactly(a_release, another_release)
+      end
+    end
+
+    describe "#caches" do
+      R = Struct.new(:id)
+      context "with >= 5 releases" do
+        let(:releases) { [R.new(1), R.new(2), R.new(3), R.new(4), R.new(5), R.new(6)].shuffle }
+
+        it "returns the last five releases" do
+          expect(instance.caches).to eql(
+            [R.new(6), R.new(5), R.new(4), R.new(3), R.new(2)]
+          )
+        end
+      end
+
+      context "with < 5 releases" do
+        let(:releases) { [R.new(3), R.new(1), R.new(2)] }
+
+        it "returns all releases" do
+          expect(instance.caches).to eql(
+            [R.new(3), R.new(2), R.new(1)]
+          )
+        end
       end
     end
   end
