@@ -19,15 +19,6 @@ module Fauxpaas
         :releases
       end
 
-      def execute
-        string = if long
-          LoggedReleases.new(instance.releases).to_s
-        else
-          LoggedReleases.new(instance.releases).to_short_s
-        end
-
-        Fauxpaas.logger.info "\n#{string}"
-      end
     end
 
   end

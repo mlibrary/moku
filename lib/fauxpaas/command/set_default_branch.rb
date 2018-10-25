@@ -19,12 +19,10 @@ module Fauxpaas
         :set_default_branch
       end
 
-      def execute
-        old_branch = instance.default_branch
-        instance.default_branch = new_branch
-        Fauxpaas.instance_repo.save_instance(instance)
-        Fauxpaas.logger.info "Changed default branch from #{old_branch} to #{new_branch}"
+      def instance_repo
+        Fauxpaas.instance_repo
       end
+
     end
 
   end

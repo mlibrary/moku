@@ -11,10 +11,6 @@ module Fauxpaas
       def action
         :read_default_branch
       end
-
-      def execute
-        Fauxpaas.logger.info "Default branch: #{instance.default_branch}"
-      end
     end
 
   end

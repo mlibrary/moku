@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "fauxpaas/pipeline"
+
 module Fauxpaas
 
   # Responsible for when and where commands are executed
@@ -12,10 +14,9 @@ module Fauxpaas
 
     private
 
-    # TODO: test this
     def run(command)
       authorize!(command)
-      command.execute
+      Pipeline.for(command).call
       nil
     rescue StandardError => e
       Fauxpaas.logger.fatal e.message

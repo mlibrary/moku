@@ -21,13 +21,9 @@ module Fauxpaas
       expect(command.action).to be(:set_default_branch)
     end
 
-    describe "#execute" do
-      let(:instance) { OpenStruct.new(default_branch: "old_branch") }
-
-      it "saves the changed branch" do
-        expect(instance_repo).to receive(:save_instance)
-          .with(OpenStruct.new(default_branch: "new_branch"))
-        command.execute
+    describe "#instance_repo" do
+      it "returns the repo" do
+        expect(command.instance_repo).to eql(Fauxpaas.instance_repo)
       end
     end
   end
