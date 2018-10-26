@@ -7,11 +7,11 @@ require "fauxpaas/command"
 module Fauxpaas
 
   # The command-line interface for fauxpaas
-  class CLI
+  class CLI # rubocop:disable Metrics/ClassLength
     include GLI::App
 
-    # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def initialize
       program_desc "Fake platform-as-a-service"
       synopsis_format :terminal
@@ -89,8 +89,8 @@ module Fauxpaas
         end
       end
     end
-    # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     private
 
