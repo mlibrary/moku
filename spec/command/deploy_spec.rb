@@ -3,9 +3,6 @@
 require_relative "command_helper"
 require_relative "../support/a_command"
 require "fauxpaas/command/deploy"
-require "fauxpaas/deploy_config"
-require "fauxpaas/release"
-require "ostruct"
 
 module Fauxpaas
   RSpec.describe Command::Deploy do
