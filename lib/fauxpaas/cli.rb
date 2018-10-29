@@ -123,6 +123,30 @@ module Fauxpaas
           )
         end
       end
+
+      desc "Run an command on matching hosts"
+      long_desc "Run an arbitrary command from the root of the deployed release, with the " \
+        "release's environment. Use the --per flag to specify on which hosts to run the " \
+        "command. 'bundle exec' is not prepended automatically."
+      arg "instance"
+      arg "cmd", [:multiple]
+      command :exec do |c|
+        c.flag [:per, :p], desc: "Specify on which hosts to run",
+          long_desc: "Specify 'host' to run on every host, 'site' to run once per site, and " \
+            "'deploy' to run exactly once.",
+          must_match: ["host", "site", "per"],
+          default_value: "host"
+        c.action do |global_options, options, args|
+          invoker.add_command(
+            Command::Exec.new(
+              instance_name: options[:instance_name],
+              user: global_options[:user],
+              cmd: args.join(" "),
+              per: options[:per]
+            )
+          )
+        end
+      end
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
