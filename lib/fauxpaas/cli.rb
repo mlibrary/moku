@@ -47,7 +47,7 @@ module Fauxpaas
       command :deploy do |c|
         c.action do |global_options, _options, args|
           invoker.add_command(
-            Commands::Deploy.new(
+            Command::Deploy.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user],
               reference: args.first
@@ -62,13 +62,13 @@ module Fauxpaas
       command :default_branch do |c|
         c.action do |global_options, _options, args|
           command = if args.first
-            Commands::SetDefaultBranch.new(
+            Command::SetDefaultBranch.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user],
               new_branch: args.first
             )
           else
-            Commands::ReadDefaultBranch.new(
+            Command::ReadDefaultBranch.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user]
             )
@@ -81,7 +81,7 @@ module Fauxpaas
       command :releases do |c|
         c.action do |global_options, _options, _args|
           invoker.add_command(
-            Commands::Releases.new(
+            Command::Releases.new(
               instance_name: global_options[:instance_name],
               user: global_options[:user]
             )
