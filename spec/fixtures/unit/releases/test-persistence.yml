@@ -1,7 +1,7 @@
 ---
 releases:
 - :user: bhock
-  :id: '20171113113136001'
+  :id: '20171113113200001'
   :version: master
   :time: '2017-11-13T11:31:36'
   :signature:
@@ -18,7 +18,7 @@ releases:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb
 - :user: bhock
-  :id: '20171113113200001'
+  :id: '20171113113136001'
   :version: 'v1.2.3'
   :time: '2017-11-13T11:32:00'
   :signature:
