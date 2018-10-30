@@ -55,6 +55,13 @@ module Fauxpaas
       releases << release
     end
 
+    def caches
+      releases
+        .sort_by(&:id)
+        .reverse
+        .slice(0, 5)
+    end
+
     private
 
     def deploy_config(ref_repo)

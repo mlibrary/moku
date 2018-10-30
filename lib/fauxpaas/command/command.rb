@@ -5,15 +5,13 @@ module Fauxpaas
   module Command
     # Represetns a command within Fauxpaas
     class Command
+      attr_reader :user, :logger
+
       def initialize(instance_name:, user:, logger: nil, instance_repo: nil)
         @instance_name = instance_name
         @user = user
         @logger = logger || Fauxpaas.logger
         @instance_repo = instance_repo || Fauxpaas.instance_repo
-      end
-
-      def execute
-        raise NotImplementedError
       end
 
       def action
@@ -28,24 +26,16 @@ module Fauxpaas
         )
       end
 
-      private
-
-      attr_reader :instance_name, :user
-      attr_reader :logger, :instance_repo
-
       def instance
         @instance ||= instance_repo.find(instance_name)
       rescue Errno::ENOENT
         raise ArgumentError, "The requested instance [#{instance_name}] doesn't exist"
       end
 
-      def report(status, action: "action")
-        if status.success?
-          logger.info "#{action} successful"
-        else
-          logger.fatal "#{action} failed (run again with --verbose for more info)"
-        end
-      end
+      private
+
+      attr_reader :instance_name, :instance_repo
+
     end
 
   end

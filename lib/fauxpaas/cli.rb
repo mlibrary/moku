@@ -7,11 +7,11 @@ require "fauxpaas/command"
 module Fauxpaas
 
   # The command-line interface for fauxpaas
-  class CLI
+  class CLI # rubocop:disable Metrics/ClassLength
     include GLI::App
 
-    # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def initialize
       program_desc "Fake platform-as-a-service"
       synopsis_format :terminal
@@ -56,6 +56,25 @@ module Fauxpaas
         end
       end
 
+      desc "Rollback to a previous release"
+      long_desc "This command quickly rolls back to a previously deployed " \
+        "release that is still cached on the host servers. You can view the " \
+        "list of cached releases via the caches command. If a release id is " \
+        "given, this will rollback to that release. Otherwise, it rolls back " \
+        "to the most recent release."
+      arg "release", :optional
+      command :rollback do |c|
+        c.action do |global_options, _options, args|
+          invoker.add_command(
+            Command::Rollback.new(
+              instance_name: global_options[:instance_name],
+              user: global_options[:user],
+              cache_id: args.first
+            )
+          )
+        end
+      end
+
       desc "View or set the default branch"
       arg "instance"
       arg "new_branch", :optional
@@ -79,6 +98,8 @@ module Fauxpaas
 
       desc "List release history"
       command :releases do |c|
+        c.desc "Show full SHAs"
+        c.switch [:l, :long]
         c.action do |global_options, _options, _args|
           invoker.add_command(
             Command::Releases.new(
@@ -88,9 +109,23 @@ module Fauxpaas
           )
         end
       end
+
+      desc "List cached releases"
+      command :caches do |c|
+        c.desc "Show full SHAs"
+        c.switch [:l, :long]
+        c.action do |global_options, _options, _args|
+          invoker.add_command(
+            Command::Caches.new(
+              instance_name: global_options[:instance_name],
+              user: global_options[:user]
+            )
+          )
+        end
+      end
     end
-    # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     private
 

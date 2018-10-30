@@ -6,8 +6,8 @@ require "fauxpaas/command/command"
 module Fauxpaas
   module Command
 
-    # Show the releases
-    class Releases < Command
+    # Show the cached releases
+    class Caches < Command
       def initialize(instance_name:, user:, long: false)
         super(instance_name: instance_name, user: user)
         @long = long
@@ -16,7 +16,7 @@ module Fauxpaas
       attr_reader :long
 
       def action
-        :releases
+        :caches
       end
 
     end
