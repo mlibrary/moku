@@ -9,6 +9,7 @@ require "pathname"
 
 module Fauxpaas
   RSpec.describe Instance do
+    R = Struct.new(:id)
     let(:app) { "myapp" }
     let(:stage) { "mystage" }
     let(:name) { "#{app}-#{stage}" }
@@ -85,7 +86,18 @@ module Fauxpaas
       end
     end
 
-    describe "#releases #log_release" do
+
+    describe "#releases" do
+      let(:releases) { [R.new(1), R.new(2), R.new(3), R.new(4), R.new(5), R.new(6)].shuffle }
+
+      it "sorts the releases" do
+        expect(instance.releases).to eql(
+          [R.new(6), R.new(5), R.new(4), R.new(3), R.new(2), R.new(1)]
+        )
+      end
+    end
+
+    describe "#log_releases" do
       let(:releases) { [a_release] }
       let(:another_release) { double(:another_release, id: "2") }
 
@@ -93,10 +105,10 @@ module Fauxpaas
         instance.log_release(another_release)
         expect(instance.releases).to contain_exactly(a_release, another_release)
       end
+
     end
 
     describe "#caches" do
-      R = Struct.new(:id)
       context "with >= 5 releases" do
         let(:releases) { [R.new(1), R.new(2), R.new(3), R.new(4), R.new(5), R.new(6)].shuffle }
 

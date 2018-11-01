@@ -27,7 +27,7 @@ module Fauxpaas
 
     attr_reader :name
     attr_reader :source, :deploy
-    attr_reader :shared, :unshared, :releases
+    attr_reader :shared, :unshared
 
     # @param commitish [String]
     # @return [ReleaseSignature]
@@ -52,14 +52,18 @@ module Fauxpaas
 
     # @param release [LoggedRelease]
     def log_release(release)
-      releases << release
+      @releases << release
     end
 
     def caches
       releases
+        .slice(0, 5)
+    end
+
+    def releases
+      @releases
         .sort_by(&:id)
         .reverse
-        .slice(0, 5)
     end
 
     private
