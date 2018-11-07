@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "../support/memory_filesystem"
-require "fauxpaas/scm/git"
-require "fauxpaas/shell/basic"
-require "fauxpaas/scm/git/local_resolver"
-require "fauxpaas/scm/git/remote_resolver"
+require "moku/scm/git"
+require "moku/shell/basic"
+require "moku/scm/git/local_resolver"
+require "moku/scm/git/remote_resolver"
 require "pathname"
 require "tmpdir"
 
-module Fauxpaas
+module Moku
   RSpec.describe SCM::Git do
     let(:url) { Pathname.new(__dir__)/".."/".."/".git" }
     let(:commit) { "00dd3a5a8dbb1c19809cfb1499829defd8e16e49" }

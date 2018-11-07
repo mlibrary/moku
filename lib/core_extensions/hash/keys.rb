@@ -2,7 +2,7 @@
 
 require "core_extensions/hash/deep_transform"
 
-module Fauxpaas
+module Moku
 
   # Behavior from ActiveSupport's hash/keys
   module Keys
@@ -46,5 +46,5 @@ module Fauxpaas
 end
 
 unless {}.respond_to?(:stringify_keys)
-  Hash.include Fauxpaas::Keys
+  Hash.include Moku::Keys
 end

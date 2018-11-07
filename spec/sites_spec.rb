@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "fauxpaas/sites"
+require "moku/sites"
 
-module Fauxpaas
+module Moku
   RSpec.describe Sites do
     let(:hash) do
       {

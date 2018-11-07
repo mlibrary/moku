@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "fauxpaas/pipeline/read_default_branch"
+require "moku/pipeline/read_default_branch"
 
-module Fauxpaas
+module Moku
   RSpec.describe Pipeline::ReadDefaultBranch do
     let(:logger) { double(:logger, info: nil) }
     let(:instance) { double(:instance, default_branch: "master") }

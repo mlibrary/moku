@@ -2,9 +2,9 @@
 
 require_relative "command_helper"
 require_relative "../support/a_command"
-require "fauxpaas/command/set_default_branch"
+require "moku/command/set_default_branch"
 
-module Fauxpaas
+module Moku
   RSpec.describe Command::SetDefaultBranch do
     include_context "when running a command spec"
     let(:command) do
@@ -23,7 +23,7 @@ module Fauxpaas
 
     describe "#instance_repo" do
       it "returns the repo" do
-        expect(command.instance_repo).to eql(Fauxpaas.instance_repo)
+        expect(command.instance_repo).to eql(Moku.instance_repo)
       end
     end
   end

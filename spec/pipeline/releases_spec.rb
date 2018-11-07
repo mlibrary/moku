@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "fauxpaas/pipeline/releases"
-require "fauxpaas/logged_releases"
+require "moku/pipeline/releases"
+require "moku/logged_releases"
 
-module Fauxpaas
+module Moku
 
   RSpec.describe Pipeline::Releases do
     let(:logger) { double(:logger, info: nil) }

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "fauxpaas/lazy/merging/overwrite"
+require "moku/lazy/merging/overwrite"
 
-module Fauxpaas
+module Moku
   RSpec.describe Lazy::Merging::Overwrite do
     describe "::handles?" do
       it "handles everything (default)" do

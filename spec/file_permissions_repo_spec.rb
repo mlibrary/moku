@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "fauxpaas/file_permissions_repo"
+require "moku/file_permissions_repo"
 require "fakefs/spec_helpers"
 require "pathname"
 require "yaml"
 
-module Fauxpaas
+module Moku
   RSpec.describe FilePermissionsRepo do
     include FakeFS::SpecHelpers
 

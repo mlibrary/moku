@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "fauxpaas/plan/plan"
+require "moku/plan/plan"
 
-module Fauxpaas
+module Moku
   class TestPlan < Plan::Plan
     def initialize(target:, prepare: [], main: [], finish: [])
       super(target)

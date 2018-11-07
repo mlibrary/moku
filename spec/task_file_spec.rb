@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "fauxpaas/task_file"
+require "moku/task_file"
 require "fakefs/spec_helpers"
 require "pathname"
 require "yaml"
 
-module Fauxpaas
+module Moku
   RSpec.describe TaskFile do
     include FakeFS::SpecHelpers
 

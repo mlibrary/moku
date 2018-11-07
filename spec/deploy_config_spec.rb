@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "fauxpaas/deploy_config"
-require "fauxpaas/sites"
+require "moku/deploy_config"
+require "moku/sites"
 require "core_extensions/hash/keys"
 require "fileutils"
 require "pathname"
@@ -10,12 +10,12 @@ require "yaml"
 require "pp"
 require "fakefs/spec_helpers"
 
-require "fauxpaas/config"
+require "moku/config"
 
-module Fauxpaas
+module Moku
   RSpec.describe DeployConfig do
     before(:each) do
-      Fauxpaas.config.register(:deploy_config_filename) { "deploy.yml" }
+      Moku.config.register(:deploy_config_filename) { "deploy.yml" }
     end
 
     let(:deploy_dir) { Pathname.new("/deploy/dir") }

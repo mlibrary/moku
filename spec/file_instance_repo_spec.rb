@@ -2,16 +2,16 @@
 
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
-require "fauxpaas/config"
-require "fauxpaas/filesystem"
-require "fauxpaas/file_instance_repo"
+require "moku/config"
+require "moku/filesystem"
+require "moku/file_instance_repo"
 require "yaml"
 
-module Fauxpaas
+module Moku
   RSpec.describe FileInstanceRepo do
-    let(:instance_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"instances" }
-    let(:releases_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"releases" }
-    let(:branches_root) { Fauxpaas.root/"spec"/"fixtures"/"unit"/"branches-cache" }
+    let(:instance_root) { Moku.root/"spec"/"fixtures"/"unit"/"instances" }
+    let(:releases_root) { Moku.root/"spec"/"fixtures"/"unit"/"releases" }
+    let(:branches_root) { Moku.root/"spec"/"fixtures"/"unit"/"branches-cache" }
     let(:git_runner) { SpoofedGitRunner.new }
     let(:static_repo) do
       described_class.new(
@@ -34,17 +34,17 @@ module Fauxpaas
     end
 
     before(:each) do
-      Fauxpaas.config.register(:git_runner) { git_runner }
+      Moku.config.register(:git_runner) { git_runner }
     end
 
     describe "#find" do
       context "when finding legacy instances" do
         let(:instance) { static_repo.find("test-legacypersistence") }
 
-        it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/faux-deploy") }
+        it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/moku-deploy") }
         it { expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git") }
-        it { expect(instance.shared.url).to   eql("git@github.com:mlibrary/faux-infrastructure") }
-        it { expect(instance.unshared.url).to eql("git@github.com:mlibrary/faux-dev") }
+        it { expect(instance.shared.url).to   eql("git@github.com:mlibrary/moku-infrastructure") }
+        it { expect(instance.unshared.url).to eql("git@github.com:mlibrary/moku-dev") }
         it { expect(instance.deploy.commitish).to   eql("test-norails") }
         it { expect(instance.source.commitish).to   eql("master") }
         it { expect(instance.shared.commitish).to   eql("test-norails") }
@@ -54,10 +54,10 @@ module Fauxpaas
       context "when finding non-legacy instances" do
         let(:instance) { static_repo.find("test-legacypersistence") }
 
-        it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/faux-deploy") }
+        it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/moku-deploy") }
         it { expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git") }
-        it { expect(instance.shared.url).to   eql("git@github.com:mlibrary/faux-infrastructure") }
-        it { expect(instance.unshared.url).to eql("git@github.com:mlibrary/faux-dev") }
+        it { expect(instance.shared.url).to   eql("git@github.com:mlibrary/moku-infrastructure") }
+        it { expect(instance.unshared.url).to eql("git@github.com:mlibrary/moku-dev") }
         it { expect(instance.deploy.commitish).to   eql("test-norails") }
         it { expect(instance.source.commitish).to   eql("master") }
         it { expect(instance.shared.commitish).to   eql("test-norails") }

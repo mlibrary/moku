@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 require_relative "spec_helper"
-require "fauxpaas/release"
-require "fauxpaas/shell/basic"
-require "fauxpaas/sites"
+require "moku/release"
+require "moku/shell/basic"
+require "moku/sites"
 
-module Fauxpaas
+module Moku
   RSpec.describe Release do
     let(:deploy_dir) { Pathname.new("/deploy/dir") }
     let(:artifact) { double(:artifact, path: "somepath") }
     let(:remote_runner) { FakeRemoteRunner.new(Shell::Basic.new) }
-    let(:user) { "faux" }
+    let(:user) { "moku" }
     let(:sites) { Sites.new("site1" => ["host1"], "site2" => ["host2"]) }
     let(:deploy_config) do
       double(

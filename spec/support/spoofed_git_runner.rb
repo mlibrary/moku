@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "pathname"
-require "fauxpaas/scm/working_directory"
+require "moku/scm/working_directory"
 
-module Fauxpaas
+module Moku
   class SpoofedGitRunner
     def initialize(sytem = nil); end
 

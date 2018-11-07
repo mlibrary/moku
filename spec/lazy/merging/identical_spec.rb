@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "fauxpaas/lazy/merging/identical"
+require "moku/lazy/merging/identical"
 
-module Fauxpaas
+module Moku
   RSpec.describe Lazy::Merging::Identical do
     describe "::handles?" do
       it "handles a single source" do

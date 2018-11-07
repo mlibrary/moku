@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 require_relative "spec_helper"
-require "fauxpaas"
-require "fauxpaas/scm/file"
+require "moku"
+require "moku/scm/file"
 require_relative "support/fake_remote_runner"
 require "tmpdir"
 require "pathname"
 require "open3"
 
-module Fauxpaas
+module Moku
 
   RSpec.describe "integration tests", integration: true do
     describe "deploy" do
       # This requires the context built by 'deploy setup'
       RSpec.shared_context "with deploy run" do |instance_name|
         before(:all) do # rubocop:disable RSpec/BeforeAfterAll
-          Fauxpaas.invoker.add_command(
+          Moku.invoker.add_command(
             Command::Deploy.new(
               user: ENV["USER"],
               instance_name: instance_name,
@@ -27,12 +27,12 @@ module Fauxpaas
 
       RSpec.shared_context "with deploy set up" do |_instance_name|
         before(:all) do # rubocop:disable RSpec/BeforeAfterAll
-          Fauxpaas.reset!
-          Fauxpaas.initialize!
-          Fauxpaas.config.tap do |config|
+          Moku.reset!
+          Moku.initialize!
+          Moku.config.tap do |config|
             # Locate fixtures and the test sandbox
-            config.register(:test_run_root) { Fauxpaas.root/"sandbox" }
-            config.register(:fixtures_root) { Fauxpaas.root/"spec"/"fixtures"/"integration" }
+            config.register(:test_run_root) { Moku.root/"sandbox" }
+            config.register(:fixtures_root) { Moku.root/"spec"/"fixtures"/"integration" }
             config.register(:fixtures_path, &:fixtures_root) # delete me
             config.register(:deploy_root) {|c| c.test_run_root/"deploy" }
 
@@ -53,21 +53,21 @@ module Fauxpaas
             end
           end
 
-          @fauxpaas = Fauxpaas.config
-          FileUtils.mkdir_p Fauxpaas.deploy_root
-          FileUtils.mkdir_p Fauxpaas.test_run_root
-          FileUtils.copy_entry("#{Fauxpaas.fixtures_root}/.", Fauxpaas.test_run_root)
+          @moku = Moku.config
+          FileUtils.mkdir_p Moku.deploy_root
+          FileUtils.mkdir_p Moku.test_run_root
+          FileUtils.copy_entry("#{Moku.fixtures_root}/.", Moku.test_run_root)
         end
 
         # rubocop:disable RSpec/InstanceVariable
         after(:all) do # rubocop:disable RSpec/BeforeAfterAll
-          FileUtils.rm_rf @fauxpaas.test_run_root
-          FileUtils.rm_rf @fauxpaas.deploy_root
-          FileUtils.rm_rf @fauxpaas.ref_root
+          FileUtils.rm_rf @moku.test_run_root
+          FileUtils.rm_rf @moku.deploy_root
+          FileUtils.rm_rf @moku.ref_root
         end
         # rubocop:enable RSpec/InstanceVariable
 
-        let(:root) { @fauxpaas.deploy_root } # rubocop:disable RSpec/InstanceVariable
+        let(:root) { @moku.deploy_root } # rubocop:disable RSpec/InstanceVariable
         let(:current_dir) { root/"current" }
       end
 

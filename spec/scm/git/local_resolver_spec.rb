@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require_relative "../../support/memory_filesystem"
-require "fauxpaas/scm/git/local_resolver"
+require "moku/scm/git/local_resolver"
 
-module Fauxpaas
+module Moku
   RSpec.describe SCM::Git::LocalResolver do
     let(:status) { double(:status, success?: true, output: raw) }
     let(:system_runner) { double(:system_runner, run: status) }
