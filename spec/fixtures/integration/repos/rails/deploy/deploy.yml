@@ -1,6 +1,7 @@
 deploy_dir: sandbox/deploy
 env:
   rack_env: production
+  rails_env: production
 systemd_services: []
 sites:
   local_site:
