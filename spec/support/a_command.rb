@@ -36,7 +36,7 @@ RSpec.shared_context "when running a command spec" do
   let(:user) { "someone" }
   let(:instance) { double(:instance, default_branch: "master") }
   before(:each) do
-    Fauxpaas.config.tap do |c|
+    Moku.config.tap do |c|
       c.register(:auth) { auth }
       c.register(:instance_repo) { instance_repo }
     end

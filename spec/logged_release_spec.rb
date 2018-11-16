@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require_relative "spec_helper"
-require "fauxpaas/logged_release"
-require "fauxpaas/release_signature"
+require "moku/logged_release"
+require "moku/release_signature"
 
-module Fauxpaas
+module Moku
   RSpec.describe LoggedRelease do
     let(:id) { "20170131134411001" }
     let(:version) { "v1.2.3" }

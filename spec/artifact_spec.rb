@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "fauxpaas/artifact"
+require "moku/artifact"
 require "pathname"
 
-module Fauxpaas
+module Moku
   RSpec.describe Artifact do
     let(:path) { Pathname.new("/some/path") }
     let(:signature) do

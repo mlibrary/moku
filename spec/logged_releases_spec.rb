@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "fauxpaas/logged_releases"
-require "fauxpaas/config"
+require "moku/logged_releases"
+require "moku/config"
 
-module Fauxpaas
+module Moku
   RSpec.describe LoggedReleases do
     let(:release1) do
       double(
@@ -32,7 +32,7 @@ module Fauxpaas
 
     describe "#to_s" do
       let(:expected) do
-        File.read(Fauxpaas.root/"spec"/"fixtures"/"unit"/"releases_output_long.txt").chomp
+        File.read(Moku.root/"spec"/"fixtures"/"unit"/"releases_output_long.txt").chomp
       end
 
       it "returns a table" do

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "fauxpaas/task/task"
+require "moku/task/task"
 require "pathname"
 
-module Fauxpaas
+module Moku
   RSpec.describe Task::Task do
     class TestTask < described_class
       def test_with_env(path)

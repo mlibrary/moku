@@ -2,9 +2,9 @@
 
 require_relative "command_helper"
 require_relative "../support/a_command"
-require "fauxpaas/command/command"
+require "moku/command/command"
 
-module Fauxpaas
+module Moku
 
   RSpec.describe Command::Command do
     include_context "when running a command spec"

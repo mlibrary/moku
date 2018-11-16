@@ -1,13 +1,13 @@
 ---
 deploy:
-  url: <%= Fauxpaas.fixtures_path.to_s %>/repos/norails/deploy
+  url: <%= Moku.fixtures_path.to_s %>/repos/norails/deploy
   commitish: norails_deploy
 source:
-  url: <%= Fauxpaas.fixtures_path.to_s %>/repos/norails/source
+  url: <%= Moku.fixtures_path.to_s %>/repos/norails/source
   commitish: norails_source
 shared:
-  - url: <%= Fauxpaas.fixtures_path.to_s %>/repos/norails/shared
+  - url: <%= Moku.fixtures_path.to_s %>/repos/norails/shared
     commitish: norails_shared
 unshared:
-  - url: <%= Fauxpaas.fixtures_path.to_s %>/repos/norails/unshared
+  - url: <%= Moku.fixtures_path.to_s %>/repos/norails/unshared
     commitish: norails_unshared

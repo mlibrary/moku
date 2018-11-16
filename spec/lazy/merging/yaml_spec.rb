@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "fauxpaas/lazy/merging/yaml"
+require "moku/lazy/merging/yaml"
 
-module Fauxpaas
+module Moku
   RSpec.describe Lazy::Merging::Yaml do
     let(:foo_yml) { Pathname.new("foo.yml") }
     let(:bar_yaml) { Pathname.new("bar.yaml") }

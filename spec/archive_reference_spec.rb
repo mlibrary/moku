@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "fauxpaas/archive_reference"
+require "moku/archive_reference"
 require_relative "support/spoofed_git_runner"
 require "pathname"
 
-module Fauxpaas
+module Moku
   RSpec.describe ArchiveReference do
     let(:url) { "https://example.com/fake.git" }
     let(:runner) { SpoofedGitRunner.new }

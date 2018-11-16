@@ -1,4 +1,4 @@
-# Fauxpaas Design
+# Moku Design
 
 This page contains a general overview of how the software is designed.  It
 is not a guide for how to use it--that comes later.
@@ -26,7 +26,7 @@ The unit tests should pass out of the box.
 ### Integration Tests
 
 The integration tests currently require that you can ssh to localhost without a password
-via ssh keypair. The ssh key should be stored in $HOME/.ssh/id\_rsa-fauxpaas. Simply symlinking
+via ssh keypair. The ssh key should be stored in $HOME/.ssh/id\_rsa-moku. Simply symlinking
 any sshkey you've already set up should accomplish this.
 
 99% of the test run time is the integration tests, which are tagged as "integration".
@@ -93,7 +93,7 @@ where the instance will be deployed.
 ## Folder Structure
 
 ```
-faux
+moku
  |- permissions.yml             global whitelist
  |- data
  |  |- instances
@@ -121,13 +121,13 @@ This project assumes that an underprivileged user ("the user") elevated its priv
 a privileged, non-root user. This latter user is the application user, and all commands are run
 with its identity. The software must be able to access the real user's username.
 
-Fauxpaas does not provide any authentication method.
+Moku does not provide any authentication method.
 
 The identity use is expected to be specified on the command line.
 From there, the CLI verifies that the user is allowed to run the given command on the given
 target. It does so by instantiating a Policy from the user object, which can then be interrogated
 for permisions. This mechanism is not especially advanced; therefore, should the authorization
-scope of Fauxpaas increase significantly, more robust mechanisms should be used.
+scope of Moku increase significantly, more robust mechanisms should be used.
 
 The Policy itself will look in the following locations for files named `permissions.yml`.
 The order does not matter.

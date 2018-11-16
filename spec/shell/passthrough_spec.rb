@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "fauxpaas/shell/passthrough"
-require "fauxpaas/status"
+require "moku/shell/passthrough"
+require "moku/status"
 require "stringio"
 
-module Fauxpaas
+module Moku
   RSpec.describe Shell::Passthrough do
     let(:log) { StringIO.new }
     let(:runner) { described_class.new(log) }

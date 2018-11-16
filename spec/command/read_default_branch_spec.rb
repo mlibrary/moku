@@ -2,9 +2,9 @@
 
 require_relative "command_helper"
 require_relative "../support/a_command"
-require "fauxpaas/command/read_default_branch"
+require "moku/command/read_default_branch"
 
-module Fauxpaas
+module Moku
   RSpec.describe Command::ReadDefaultBranch do
     include_context "when running a command spec"
     let(:command) do

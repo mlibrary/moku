@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "fauxpaas/lazy/directory"
+require "moku/lazy/directory"
 require "pathname"
 require "fileutils"
 require "find"
 
-module Fauxpaas
+module Moku
   RSpec.describe Lazy::Directory do
     class TestFile
       attr_reader :path

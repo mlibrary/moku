@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "fauxpaas/lazy/origin"
+require "moku/lazy/origin"
 require "fileutils"
 require "pathname"
 
-module Fauxpaas
+module Moku
   RSpec.describe Lazy::Origin do
     class TestOrigin < Lazy::Origin
       register(self)

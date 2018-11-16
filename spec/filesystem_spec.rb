@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "fauxpaas/filesystem"
+require "moku/filesystem"
 require "pathname"
 require "fileutils"
 
-module Fauxpaas
+module Moku
   RSpec.describe Filesystem do
     let(:fs) { described_class.new }
 

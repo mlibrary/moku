@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "fauxpaas/task/bundle"
+require "moku/task/bundle"
 require "fileutils"
 require "pathname"
 require "fakefs/spec_helpers"
 
-module Fauxpaas
+module Moku
   RSpec.describe Task::Bundle do
     include FakeFS::SpecHelpers
     let(:runner) { double(:runner, run: status) }

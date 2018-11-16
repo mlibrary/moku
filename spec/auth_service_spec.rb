@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "fauxpaas/auth_service"
+require "moku/auth_service"
 
-module Fauxpaas
+module Moku
   RSpec.describe AuthService do
     # The AuthService is initialized with roles. We use a policy
     # here that checks for roles, not actions, for simplicity.

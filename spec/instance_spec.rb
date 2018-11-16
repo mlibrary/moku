@@ -2,12 +2,12 @@
 
 require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
-require "fauxpaas/instance"
-require "fauxpaas/archive_reference"
-require "fauxpaas/release_signature"
+require "moku/instance"
+require "moku/archive_reference"
+require "moku/release_signature"
 require "pathname"
 
-module Fauxpaas
+module Moku
   RSpec.describe Instance do
     R = Struct.new(:id)
     let(:app) { "myapp" }

@@ -25,7 +25,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-module Fauxpaas
+module Moku
 
   # Contains the logic for deep transformation of hash keys
   module DeepTransform
@@ -63,5 +63,5 @@ module Fauxpaas
 end
 
 unless {}.respond_to?(:deep_transform_keys)
-  Hash.include Fauxpaas::DeepTransform
+  Hash.include Moku::DeepTransform
 end

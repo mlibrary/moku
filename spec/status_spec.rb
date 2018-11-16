@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "fauxpaas/status"
+require "moku/status"
 
-module Fauxpaas
+module Moku
   RSpec.describe Status do
     describe "::success" do
       it "returns a successful status" do

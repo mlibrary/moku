@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fauxpaas (0.2.0)
+    moku (0.2.0)
       canister
       ettin (~> 1.1.0)
       gli
@@ -73,7 +73,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.15)
   fakefs
-  fauxpaas!
+  moku!
   pry
   rake (~> 10.0)
   rspec (~> 3.0)
@@ -82,4 +82,4 @@ DEPENDENCIES
   simplecov
 
 BUNDLED WITH
-   1.16.4
+   1.17.1

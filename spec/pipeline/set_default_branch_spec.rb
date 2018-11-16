@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "fauxpaas/pipeline/set_default_branch"
+require "moku/pipeline/set_default_branch"
 require "ostruct"
 
-module Fauxpaas
+module Moku
   RSpec.describe Pipeline::SetDefaultBranch do
     let(:instance) { OpenStruct.new(default_branch: "old_branch") }
     let(:user) { "someuser" }

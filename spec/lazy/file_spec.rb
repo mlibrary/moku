@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "fauxpaas/lazy/file"
-require "fauxpaas/lazy/origin"
+require "moku/lazy/file"
+require "moku/lazy/origin"
 require "pathname"
 
-module Fauxpaas
+module Moku
   RSpec.describe Lazy::File do
     let(:file) { described_class.new(origin, path) }
     let(:origin) { double(:origin) }
