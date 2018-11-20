@@ -33,7 +33,6 @@ module Moku
         # Locate fixtures and the test sandbox
         config.register(:test_run_root) { Moku.root/"sandbox" }
         config.register(:fixtures_root) { Moku.root/"spec"/"fixtures"/"integration" }
-        config.register(:fixtures_path, &:fixtures_root) # delete me
         config.register(:deploy_root) {|c| c.test_run_root/"deploy" }
 
         # Configure the application
