@@ -4,11 +4,12 @@ require "moku/artifact"
 require "moku/deploy_config"
 require "moku/logged_release"
 require "moku/pipeline/pipeline"
-require "moku/release"
-require "moku/sequence"
 require "moku/plan/basic_build"
 require "moku/plan/basic_deploy"
 require "moku/plan/restart"
+require "moku/release"
+require "moku/sequence"
+require "moku/sites/scope"
 require "pathname"
 
 module Moku
@@ -70,7 +71,7 @@ module Moku
 
       def cleanup_caches
         Sequence.for(instance.releases - instance.caches) do |logged_release|
-          release.run_per_host("rm -rf #{release.deploy_config.deploy_dir/logged_release.id}")
+          release.run(Sites::Scope.all, "rm -rf #{release.deploy_config.deploy_dir/logged_release.id}")
         end
       end
 

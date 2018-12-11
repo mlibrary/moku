@@ -13,7 +13,7 @@ module Moku
         instance_name: instance_name,
         user: user,
         cmd: "ls",
-        per: "deploy"
+        scope: ["deploy", nil]
       )
     end
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "moku/task_file"
+require "moku/sites/scope"
 require "fakefs/spec_helpers"
 require "pathname"
 require "yaml"
@@ -19,7 +20,10 @@ module Moku
 
     describe "enumerability" do
       it "returns the tasks" do
-        expect(task_file.map {|x| x }).to eql(content)
+        expect(task_file.map {|x| x }).to contain_exactly(
+          { cmd: "foo", scope: an_instance_of(Sites::Scope) },
+          cmd: "bar", scope: an_instance_of(Sites::Scope)
+        )
       end
     end
   end

@@ -38,23 +38,18 @@ module Moku
       deploy_config.systemd_services
     end
 
-    def run_per_host(command)
-      run(deploy_config.sites.hosts, command)
-    end
-
-    def run_per_site(command)
-      run(deploy_config.sites.primaries, command)
-    end
-
-    def run_per_deploy(command)
-      run([deploy_config.sites.primary], command)
+    def run(scope, command)
+      run_on_hosts(
+        scope.apply(deploy_config.sites),
+        command
+      )
     end
 
     private
 
     attr_reader :artifact, :deploy_config, :remote_runner, :user
 
-    def run(hosts, command)
+    def run_on_hosts(hosts, command)
       Sequence.for(hosts) do |host|
         remote_runner.run(
           user: user,

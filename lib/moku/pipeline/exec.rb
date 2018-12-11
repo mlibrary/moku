@@ -32,10 +32,10 @@ module Moku
         )
       end
 
-      def set_current
+      def run_command
         Task::RemoteShell.new(
           command: command.cmd,
-          per: command.per
+          scope: command.scope
         ).call(release)
       end
     end
