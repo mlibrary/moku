@@ -28,7 +28,7 @@ module Moku
       def finish
         [
           TaskFile.new(task_file_path).map do |raw_task|
-            Task::Shell.new(raw_task["cmd"])
+            Task::Shell.new(command: raw_task[:cmd])
           end,
           Task::BuildPermissions.new
         ].flatten

@@ -26,8 +26,8 @@ module Moku
       def main
         TaskFile.new(task_file_path).map do |raw_task|
           Task::RemoteShell.new(
-            command: raw_task["cmd"],
-            per: raw_task["per"]
+            command: raw_task[:cmd],
+            scope: raw_task[:scope]
           )
         end
       end

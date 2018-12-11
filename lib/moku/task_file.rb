@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "moku/sites/scope"
 require "yaml"
 
 module Moku
@@ -13,12 +14,18 @@ module Moku
     end
 
     def each
-      raw_tasks.each {|task| yield(task) }
+      tasks.each {|task| yield(task) }
     end
 
     private
 
     attr_reader :path
+
+    def tasks
+      @tasks ||= raw_tasks.map do |raw_task|
+        { cmd: raw_task["cmd"], scope: scope(raw_task["per"]) }
+      end
+    end
 
     # The tasks encoded in the file
     # @return [Array<Hash>]
@@ -27,6 +34,19 @@ module Moku
         YAML.safe_load(File.read(path)) || []
       else
         []
+      end
+    end
+
+    def scope(per)
+      case per
+      when "host", nil
+        Sites::Scope.all
+      when "site"
+        Sites::Scope.each_site
+      when "deploy"
+        Sites::Scope.once
+      else
+        raise ArgumentError, "Unknown scope or value for 'per'"
       end
     end
 

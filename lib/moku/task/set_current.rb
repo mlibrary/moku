@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "moku/task/task"
+require "moku/sites/scope"
 
 module Moku
   module Task
@@ -9,9 +10,9 @@ module Moku
     class SetCurrent < Task
 
       def call(release)
-        release.run_per_host(
-          "rm -f #{release.app_path}; " \
-          "ln -s #{target_path(release)} #{release.app_path}"
+        release.run(
+          Sites::Scope.all,
+          "rm -f #{release.app_path}; ln -s #{target_path(release)} #{release.app_path}"
         )
       end
 
