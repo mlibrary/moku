@@ -11,3 +11,4 @@ finish_build_filename: finish_build.yml
 finish_deploy_filename: finish_deploy.yml
 deploy_config_filename: deploy.yml
 release_time_format: "%Y%m%d%H%M%S%L"
+ref_cache_max: 10

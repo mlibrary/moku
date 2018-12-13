@@ -11,9 +11,10 @@ module Moku
 
     # @param dir [Pathname] A directory in which to store
     #   intermediate artifacts.
-    def initialize(dir, runner = Moku.git_runner)
+    def initialize(dir, runner = Moku.git_runner, max_cache: Moku.ref_cache_max)
       @dir = dir
       @runner = runner
+      @max_cache = max_cache
     end
 
     # Download the given archive reference, unpack it,
@@ -22,6 +23,7 @@ module Moku
     # @return [Lazy::Directory]
     def resolve(ref)
       wd = checkout(ref, dir_for(ref))
+      cleanup!
       Lazy::Directory.for(
         wd.dir,
         wd.relative_files.map do |relative_path|
@@ -32,7 +34,21 @@ module Moku
 
     private
 
-    attr_reader :dir, :runner
+    attr_reader :dir, :runner, :max_cache
+
+    def cached_references
+      dir.children.select(&:directory?)
+    end
+
+    # Remove caches in excess of the amount allowed by max_cache,
+    # starting with the oldest.
+    def cleanup!
+      cached_refs = cached_references
+      cached_refs
+        .sort_by(&:mtime)
+        .slice(0, [0, cached_refs.count - max_cache].max)
+        .each {|cache| FileUtils.remove_entry_secure(cache) }
+    end
 
     # @yield [SCM::WorkingDirectory] The directory in which
     #   the content has been checked out.
