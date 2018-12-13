@@ -7,9 +7,13 @@ module Moku
 
     # A simple shell task, resolved in the context of the target.
     class Shell < Task
-      def initialize(command, runner: Moku.system_runner)
+      def initialize(command:, runner: Moku.system_runner)
         @command = command
         @runner = runner
+      end
+
+      def to_s
+        "#{self.class}(#{command})"
       end
 
       attr_reader :command
