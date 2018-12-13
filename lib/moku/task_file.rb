@@ -9,8 +9,19 @@ module Moku
   class TaskFile
     include Enumerable
 
-    def initialize(path)
-      @path = path
+    TaskSpec = Struct.new(:command, :scope)
+
+    def self.from_path(path)
+      raw_tasks = if path.exist?
+        YAML.safe_load(File.read(path)) || []
+      else
+        []
+      end
+      new(raw_tasks)
+    end
+
+    def initialize(raw_tasks)
+      @raw_tasks = [raw_tasks].flatten.compact
     end
 
     def each
@@ -19,21 +30,11 @@ module Moku
 
     private
 
-    attr_reader :path
+    attr_reader :raw_tasks
 
     def tasks
       @tasks ||= raw_tasks.map do |raw_task|
-        { cmd: raw_task["cmd"], scope: scope(raw_task["per"]) }
-      end
-    end
-
-    # The tasks encoded in the file
-    # @return [Array<Hash>]
-    def raw_tasks
-      @raw_tasks ||= if path.exist?
-        YAML.safe_load(File.read(path)) || []
-      else
-        []
+        TaskSpec.new(raw_task["cmd"], scope(raw_task["per"]))
       end
     end
 

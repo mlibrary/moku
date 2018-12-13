@@ -24,11 +24,8 @@ module Moku
       end
 
       def main
-        TaskFile.new(task_file_path).map do |raw_task|
-          Task::RemoteShell.new(
-            command: raw_task[:cmd],
-            scope: raw_task[:scope]
-          )
+        TaskFile.from_path(task_file_path).map do |task_spec|
+          Task::RemoteShell.from_spec(task_spec)
         end
       end
 

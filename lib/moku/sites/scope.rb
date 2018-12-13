@@ -8,32 +8,40 @@ module Moku
     class Scope
 
       def self.all
-        new(proc {|sites| sites.hosts })
+        new(:all, proc {|sites| sites.hosts })
       end
 
       def self.each_site
-        new(proc {|sites| sites.primaries })
+        new(:each_site, proc {|sites| sites.primaries })
       end
 
       def self.once
-        new(proc {|sites| [sites.primary] })
+        new(:once, proc {|sites| [sites.primary] })
       end
 
       def self.site(*site_names)
-        new(proc {|sites| sites.site(*site_names).hosts })
+        new("site:#{site_names}", proc {|sites| sites.site(*site_names).hosts })
       end
 
       def self.host(*hostnames)
-        new(proc {|sites| sites.host(*hostnames) })
+        new("host:#{hostnames}", proc {|sites| sites.host(*hostnames) })
       end
 
-      def initialize(callable)
+      def initialize(identifier, callable)
+        @identifier = identifier
         @callable = callable
       end
+
+      attr_reader :identifier
 
       def apply(sites)
         callable.call(sites)
       end
+
+      def eql?(other)
+        identifier == other.identifier
+      end
+      alias_method :==, :eql?
 
       private
 
