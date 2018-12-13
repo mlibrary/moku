@@ -9,6 +9,11 @@ module Moku
     # A shell task that is resolved in the context of the deployed
     # release on each target host.
     class RemoteShell < Task
+
+      def self.from_spec(task_spec)
+        new(command: task_spec.command, scope: task_spec.scope)
+      end
+
       def initialize(command:, scope:)
         @command = command
         @scope = scope
