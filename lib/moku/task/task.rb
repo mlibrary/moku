@@ -10,6 +10,10 @@ module Moku
       # @return [Status]
       def call(target); end
 
+      def to_s
+        self.class.to_s
+      end
+
       protected
 
       # Evaluate some block in the context of the path, shedding

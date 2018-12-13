@@ -21,8 +21,9 @@ module Moku
     class Plan
 
       # @param target [Object] The object upon which the plan operates.
-      def initialize(target)
+      def initialize(target, logger: Moku.logger)
         @target = target
+        @logger = logger
       end
 
       # Execute the tasks of the plan. If a task fails, halt this process. This
@@ -53,18 +54,21 @@ module Moku
         []
       end
 
-      attr_reader :target
+      attr_reader :target, :logger
 
       private
 
-      # Run a list of tasks, stopping if any failure to return a successful
+      # Run a list of tasks, stopping if any fail to return a successful
       # status object. This plan's target will be passed to each task's #call
       # method.
       # @param tasks [Array<Task>]
       # @return [Status] The result of the last task. If no tasks were given,
       #   then this will be a successful Status.
       def run(tasks)
-        Sequence.do(tasks, target)
+        Sequence.for(tasks) do |task|
+          logger.info "Starting task: #{task}"
+          task.call(target)
+        end
       end
 
     end
