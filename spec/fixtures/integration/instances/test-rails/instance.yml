@@ -1,13 +1,13 @@
 ---
 deploy:
-  url: <%= Moku.fixtures_path.to_s %>/repos/rails/deploy
+  url: <%= Moku.fixtures_root.to_s %>/repos/rails/deploy
   commitish: rails_deploy
 source:
-  url: <%= Moku.fixtures_path.to_s %>/repos/rails/source
+  url: <%= Moku.fixtures_root.to_s %>/repos/rails/source
   commitish: rails_source
 shared:
-  - url: <%= Moku.fixtures_path.to_s %>/repos/rails/shared
+  - url: <%= Moku.fixtures_root.to_s %>/repos/rails/shared
     commitish: rails_shared
 unshared:
-  - url: <%= Moku.fixtures_path.to_s %>/repos/rails/unshared
+  - url: <%= Moku.fixtures_root.to_s %>/repos/rails/unshared
     commitish: rails_unshared

@@ -3,6 +3,7 @@
 require "gli"
 require "moku"
 require "moku/command"
+require "moku/sites/scope"
 
 module Moku
 
@@ -126,23 +127,41 @@ module Moku
 
       desc "Run an command on matching hosts"
       long_desc "Run an arbitrary command from the root of the deployed release, with the " \
-        "release's environment. Use the --per flag to specify on which hosts to run the " \
-        "command. 'bundle exec' is not prepended automatically."
+        "release's environment. Use the flags to specify on which hosts to run. A default " \
+        "host is set for each site and one site is designated as primary for the instance. " \
+        "The behavior with no flags is to run on the default host at the primary site " \
+        "(to simplify operations like database migrations, which will take effect instance-wide)."
       arg "instance"
       arg "cmd", [:multiple]
       command :exec do |c|
-        c.flag [:per, :p], desc: "Specify on which hosts to run",
-          long_desc: "Specify 'host' to run on every host, 'site' to run once per site, and " \
-            "'deploy' to run exactly once.",
-          must_match: ["host", "site", "per"],
-          default_value: "host"
+        c.example "exec myapp-mystage bundle exec rake db:migrate",
+          desc: "Run database migrations on only one host:"
+        c.example "exec myapp-mystage -v --host host1,host2,host3 'DEBUG=true bin/status'",
+          desc: "Run bin/status on host1, host2, and host3, setting an environment variable " \
+          "and printing the output:"
+        c.flag [:site, :S], type: Array, desc: "Run on the default host at the specified site(s)"
+        c.flag [:host, :H], type: Array, desc: "Run on each of the specified hosts"
+        c.switch [:all, :A], desc: "Run on every host for the instance"
+        c.switch [:"each-site", :Z], desc: "Run on the default host at every site"
         c.action do |global_options, options, args|
+          scope = if options[:site]
+            Sites::Scope.site(*options[:site])
+          elsif options options[:host]
+            Sites::Scope.host(*options[:host])
+          elsif options[:"each-site"]
+            Sites::Scope.each_site
+          elsif options[:all]
+            Sites::Scope.all
+          else
+            Sites::Scope.once
+          end
+
           invoker.add_command(
             Command::Exec.new(
               instance_name: options[:instance_name],
               user: global_options[:user],
               cmd: args.join(" "),
-              per: options[:per]
+              scope: scope
             )
           )
         end

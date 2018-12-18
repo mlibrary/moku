@@ -14,7 +14,7 @@ module Moku
     let(:artifact) { double(:artifact, path: path) }
     let(:status) { double(:status, success?: true, error: "") }
     let(:command) { "some command -f -a - p" }
-    let(:task) { described_class.new(command, runner: runner) }
+    let(:task) { described_class.new(command: command, runner: runner) }
 
     before(:each) { FileUtils.mkdir_p path.to_s }
 

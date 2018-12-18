@@ -23,11 +23,17 @@ module Moku
       attr_reader :command
 
       def step(method)
-        logger.info "Starting: #{method}"
-        status = send(method)
-        raise status.error if status.respond_to?(:success?) && !status.success?
-      rescue StandardError => e
-        logger.error "Fatal error during #{method}:\n\t#{e.message}"
+        begin
+          logger.info "Starting: #{method}"
+          status = send(method)
+        rescue StandardError => e
+          logger.error "Fatal error during #{method}: #{e.message}\n" \
+            "\t#{e.backtrace.join("\n\t")}"
+          raise
+        end
+        if status.respond_to?(:success?) && !status.success?
+          raise status.error
+        end
       end
 
     end

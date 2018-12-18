@@ -9,19 +9,24 @@ module Moku
     # A shell task that is resolved in the context of the deployed
     # release on each target host.
     class RemoteShell < Task
-      def initialize(command:, per:)
-        @command = command
-        @per = per
+
+      def self.from_spec(task_spec)
+        new(command: task_spec.command, scope: task_spec.scope)
       end
 
-      attr_reader :command, :per
+      def initialize(command:, scope:)
+        @command = command
+        @scope = scope
+      end
+
+      attr_reader :command, :scope
 
       # @param target [Release]
       def call(release)
         return Status.failure("Must specify a command") unless command
-        return Status.failure("Must specify per") unless per
+        return Status.failure("Must specify scope") unless scope
 
-        release.public_send(:"run_per_#{per}", command)
+        release.run(scope, command)
       end
     end
 

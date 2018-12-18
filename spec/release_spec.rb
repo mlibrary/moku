@@ -76,31 +76,19 @@ module Moku
         )
       end
 
-      describe "#run_per_host" do
-        it "runs the command at each host" do
-          ["host1", "host2", "host3", "host4"].each do |hostname|
-            expect(remote_runner)
-              .to receive(:run).with(user: user, host: hostname, command: /#{command}/)
-            release.run_per_host(command)
-          end
-        end
-      end
+      describe "#run" do
+        let(:scope) { double(:scope) }
 
-      describe "#run_per_site" do
-        it "runs the command at one host per site" do
-          ["host1", "host3"].each do |hostname|
-            expect(remote_runner)
-              .to receive(:run).with(user: user, host: hostname, command: /#{command}/)
-            release.run_per_host(command)
-          end
+        before(:each) do
+          allow(scope).to receive(:apply).with(sites).and_return(sites.hosts)
         end
-      end
 
-      describe "#run_per_deploy" do
-        it "runs the command at exactly one host" do
-          expect(remote_runner)
-            .to receive(:run).with(user: user, host: "host1", command: /#{command}/)
-          release.run_per_host(command)
+        it "runs the commands on the hosts defined by the scope" do
+          scope.apply(sites).each do |host|
+            expect(remote_runner).to receive(:run)
+              .with(user: user, host: host.hostname, command: /#{command}/)
+          end
+          release.run(scope, command)
         end
       end
     end
