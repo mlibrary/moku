@@ -130,17 +130,17 @@ module Moku
         "release's environment. Use the flags to specify on which hosts to run. A default " \
         "host is set for each site and one site is designated as primary for the instance. " \
         "The behavior with no flags is to run on the default host at the primary site " \
-        "(to simplify things like database operations, which will take effect instance-wide)."
+        "(to simplify operations like database migrations, which will take effect instance-wide)."
       arg "instance"
       arg "cmd", [:multiple]
       command :exec do |c|
         c.example "exec myapp-mystage bundle exec rake db:migrate",
-          desc: "Run database migrations exactly once:"
-        c.example "exec myapp-mystage -v --host host1,host2,host3 'DEBUG=true bin/status",
+          desc: "Run database migrations on only one host:"
+        c.example "exec myapp-mystage -v --host host1,host2,host3 'DEBUG=true bin/status'",
           desc: "Run bin/status on host1, host2, and host3, setting an environment variable " \
           "and printing the output:"
         c.flag [:site, :S], type: Array, desc: "Run on the default host at the specified site(s)"
-        c.flag [:host, :H], type: Array, desc: "Run on each of the specified host(s)"
+        c.flag [:host, :H], type: Array, desc: "Run on each of the specified hosts"
         c.switch [:all, :A], desc: "Run on every host for the instance"
         c.switch [:"each-site", :Z], desc: "Run on the default host at every site"
         c.action do |global_options, options, args|
