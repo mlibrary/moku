@@ -35,10 +35,19 @@ RSpec.shared_context "when running a command spec" do
   let(:instance_name) { "myapp-mystage" }
   let(:user) { "someone" }
   let(:instance) { double(:instance, default_branch: "master") }
+
   before(:each) do
-    Moku.config.tap do |c|
-      c.register(:auth) { auth }
-      c.register(:instance_repo) { instance_repo }
+    Moku.reset!
+    Moku.env = "test"
+    Moku.initialize!
+    Moku.config.tap do |container|
+      container.register(:auth) { auth }
+      container.register(:instance_repo) { instance_repo }
+      container.register(:filesystem) { Moku::MemoryFilesystem.new }
+      container.register(:git_runner) { Moku::SpoofedGitRunner.new }
+      container.register(:remote_runner) { Moku::FakeRemoteRunner.new }
+      container.register(:log_file) { StringIO.new }
+      container.register(:logger) {|c| Logger.new(c.log_file, level: :info) }
     end
   end
 end

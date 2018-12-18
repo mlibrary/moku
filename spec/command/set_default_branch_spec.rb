@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "command_helper"
 require_relative "../support/a_command"
 require "moku/command/set_default_branch"
 
