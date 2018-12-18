@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 require_relative "spec_helper"
-require "moku"
-require "moku/scm/file"
 require_relative "support/fake_remote_runner"
 require_relative "support/with_a_sandbox"
+require_relative "support/with_a_deployed_instance"
 require_relative "support/a_successful_deploy"
 require "open3"
 
@@ -12,22 +11,9 @@ module Moku
 
   RSpec.describe "integration tests", integration: true do
     describe "deploy" do
-      # This requires the context built by 'deploy setup'
-      RSpec.shared_context "with deploy run" do |instance_name|
-        before(:all) do # rubocop:disable RSpec/BeforeAfterAll
-          Moku.invoker.add_command(
-            Command::Deploy.new(
-              user: ENV["USER"],
-              instance_name: instance_name,
-              reference: nil
-            )
-          )
-        end
-      end
-
       context "without rails" do
         include_context "with a sandbox", "test-norails"
-        include_context "with deploy run", "test-norails"
+        include_context "with a deployed instance", "test-norails"
         let(:gem) { "pry" }
         let(:development_gem) { "faker" }
         let(:test_gem) { "rspec" }
@@ -54,7 +40,7 @@ module Moku
 
       context "with rails" do
         include_context "with a sandbox", "test-rails"
-        include_context "with deploy run", "test-rails"
+        include_context "with a deployed instance", "test-rails"
         let(:gem) { "rails" }
         let(:source) { Pathname.new("config/environment.rb") }
 
