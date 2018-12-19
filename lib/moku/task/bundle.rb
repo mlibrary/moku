@@ -16,7 +16,7 @@ module Moku
       # @param artifact [Artifact]
       # @return [Status]
       def call(artifact)
-        with_env(artifact.path) { run }
+        artifact.with_env { run }
       end
 
       private
@@ -31,9 +31,6 @@ module Moku
         "bundle install --deployment '--without=development test'"
       end
 
-      def error
-        "Failed to install gems"
-      end
     end
 
   end

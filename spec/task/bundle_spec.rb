@@ -14,7 +14,10 @@ module Moku
     let(:artifact) { double(:artifact, path: path) }
     let(:status) { double(:status, success?: true, error: "") }
 
-    before(:each) { FileUtils.mkdir_p path.to_s }
+    before(:each) do
+      FileUtils.mkdir_p path.to_s
+      allow(artifact).to receive(:with_env).and_yield
+    end
 
     describe "#call" do
       it "runs the bundle command" do
@@ -23,29 +26,12 @@ module Moku
       end
 
       it "uses the target's bundle context" do
-        expect(task).to receive(:with_env).and_call_original
+        expect(artifact).to receive(:with_env)
         task.call(artifact)
       end
 
-      it "executes in the target's dir" do
-        expect(task).to receive(:with_env).with(path).and_call_original
-        task.call(artifact)
-      end
-
-      context "when successful" do
-        let(:status) { double(:status, success?: true, error: "") }
-
-        it "returns success" do
-          expect(task.call(artifact)).to eql(status)
-        end
-      end
-
-      context "when unsuccessful" do
-        let(:status) { double(:status, success?: false, error: "Failed to install gems") }
-
-        it "returns failure" do
-          expect(task.call(artifact)).to eql(status)
-        end
+      it "returns the status" do
+        expect(task.call(artifact)).to eql(status)
       end
     end
   end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "forwardable"
+require "moku/bundleable"
 
 module Moku
 
@@ -18,6 +19,7 @@ module Moku
   # of information about the artifact, the responsibility for building it lies elsewhere.
   class Artifact
     extend Forwardable
+    include Bundleable
 
     # Where should the path come from? (It shouldn't be Dir.mktmpdir)
     # Do we want the signature here?
