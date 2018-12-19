@@ -9,28 +9,19 @@ module Moku
     # Retrieve and install the artifact's gems (as defined by its Gemfile)
     class Bundle < Task
       # @param runner A system runner
-      def initialize(runner: Moku.system_runner)
-        @runner = runner
+      def initialize(cached_bundle: Moku.cached_bundle)
+        @cached_bundle = cached_bundle
       end
 
       # @param artifact [Artifact]
       # @return [Status]
       def call(artifact)
-        artifact.with_env { run }
+        cached_bundle.install(artifact)
       end
 
       private
 
-      attr_reader :runner
-
-      def run
-        runner.run(command)
-      end
-
-      def command
-        "bundle install --deployment '--without=development test'"
-      end
-
+      attr_reader :cached_bundle
     end
 
   end

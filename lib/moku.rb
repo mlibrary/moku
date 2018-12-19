@@ -4,6 +4,7 @@ require "moku/version"
 require "moku/archive_reference"
 require "moku/artifact"
 require "moku/auth_service"
+require "moku/cached_bundle"
 require "moku/cli"
 require "moku/config"
 require "moku/deploy_config"
@@ -77,6 +78,16 @@ module Moku
             global: data.fetch(:all, {}),
             instances: data.fetch(:instances, {}),
             policy_factory: Moku::Policy
+          )
+        end
+
+        container.register(:bundle_cache_path) do
+          Pathname.new(settings.bundle_cache_path).expand_path(Moku.root)
+        end
+        container.register(:cached_bundle) do |c|
+          Moku::CachedBundle.new(
+            path: c.bundle_cache_path,
+            runner: c.system_runner
           )
         end
 
