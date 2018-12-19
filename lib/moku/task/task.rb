@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "moku/status"
+
 module Moku
   module Task
 
@@ -8,7 +10,9 @@ module Moku
     class Task
       # @param target [Artifact,Release]
       # @return [Status]
-      def call(target); end
+      def call(target)
+        Status.success
+      end
 
       def to_s
         self.class.to_s
