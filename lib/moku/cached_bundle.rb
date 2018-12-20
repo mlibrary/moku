@@ -1,34 +1,43 @@
+# frozen_string_literal: true
+
 require "moku/sequence"
 
 module Moku
 
   # Moku's cache of gems for use with bundler
   class CachedBundle
-    def initialize(path:, runner:)
+
+    # @param path [Pathname] The path to this cache
+    def initialize(path)
       @path = path
-      @runner = runner
+      @paths = {}
     end
 
-    attr_reader :path, :runner
+    attr_reader :path
 
-    # Install the artifact's gems into a bundler cache for that artifact. This
-    # uses this object's own cached gems to speed up this operation, and
-    # subsequently updates its cache with any new gems.
+    # Use moku's cache of gems to install and artifact's bundle. Missing gems
+    # will be downloaded from the configured gem source (e.g. rubygems), and
+    # also added to this cache.
     # @param artifact [Artifact]
     # @return [Status]
     def install(artifact)
-      install_path = artifact.path/"vendor"/"bundle"
-      install_path.mkpath
-      path.mkpath
       artifact.with_env do
         Sequence.for([
-          "rsync -r #{path}/. #{install_path}/",
+          "rsync -r #{cache_path(artifact)}/. #{artifact.bundle_path}/",
           "bundle install --deployment '--without=development test'",
-          "rsync -r #{install_path}/. #{path}/",
+          "rsync -r #{artifact.bundle_path}/. #{cache_path(artifact)}/",
           "bundle clean"
-        ]) {|command| runner.run(command) }
+        ]) {|command| artifact.run(command) }
       end
     end
+
+    private
+
+    def cache_path(artifact)
+      @paths[artifact.gem_version] ||= (path/"vendor"/"bundle"/"ruby"/artifact.gem_version)
+        .tap(&:mkpath)
+    end
+
   end
 
 end

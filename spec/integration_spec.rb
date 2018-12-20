@@ -5,6 +5,7 @@ require_relative "support/fake_remote_runner"
 require_relative "support/with_a_sandbox"
 require_relative "support/with_a_deployed_instance"
 require_relative "support/a_successful_deploy"
+require_relative "support/with_context"
 require "open3"
 
 module Moku
@@ -22,18 +23,14 @@ module Moku
         it_behaves_like "a successful deploy"
 
         it "doesn't install development gems" do
-          Bundler.with_clean_env do
-            Dir.chdir(current_dir) do
-              expect(`bundle list`).not_to match(/#{development_gem}/)
-            end
+          within(current_dir) do |env|
+            expect(`#{env} bundle list`).not_to match(/#{development_gem}/)
           end
         end
 
         it "doesn't install test gems" do
-          Bundler.with_clean_env do
-            Dir.chdir(current_dir) do
-              expect(`bundle list`).not_to match(/#{test_gem}/)
-            end
+          within(current_dir) do |env|
+            expect(`#{env} bundle list`).not_to match(/#{test_gem}/)
           end
         end
       end
@@ -62,13 +59,11 @@ module Moku
         end
 
         it "installs a working project" do
-          Bundler.with_clean_env do
-            Dir.chdir(current_dir) do
-              _, _, status = Open3.capture3(
-                "bin/rails runner -e production 'Post.new.valid?'"
-              )
-              expect(status.success?).to be true
-            end
+          within(current_dir) do |env|
+            _, _, status = Open3.capture3(
+              "#{env} bin/rails runner -e production 'Post.new.valid?'"
+            )
+            expect(status.success?).to be true
           end
         end
       end

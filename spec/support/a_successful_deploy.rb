@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "with_context"
+
 module Moku
   # Expects
   # let(:gem) { some gem name }
@@ -66,10 +68,8 @@ module Moku
     end
     it "installs the gems" do
       # The expect {}-to-output syntax didn't like this test
-      Bundler.with_clean_env do
-        Dir.chdir(current_dir) do
-          expect(`bundle list`).to match(/#{gem}/)
-        end
+      within(current_dir) do |env|
+        expect(`#{env} bundle list`).to match(/#{gem}/)
       end
     end
     it "installs the source files" do

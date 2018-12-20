@@ -85,10 +85,7 @@ module Moku
           Pathname.new(settings.bundle_cache_path).expand_path(Moku.root)
         end
         container.register(:cached_bundle) do |c|
-          Moku::CachedBundle.new(
-            path: c.bundle_cache_path,
-            runner: c.system_runner
-          )
+          Moku::CachedBundle.new(c.bundle_cache_path)
         end
 
         container.register(:invoker) { Moku::Invoker.new }
