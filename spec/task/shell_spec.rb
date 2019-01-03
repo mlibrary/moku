@@ -16,7 +16,10 @@ module Moku
     let(:command) { "some command -f -a - p" }
     let(:task) { described_class.new(command: command, runner: runner) }
 
-    before(:each) { FileUtils.mkdir_p path.to_s }
+    before(:each) do
+      FileUtils.mkdir_p path.to_s
+      allow(artifact).to receive(:with_env).and_yield
+    end
 
     describe "#call" do
       it "runs the command" do
@@ -25,12 +28,7 @@ module Moku
       end
 
       it "uses the target's bundle context" do
-        expect(task).to receive(:with_env).and_call_original
-        task.call(artifact)
-      end
-
-      it "executes in the target's dir" do
-        expect(task).to receive(:with_env).with(path).and_call_original
+        expect(artifact).to receive(:with_env)
         task.call(artifact)
       end
 

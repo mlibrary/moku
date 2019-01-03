@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "moku/artifact"
+require "moku/bundleable"
 require "moku/sequence"
 
 module Moku
@@ -9,6 +10,7 @@ module Moku
   # operations first create a release, and then attempt to deploy it.
   class Release
     extend Forwardable
+    include Bundleable
 
     # @param artifact [Artifact]
     # @param deploy_config [DeployConfig]

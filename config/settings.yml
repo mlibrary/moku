@@ -1,5 +1,6 @@
 branches_root: data/cache/branches
 instance_root: data/instances
+bundle_cache_path: data/bundle_cache
 releases_root: releases
 deployer_env_root: deploy/capfiles
 ref_root: data/cache/references

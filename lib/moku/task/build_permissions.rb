@@ -54,7 +54,7 @@ module Moku
       # @param artifact [Artifact]
       # @return [Status]
       def call(artifact) # rubocop:disable Metrics/AbcSize
-        with_env(artifact.path) do
+        artifact.with_env do
           private_permissions.apply(artifact.path)
           sensitive_permissions.apply(artifact.path/"log")
           public_permissions.apply(artifact.path/"public")

@@ -17,18 +17,6 @@ module Moku
       def to_s
         self.class.to_s
       end
-
-      protected
-
-      # Evaluate some block in the context of the path, shedding
-      # our own bundler context.
-      def with_env(path)
-        Bundler.with_clean_env do
-          Dir.chdir(path) do
-            yield
-          end
-        end
-      end
     end
 
   end

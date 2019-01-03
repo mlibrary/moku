@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "forwardable"
+require "moku/bundleable"
 
 module Moku
 
@@ -18,6 +19,7 @@ module Moku
   # of information about the artifact, the responsibility for building it lies elsewhere.
   class Artifact
     extend Forwardable
+    include Bundleable
 
     # Where should the path come from? (It shouldn't be Dir.mktmpdir)
     # Do we want the signature here?
@@ -25,9 +27,10 @@ module Moku
     #   This path should exist.
     # @param signature [ReleaseSignature] A signature identifying the references that should
     #   be used in the construction of this artifact.
-    def initialize(path:, signature:)
+    def initialize(path:, signature:, runner: Moku.system_runner)
       @path = path
       @signature = signature
+      @runner = runner
     end
 
     # The path of the top-level directory where this artifact is located.
@@ -45,13 +48,29 @@ module Moku
     #   @return [ArchiveReference]
     def_delegators :@signature, :source, :shared, :unshared
 
-    def env
-      []
+    def run(command)
+      runner.run("#{env} #{command}")
+    end
+
+    def gem_version
+      return @gem_version if @gem_version
+
+      major, minor, = runner.run("rbenv local").output.strip.split(".")
+      @gem_version = "#{major}.#{minor}.0"
+    end
+
+    def bundle_path
+      @bundle_path ||= (path/"vendor"/"bundle"/"ruby"/gem_version)
+        .tap(&:mkpath)
     end
 
     private
 
-    attr_reader :plan, :signature
+    def env
+      "PATH=$RBENV_ROOT/versions/$(rbenv local)/bin:$PATH"
+    end
+
+    attr_reader :signature, :runner
 
   end
 end

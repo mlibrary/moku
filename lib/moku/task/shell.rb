@@ -25,7 +25,7 @@ module Moku
 
       # @param target [Artifact,Release]
       def call(target)
-        with_env(target.path) do
+        target.with_env do
           runner.run(command)
         end
       end
