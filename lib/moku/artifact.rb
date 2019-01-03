@@ -49,13 +49,15 @@ module Moku
     def_delegators :@signature, :source, :shared, :unshared
 
     def run(command)
-      runner.run("#{env} #{command}")
+      with_env do
+        runner.run("#{env} #{command}")
+      end
     end
 
     def gem_version
       return @gem_version if @gem_version
 
-      major, minor, = runner.run("rbenv local").output.strip.split(".")
+      major, minor, = run("rbenv local").output.strip.split(".")
       @gem_version = "#{major}.#{minor}.0"
     end
 
