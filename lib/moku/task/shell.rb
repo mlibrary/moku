@@ -5,16 +5,15 @@ require "moku/task/task"
 module Moku
   module Task
 
-    # A simple shell task, resolved in the context of the target.
+    # A simple shell task, resolved in the context of the artifact.
     class Shell < Task
 
       def self.from_spec(task_spec)
         new(command: task_spec.command)
       end
 
-      def initialize(command:, runner: Moku.system_runner)
+      def initialize(command:)
         @command = command
-        @runner = runner
       end
 
       def to_s
@@ -23,16 +22,11 @@ module Moku
 
       attr_reader :command
 
-      # @param target [Artifact,Release]
-      def call(target)
-        target.with_env do
-          runner.run(command)
-        end
+      # @param artifact [Artifact]
+      def call(artifact)
+        artifact.run(command)
       end
 
-      private
-
-      attr_reader :runner
     end
 
   end
