@@ -15,6 +15,7 @@ module Moku
         step :retrieve_signature
         step :construct_release
         step :set_current
+        step :log_release
       end
 
       private
@@ -34,6 +35,17 @@ module Moku
 
       def set_current
         Task::SetCurrent.new.call(release)
+      end
+
+      def log_release
+        instance.log_release(LoggedRelease.new(
+          id: release.id,
+          user: user,
+          time: Time.now,
+          signature: signature,
+          version: "rollback -> #{command.cache.id}"
+        ))
+        Moku.instance_repo.save_releases(instance)
       end
     end
 

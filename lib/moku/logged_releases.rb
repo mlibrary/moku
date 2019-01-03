@@ -48,7 +48,7 @@ module Moku
         [
           hash[:id],
           hash[:user],
-          hash[:version].slice(0, 11),
+          hash[:version].sub("rollback ", "").slice(0, 11),
           hash[:source].slice(0, 7),
           hash[:deploy].slice(0, 7),
           hash[:unshared].slice(0, 7),

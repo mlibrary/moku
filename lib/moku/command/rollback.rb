@@ -14,7 +14,7 @@ module Moku
       end
 
       def action
-        :deploy
+        :rollback
       end
 
       def cache
@@ -24,6 +24,10 @@ module Moku
           instance.caches.first
         end
       end
+
+      private
+
+      attr_reader :cache_id
     end
 
   end
