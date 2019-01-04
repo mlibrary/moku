@@ -9,12 +9,11 @@ require "fakefs/spec_helpers"
 module Moku
   RSpec.describe Task::Shell do
     include FakeFS::SpecHelpers
-    let(:runner) { double(:runner, run: status) }
     let(:path) { Pathname.new("/some/path") }
-    let(:artifact) { double(:artifact, path: path) }
+    let(:artifact) { double(:artifact, path: path, run: status) }
     let(:status) { double(:status, success?: true, error: "") }
     let(:command) { "some command -f -a - p" }
-    let(:task) { described_class.new(command: command, runner: runner) }
+    let(:task) { described_class.new(command: command) }
 
     before(:each) do
       FileUtils.mkdir_p path.to_s
@@ -23,12 +22,7 @@ module Moku
 
     describe "#call" do
       it "runs the command" do
-        expect(runner).to receive(:run).with(command)
-        task.call(artifact)
-      end
-
-      it "uses the target's bundle context" do
-        expect(artifact).to receive(:with_env)
+        expect(artifact).to receive(:run).with(command)
         task.call(artifact)
       end
 

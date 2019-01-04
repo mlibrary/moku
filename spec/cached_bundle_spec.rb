@@ -17,7 +17,6 @@ module Moku
 
     before(:each) do
       FileUtils.mkdir_p path.to_s
-      allow(artifact).to receive(:with_env).and_yield
       allow(artifact).to receive(:gem_version).and_return(version)
       allow(artifact).to receive(:bundle_path).and_return(bundle_path)
       allow(artifact).to receive(:run).and_return(status)
@@ -25,11 +24,6 @@ module Moku
 
     it "runs the bundle command" do
       expect(artifact).to receive(:run).with(/bundle install/)
-      cached_bundle.install(artifact)
-    end
-
-    it "uses the target's bundle context" do
-      expect(artifact).to receive(:with_env)
       cached_bundle.install(artifact)
     end
 

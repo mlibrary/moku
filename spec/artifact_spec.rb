@@ -2,6 +2,8 @@
 
 require "moku/artifact"
 require "pathname"
+require "fileutils"
+require "pp"
 require "fakefs/spec_helpers"
 
 module Moku
@@ -28,7 +30,8 @@ module Moku
     end
 
     before(:each) do
-      allow(runner).to receive(:run).with("rbenv local").and_return(status)
+      allow(runner).to receive(:run).with(a_string_matching("rbenv local"))
+        .and_return(status)
     end
 
     it { expect(artifact.path).to eql(path) }
@@ -37,6 +40,9 @@ module Moku
     it { expect(artifact.unshared).to eql(signature.unshared) }
 
     describe "#gem_version" do
+      include FakeFS::SpecHelpers
+      before(:each) { FileUtils.mkdir_p artifact.path }
+
       context "when version is an alias" do
         let(:version) { "2.4" }
 
@@ -48,22 +54,24 @@ module Moku
 
         it { expect(artifact.gem_version).to eql("2.5.0") }
       end
+    end
 
-      describe "#bundle_path" do
-        include FakeFS::SpecHelpers
-        let(:version) { "2.5.3" }
-        let(:expected_path) { path/"vendor"/"bundle"/"ruby"/"2.5.0" }
+    describe "#bundle_path" do
+      include FakeFS::SpecHelpers
+      before(:each) { FileUtils.mkdir_p artifact.path }
 
-        it "returns the path" do
-          expect(artifact.bundle_path).to eql(expected_path)
-        end
+      let(:version) { "2.5.3" }
+      let(:expected_path) { path/"vendor"/"bundle"/"ruby"/"2.5.0" }
 
-        it "makes the path" do
-          expect { artifact.bundle_path }
-            .to change(expected_path, :exist?)
-            .from(false)
-            .to(true)
-        end
+      it "returns the path" do
+        expect(artifact.bundle_path).to eql(expected_path)
+      end
+
+      it "makes the path" do
+        expect { artifact.bundle_path }
+          .to change(expected_path, :exist?)
+          .from(false)
+          .to(true)
       end
     end
   end
