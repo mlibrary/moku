@@ -55,11 +55,13 @@ module Moku
       @releases << release
     end
 
+    # @return [Array<LoggedRelease>]
     def caches
       releases
         .slice(0, 5)
     end
 
+    # @return [Array<LoggedRelease>]
     def releases
       @releases
         .sort_by(&:id)

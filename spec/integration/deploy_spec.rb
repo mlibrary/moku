@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
-require_relative "spec_helper"
-require_relative "support/fake_remote_runner"
-require_relative "support/with_a_sandbox"
-require_relative "support/with_a_deployed_instance"
-require_relative "support/a_successful_deploy"
-require_relative "support/with_context"
+require_relative "../spec_helper"
+require_relative "../support/fake_remote_runner"
+require_relative "../support/with_a_sandbox"
+require_relative "../support/with_a_deployed_instance"
+require_relative "../support/a_successful_deploy"
+require_relative "../support/with_context"
 require "open3"
+require "pathname"
 
 module Moku
 
-  RSpec.describe "integration tests", integration: true do
+  RSpec.describe "deploy integration", integration: true do
     describe "deploy" do
       context "without rails" do
         include_context "with a sandbox", "test-norails"
