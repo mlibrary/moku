@@ -25,6 +25,8 @@ module Moku
 
       attr_reader :ref_repo
 
+      # @param ref [ArchiveReference]
+      # @param path [Pathname] Where to install the files
       def add_reference(ref, path)
         ref_repo.resolve(ref)
           .cp(path)
