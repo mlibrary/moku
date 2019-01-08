@@ -3,8 +3,7 @@
 module Moku
   class Sites
 
-    # Scopes are used to create an a list of hosts from a Sites
-    # object.
+    # Scopes are used to create a list of hosts from a Sites object.
     class Scope
 
       def self.all
