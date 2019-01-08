@@ -7,10 +7,11 @@ module Moku
   # let(:gem) { some gem name }
   # let(:source) { some source file relative path }
   # let(:deploy_root) { path to the deploy root }
-  # let(:current_dir) { path to the 'current' symlink, likely deploy_root/current }
+  # let(:deploy_dir) { path to the releases/id dir where files actually live }
+  # let(:current_dir) { path to the 'current' symlink, likely deploy_dir/current }
   RSpec.shared_examples "a successful deploy" do
     it "the 'releases' dir exists" do
-      expect((deploy_root/"releases").exist?).to be true
+      expect((deploy_dir/"releases").exist?).to be true
     end
     it "the 'current' dir exists" do
       expect(current_dir.exist?).to be true
@@ -33,10 +34,10 @@ module Moku
 
     describe "permissions" do
       it "releases 2775" do
-        expect(deploy_root/"releases").to have_permissions("2775")
+        expect(deploy_dir/"releases").to have_permissions("2775")
       end
       it "releases/<release> 2775" do
-        release_dir = (deploy_root/"releases").children.first
+        release_dir = (deploy_dir/"releases").children.first
         expect(release_dir).to have_permissions("2775")
       end
       it "current/public 2775" do

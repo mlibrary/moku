@@ -2,6 +2,7 @@
 
 require "moku/scm/file"
 require "pathname"
+require_relative "local_upload"
 
 module Moku
 
@@ -41,6 +42,7 @@ module Moku
         config.register(:releases_root) {|c| c.test_run_root/"releases" }
         config.register(:git_runner) { SCM::File.new }
         config.register(:remote_runner) {|c| FakeRemoteRunner.new(c.system_runner) }
+        config.register(:upload_factory) { LocalUpload }
 
         # Configure the logger
         if ENV["DEBUG"]
@@ -66,6 +68,5 @@ module Moku
     # rubocop:enable RSpec/InstanceVariable
 
     let(:deploy_root) { @moku.deploy_root } # rubocop:disable RSpec/InstanceVariable
-    let(:current_dir) { deploy_root/"current" }
   end
 end

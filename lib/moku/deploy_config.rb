@@ -42,7 +42,7 @@ module Moku
     # @param systemd_services [Array<String>]
     # @param sites [Sites]
     def initialize(deploy_dir:, env:, systemd_services:, sites:)
-      @deploy_dir = Pathname.new(deploy_dir).expand_path(Moku.root)
+      @deploy_dir = Pathname.new(deploy_dir)
       @env = env
       @systemd_services = systemd_services
       @sites = sites

@@ -1,8 +1,11 @@
-deploy_dir: sandbox/deploy
+deploy_dir: my/deploy/dir
 env:
   rack_env: production
 systemd_services: []
 sites:
   local_site:
     - localhost
+    - another_localhost
+  remote_site:
+    - remote_host
 

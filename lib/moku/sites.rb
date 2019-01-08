@@ -20,6 +20,11 @@ module Moku
         end
     end
 
+    # @return [Array<String>]
+    def site_names
+      sites.keys.map(&:to_s)
+    end
+
     # All of the hosts in the sites
     # @return [Array<Sites::Host>]
     def hosts

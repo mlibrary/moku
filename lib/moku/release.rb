@@ -40,6 +40,10 @@ module Moku
       deploy_config.systemd_services
     end
 
+    def sites
+      deploy_config.sites
+    end
+
     def run(scope, command)
       run_on_hosts(
         scope.apply(deploy_config.sites),
