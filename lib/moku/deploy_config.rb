@@ -37,6 +37,10 @@ module Moku
       from_dir(ref_repo.resolve(ref))
     end
 
+    # @param deploy_dir [Pathname]
+    # @param env [Hash<Symbol, String>]
+    # @param systemd_services [Array<String>]
+    # @param sites [Sites]
     def initialize(deploy_dir:, env:, systemd_services:, sites:)
       @deploy_dir = Pathname.new(deploy_dir).expand_path(Moku.root)
       @env = env
