@@ -11,9 +11,10 @@ module Moku
 
     # @param dir [Pathname] A directory in which to store intermediate files.
     def initialize(dir, runner = Moku.git_runner, max_cache: Moku.ref_cache_max)
-      @dir = dir
+      @dir = Pathname.new(dir).tap(&:mkpath)
       @runner = runner
-      @max_cache = max_cache || 1
+      @max_cache = (max_cache - 1) || 1
+      # -1 because we prune before building, so we won't reach it until max + 1.
     end
 
     # Download the given archive reference, unpack it,
@@ -21,8 +22,8 @@ module Moku
     # @param ref [ArchiveReference]
     # @return [Lazy::Directory]
     def resolve(ref)
-      wd = checkout(ref, dir_for(ref))
       cleanup!
+      wd = checkout(ref, dir_for(ref))
       Lazy::Directory.for(
         wd.dir,
         wd.relative_files.map do |relative_path|
