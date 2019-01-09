@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "moku/artifact"
 require "moku/deploy_config"
 require "moku/logged_release"
 require "moku/pipeline/pipeline"
@@ -30,10 +29,9 @@ module Moku
 
       private
 
-      attr_reader :build_dir, :reference, :signature, :artifact, :release
+      attr_reader :reference, :signature, :artifact, :release
 
       def init
-        @build_dir = Pathname.new(Dir.mktmpdir)
         @reference = command.reference
       end
 
@@ -42,8 +40,7 @@ module Moku
       end
 
       def build_artifact
-        @artifact = Artifact.new(path: build_dir, signature: signature)
-        Plan::BasicBuild.new(artifact).call
+        @artifact = Moku.artifact_repo.for(signature, Plan::BasicBuild)
       end
 
       def deploy_release

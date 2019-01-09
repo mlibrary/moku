@@ -3,6 +3,7 @@ instance_root: data/instances
 bundle_cache_path: data/bundle_cache
 releases_root: releases
 deployer_env_root: deploy/capfiles
+build_root: data/cache/builds
 ref_root: data/cache/references
 split_token: 1239810_moku_split_token_678303
 shared_name: infrastructure
@@ -13,3 +14,4 @@ finish_deploy_filename: finish_deploy.yml
 deploy_config_filename: deploy.yml
 release_time_format: "%Y%m%d%H%M%S%L"
 ref_cache_max: 10
+build_cache_max: 20
