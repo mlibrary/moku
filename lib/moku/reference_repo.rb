@@ -14,7 +14,7 @@ module Moku
     def initialize(dir, runner = Moku.git_runner, max_cache: Moku.ref_cache_max)
       @dir = dir
       @runner = runner
-      @max_cache = max_cache
+      @max_cache = max_cache || 1
     end
 
     # Download the given archive reference, unpack it,
