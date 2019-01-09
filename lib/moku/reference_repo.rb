@@ -9,8 +9,7 @@ module Moku
   # Provides an anchor point for features such as reference caching.
   class ReferenceRepo
 
-    # @param dir [Pathname] A directory in which to store
-    #   intermediate artifacts.
+    # @param dir [Pathname] A directory in which to store intermediate files.
     def initialize(dir, runner = Moku.git_runner, max_cache: Moku.ref_cache_max)
       @dir = dir
       @runner = runner
