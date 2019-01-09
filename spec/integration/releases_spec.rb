@@ -8,7 +8,7 @@ require "moku/command/rollback"
 
 module Moku
 
-  RSpec.describe "releases integration", integration: true do
+  RSpec.describe "integration releases", integration: true do
     include_context "with a sandbox", "test-norails"
     include_context "with a deployed instance", "test-norails"
     include_context "with a deployed instance", "test-norails"
