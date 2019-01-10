@@ -10,7 +10,7 @@ module Moku
     class Task
       # @param target [Artifact,Release]
       # @return [Status]
-      def call(target)
+      def call(target) # rubocop:disable Lint/UnusedMethodArgument
         Status.success
       end
 
