@@ -38,7 +38,7 @@ module Moku
 
       RSpec.shared_examples "links site-specific files" do
         it "links site-specific files" do
-          expect(File.read(current_dir/"woot.yml")).to eql("foo: bar\n")
+          expect(File.read(current_dir/"woot.yml")).to eql("foo: overwritten\n")
         end
 
         it "links site-specific nested files" do
@@ -123,7 +123,7 @@ module Moku
         end
 
         it "does not link files from another site" do
-          expect((current_dir/"woot.yml").exist?).to be false
+          expect(File.read(current_dir/"woot.yml")).to eql("foo: not overwritten\n")
         end
 
         it "does not link nested files from another site" do

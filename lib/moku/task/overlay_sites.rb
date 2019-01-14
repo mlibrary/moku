@@ -35,7 +35,7 @@ module Moku
         "test ! -d #{site_path} || " \
           "find #{site_path} -type f " \
           "| sed -e \"s,^#{site_path}/,,\" " \
-          "| while read i; do ln -s \"#{site_path}/$i\" \"./$i\"; done"
+          "| while read i; do rm -f ./$i && ln -s \"#{site_path}/$i\" \"./$i\"; done"
       end
     end
 
