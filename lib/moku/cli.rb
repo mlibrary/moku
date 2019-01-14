@@ -141,8 +141,8 @@ module Moku
           "and printing the output:"
         c.flag [:site, :S], type: Array, desc: "Run on the default host at the specified site(s)"
         c.flag [:host, :H], type: Array, desc: "Run on each of the specified hosts"
-        c.switch [:all, :A], desc: "Run on every host for the instance"
-        c.switch [:"each-site", :Z], desc: "Run on the default host at every site"
+        c.switch [:all, :A], negatable: false, desc: "Run on every host for the instance"
+        c.switch [:"each-site", :Z], negatable: false, desc: "Run on the default host at every site"
         c.action do |global_options, options, args|
           scope = if options[:site]
             Sites::Scope.site(*options[:site])
