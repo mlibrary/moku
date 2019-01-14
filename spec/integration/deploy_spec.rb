@@ -36,21 +36,55 @@ module Moku
         end
       end
 
-      ["localhost", "another_localhost"].each_with_index do |host, i|
-        context "with host ##{i} at site #1" do
-          let(:host) { host }
+      RSpec.shared_examples "links site-specific files" do
+        it "links site-specific files" do
+          expect(File.read(current_dir/"woot.yml")).to eql("foo: bar\n")
+        end
 
-          it_behaves_like "a successful deploy"
-          include_examples "only installs production gems"
+        it "links site-specific nested files" do
+          expect(File.read(current_dir/"site"/"only"/"local.txt"))
+            .to eql("this file is specific to this site\n")
+        end
+      end
 
-          it "links site-specific files" do
-            expect(File.read(current_dir/"woot.yml")).to eql("foo: bar\n")
-          end
+      context "with host #1 at site #1" do
+        let(:host) { "localhost" }
 
-          it "links site-specific nested files" do
-            expect(File.read(current_dir/"site"/"only"/"local.txt"))
-              .to eql("this file is specific to this site\n")
-          end
+        it_behaves_like "a successful deploy"
+        include_examples "only installs production gems"
+        include_examples "links site-specific files"
+
+        it "receives commands run against all hosts" do
+          expect((current_dir/"every_host").exist?).to be true
+        end
+
+        it "receives commands run against each site" do
+          expect((current_dir/"each_site").exist?).to be true
+        end
+
+        it "receives commands run once per deploy" do
+          expect((current_dir/"just_once").exist?).to be true
+        end
+
+      end
+
+      context "with host #2 at site #1" do
+        let(:host) { "another_localhost" }
+
+        it_behaves_like "a successful deploy"
+        include_examples "only installs production gems"
+        include_examples "links site-specific files"
+
+        it "receives commands run against all hosts" do
+          expect((current_dir/"every_host").exist?).to be true
+        end
+
+        it "does not receive commands run against each site" do
+          expect((current_dir/"each_site").exist?).to be false
+        end
+
+        it "does not receive commands run once per deploy" do
+          expect((current_dir/"just_once").exist?).to be false
         end
       end
 
@@ -59,6 +93,18 @@ module Moku
 
         it_behaves_like "a successful deploy"
         include_examples "only installs production gems"
+
+        it "receives commands run against all hosts" do
+          expect((current_dir/"every_host").exist?).to be true
+        end
+
+        it "receives commands run against each site" do
+          expect((current_dir/"each_site").exist?).to be true
+        end
+
+        it "does not receive commands run once per deploy" do
+          expect((current_dir/"just_once").exist?).to be false
+        end
 
         it "doesn't install development gems" do
           within(current_dir) do |env|
@@ -70,6 +116,10 @@ module Moku
           within(current_dir) do |env|
             expect(`#{env} bundle list`).not_to match(/#{test_gem}/)
           end
+        end
+
+        it "receives commands run against all hosts" do
+          expect((current_dir/"every_host").exist?).to be true
         end
 
         it "does not link files from another site" do
