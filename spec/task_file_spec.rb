@@ -7,7 +7,7 @@ require "yaml"
 
 module Moku
   RSpec.describe TaskFile do
-    let(:content) { [{ "cmd" => "foo" }, { "cmd" => "bar" }] }
+    let(:content) { [{ "cmd" => "foo" }, { "cmd" => "bar", "scope" => "each_site" }] }
     let(:task_file) { described_class.new(content) }
 
     describe "enumerability" do
@@ -17,8 +17,8 @@ module Moku
 
       it "returns TaskSpec instances" do
         expect(task_file.map {|x| x }).to contain_exactly(
-          TaskFile::TaskSpec.new("foo", Sites::Scope.all),
-          TaskFile::TaskSpec.new("bar", Sites::Scope.all)
+          TaskFile::TaskSpec.new("foo", Sites::Scope.once),
+          TaskFile::TaskSpec.new("bar", Sites::Scope.each_site)
         )
       end
     end

@@ -34,20 +34,20 @@ module Moku
 
     def tasks
       @tasks ||= raw_tasks.map do |raw_task|
-        TaskSpec.new(raw_task["cmd"], scope(raw_task["per"]))
+        TaskSpec.new(raw_task["cmd"], scope(raw_task["scope"]))
       end
     end
 
-    def scope(per)
-      case per
-      when "host", nil
+    def scope(user_scope)
+      case user_scope
+      when "all"
         Sites::Scope.all
-      when "site"
+      when "site", "each_site"
         Sites::Scope.each_site
-      when "deploy"
+      when "deploy", "once", nil
         Sites::Scope.once
       else
-        raise ArgumentError, "Unknown scope or value for 'per'"
+        raise ArgumentError, "Unknown scope or value '#{user_scope}'"
       end
     end
 
