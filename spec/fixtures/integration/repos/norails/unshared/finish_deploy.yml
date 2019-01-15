@@ -1,0 +1,7 @@
+- cmd: touch every_host
+  scope: all
+- cmd: touch each_site
+  scope: each_site
+- cmd: touch just_once
+  scope: once
+

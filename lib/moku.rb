@@ -24,6 +24,7 @@ require "moku/scm/git"
 require "moku/shell/basic"
 require "moku/shell/passthrough"
 require "moku/shell/secure_remote"
+require "moku/upload"
 
 require "logger"
 require "pathname"
@@ -49,6 +50,7 @@ module Moku
         container.register(:remote_runner) {|c| Moku::Shell::SecureRemote.new(c.system_runner) }
         container.register(:backend_runner) {|c| Moku::CapRunner.new(c.system_runner) }
         container.register(:filesystem) { Moku::Filesystem.new }
+        container.register(:upload_factory) { Moku::Upload }
         container.register(:git_runner) do |c|
           Moku::GitRunner.new(
             system_runner: c.system_runner,

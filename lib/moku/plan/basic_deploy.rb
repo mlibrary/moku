@@ -3,6 +3,7 @@
 require "moku/plan/plan"
 require "moku/task_file"
 require "moku/task/create_structure"
+require "moku/task/overlay_sites"
 require "moku/task/remote_shell"
 require "moku/task/restart"
 require "moku/task/set_current"
@@ -19,7 +20,8 @@ module Moku
       def prepare
         [
           Task::CreateStructure.new,
-          Task::Upload.new
+          Task::Upload.new,
+          Task::OverlaySites.new
         ]
       end
 
