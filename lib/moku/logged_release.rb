@@ -50,16 +50,16 @@ module Moku
         user:     user,
         source:   source,
         deploy:   deploy,
-        unshared: unshared,
-        shared:   shared
+        dev:      dev,
+        infrastructure:   infrastructure
       }
     end
 
     def to_s
       "#{formatted_time}: #{user} #{id} #{version} w/ #{deploy}\n" \
         "  #{source}\n" \
-        "  #{unshared}\n" \
-        "  #{shared}"
+        "  #{dev}\n" \
+        "  #{infrastructure}"
     end
 
     def to_hash
@@ -84,12 +84,12 @@ module Moku
       signature.source.commitish
     end
 
-    def shared
-      signature.shared.commitish
+    def infrastructure
+      signature.infrastructure.commitish
     end
 
-    def unshared
-      signature.unshared.commitish
+    def dev
+      signature.dev.commitish
     end
 
     def formatted_time

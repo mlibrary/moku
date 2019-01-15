@@ -13,21 +13,21 @@ module Moku
     # @param name [String] Of the format appname-stagename
     # @param source [ArchiveReference]
     # @param deploy [ArchiveReference]
-    # @param shared [ArchiveReference]
-    # @param unshared [ArchiveReference]
+    # @param infrastructure [ArchiveReference]
+    # @param dev [ArchiveReference]
     # @param releases [Array<LoggedRelease>]
-    def initialize(name:, source:, deploy:, shared:, unshared:, releases: [])
+    def initialize(name:, source:, deploy:, infrastructure:, dev:, releases: [])
       @name = name
       @source = source
       @deploy = deploy
-      @shared = shared
-      @unshared = unshared
+      @infrastructure = infrastructure
+      @dev = dev
       @releases = releases
     end
 
     attr_reader :name
     attr_reader :source, :deploy
-    attr_reader :shared, :unshared
+    attr_reader :infrastructure, :dev
 
     # @param commitish [String]
     # @return [ReleaseSignature]
@@ -35,8 +35,8 @@ module Moku
       ReleaseSignature.new(
         deploy: deploy.latest,
         source: source.at(commitish),
-        shared: shared.latest,
-        unshared: unshared.latest
+        infrastructure: infrastructure.latest,
+        dev: dev.latest
       )
     end
 

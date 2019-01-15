@@ -16,12 +16,12 @@ module Moku
     it "the 'current' dir exists" do
       expect(current_dir.exist?).to be true
     end
-    it "installs unshared files" do
+    it "installs dev files" do
       expect(File.read(current_dir/"some"/"dev"/"file.txt")).to eql("with some dev contents\n")
     end
-    it "installs shared files" do
-      expect(File.read(current_dir/"some"/"shared"/"file.txt"))
-        .to eql("with some shared contents\n")
+    it "installs infrastructure files" do
+      expect(File.read(current_dir/"some"/"infrastructure"/"file.txt"))
+        .to eql("with some infrastructure contents\n")
     end
     it "bundles gems in ./vendor/bundle" do
       expect(File.read(current_dir/".bundle"/"config"))
@@ -47,12 +47,12 @@ module Moku
         file = (current_dir/"public").children.find(&:file?)
         expect(file).to have_permissions("664")
       end
-      it "current/<some_unshared> 660" do
+      it "current/<some_dev> 660" do
         file = current_dir/"some"/"dev"/"file.txt"
         expect(file).to have_permissions("660")
       end
-      it "current/<some_shared_file> 660" do
-        file = current_dir/"some"/"shared"/"file.txt"
+      it "current/<some_infrastructure> 660" do
+        file = current_dir/"some"/"infrastructure"/"file.txt"
         expect(file).to have_permissions("660")
       end
       it "current/log 2770" do

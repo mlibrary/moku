@@ -22,8 +22,8 @@ module Moku
         "deploy_dir"   => "/some/deploy/dir"
       }
     end
-    let(:shared) { ArchiveReference.new("infra.git", runner.branch, runner) }
-    let(:unshared) { ArchiveReference.new("dev.git", runner.branch, runner) }
+    let(:infrastructure) { ArchiveReference.new("infra.git", runner.branch, runner) }
+    let(:dev) { ArchiveReference.new("dev.git", runner.branch, runner) }
     let(:deploy) { ArchiveReference.new("deploy.git", runner.branch, runner) }
     let(:source) { ArchiveReference.new("source.git", runner.branch, runner) }
     let(:releases) { [a_release] }
@@ -32,8 +32,8 @@ module Moku
     let(:instance) do
       described_class.new(
         name: name,
-        shared: shared,
-        unshared: unshared,
+        infrastructure: infrastructure,
+        dev: dev,
         deploy: deploy,
         source: source,
         releases: releases
@@ -47,8 +47,8 @@ module Moku
         it "returns the latest release signature" do
           expect(instance.signature).to eql(
             ReleaseSignature.new(
-              shared: shared.latest,
-              unshared: unshared.latest,
+              infrastructure: infrastructure.latest,
+              dev: dev.latest,
               deploy: deploy.latest,
               source: source.latest
             )
@@ -60,8 +60,8 @@ module Moku
         it "returns an appropriate signature" do
           expect(instance.signature(runner.short)).to eql(
             ReleaseSignature.new(
-              shared: shared.latest,
-              unshared: unshared.latest,
+              infrastructure: infrastructure.latest,
+              dev: dev.latest,
               deploy: deploy.latest,
               source: source.at(runner.short)
             )

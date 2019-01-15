@@ -17,8 +17,8 @@ module Moku
         :signature,
         deploy: double(:deploy),
         source: double(:source),
-        shared: double(:shared),
-        unshared: double(:unshared)
+        infrastructure: double(:infrastructure),
+        dev: double(:dev)
       )
     end
     let(:artifact) do
@@ -36,8 +36,8 @@ module Moku
 
     it { expect(artifact.path).to eql(path) }
     it { expect(artifact.source).to eql(signature.source) }
-    it { expect(artifact.shared).to eql(signature.shared) }
-    it { expect(artifact.unshared).to eql(signature.unshared) }
+    it { expect(artifact.infrastructure).to eql(signature.infrastructure) }
+    it { expect(artifact.dev).to eql(signature.dev) }
 
     describe "#gem_version" do
       include FakeFS::SpecHelpers

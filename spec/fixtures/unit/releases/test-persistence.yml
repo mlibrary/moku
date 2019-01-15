@@ -11,10 +11,10 @@ releases:
     :deploy:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb
-    :shared:
+    :infrastructure:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb
-    :unshared:
+    :dev:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb
 - :user: bhock
@@ -28,9 +28,9 @@ releases:
     :deploy:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb
-    :shared:
+    :infrastructure:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb
-    :unshared:
+    :dev:
       url: "."
       commitish: d8354414fdd500469c984733c08daf57a066bcfb

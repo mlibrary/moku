@@ -15,19 +15,13 @@ module Moku
           user:     "alice",
           source:   "source7070a31ef4810af60b9df2d74bf09fb8e8",
           deploy:   "deploy7070a31ef4810af60b9df2d74bf09fb8e8",
-          unshared: "unsha17070a31ef4810af60b9df2d74bf09fb8e8",
-          shared:   "share17070a31ef4810af60b9df2d74bf09fb8e8"
+          dev: "unsha17070a31ef4810af60b9df2d74bf09fb8e8",
+          infrastructure:   "share17070a31ef4810af60b9df2d74bf09fb8e8"
         }
       )
     end
-    let(:shared_name) { "infrastructure" }
-    let(:unshared_name) { "dev" }
     let(:instance) do
-      described_class.new(
-        [release1],
-        shared_name: shared_name,
-        unshared_name: unshared_name
-      )
+      described_class.new([release1])
     end
 
     describe "#to_s" do

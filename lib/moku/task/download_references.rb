@@ -7,7 +7,7 @@ module Moku
   module Task
 
     # Download and merge an artifact's files as defined by its
-    # source, shared, and unshared directories.
+    # source, infrastructure, and dev directories.
     class DownloadReferences < Task
       def initialize(ref_repo: Moku.ref_repo)
         @ref_repo = ref_repo
@@ -16,8 +16,8 @@ module Moku
       # @param artifact [Artifact]
       def call(artifact)
         add_reference(artifact.source,   artifact.path)
-        add_reference(artifact.shared,   artifact.path)
-        add_reference(artifact.unshared, artifact.path)
+        add_reference(artifact.infrastructure,   artifact.path)
+        add_reference(artifact.dev,      artifact.path)
         Status.success
       end
 

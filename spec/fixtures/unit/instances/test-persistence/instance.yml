@@ -5,9 +5,9 @@ deploy:
 source:
   url: https://github.com/dpn-admin/dpn-client.git
   commitish: master
-shared:
+infrastructure:
   url: "git@github.com:mlibrary/moku-infrastructure"
   commitish: test-norails
-unshared:
+dev:
   url: "git@github.com:mlibrary/moku-dev"
   commitish: test-norails

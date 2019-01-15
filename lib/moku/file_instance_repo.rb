@@ -33,8 +33,8 @@ module Moku
         name: name,
         source: instance_from_hash(name, contents),
         deploy: ArchiveReference.from_hash(contents["deploy"], git_runner),
-        shared: ArchiveReference.from_hash([contents["shared"]].flatten.first, git_runner),
-        unshared: ArchiveReference.from_hash([contents["unshared"]].flatten.first, git_runner),
+        infrastructure: ArchiveReference.from_hash([contents["infrastructure"]].flatten.first, git_runner),
+        dev: ArchiveReference.from_hash([contents["dev"]].flatten.first, git_runner),
         releases: releases.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
     end

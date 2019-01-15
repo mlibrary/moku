@@ -64,7 +64,7 @@ module Moku
     end
 
     def dir_for(signature)
-      [:source, :shared, :unshared]
+      [:source, :infrastructure, :dev]
         .map {|method| signature.public_send(method) }
         .map(&:commitish)
         .map {|sha| sha.slice(0, 7) }

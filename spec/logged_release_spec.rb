@@ -17,22 +17,22 @@ module Moku
         to_hash: { url: source_url, commitish: source_ref })
     end
 
-    let(:shared_url) { "shared_url" }
-    let(:shared_ref) { "shared_ref" }
-    let(:shared) do
-      double(:shared,
-        url: shared_url,
-        commitish: shared_ref,
-        to_hash: { url: shared_url, commitish: shared_ref })
+    let(:infrastructure_url) { "infrastructure_url" }
+    let(:infrastructure_ref) { "infrastructure_ref" }
+    let(:infrastructure) do
+      double(:infrastructure,
+        url: infrastructure_url,
+        commitish: infrastructure_ref,
+        to_hash: { url: infrastructure_url, commitish: infrastructure_ref })
     end
 
-    let(:unshared_url) { "unshared_url" }
-    let(:unshared_ref) { "unshared_ref" }
-    let(:unshared) do
-      double(:unshared,
-        url: unshared_url,
-        commitish: unshared_ref,
-        to_hash: { url: unshared_url, commitish: unshared_ref })
+    let(:dev_url) { "dev_url" }
+    let(:dev_ref) { "dev_ref" }
+    let(:dev) do
+      double(:dev,
+        url: dev_url,
+        commitish: dev_ref,
+        to_hash: { url: dev_url, commitish: dev_ref })
     end
 
     let(:deploy_url) { "deploy_url" }
@@ -60,20 +60,20 @@ module Moku
     let(:sig) do
       ReleaseSignature.new(
         source: source,
-        shared: shared,
-        unshared: unshared,
+        infrastructure: infrastructure,
+        dev: dev,
         deploy: deploy
       )
     end
 
     describe "#to_s" do
-      context "with single shared,unshared" do
+      context "with single infrastructure,dev" do
         it "returns a formatted string" do
           expect(logged_release.to_s).to eql(
             "2017-01-31T13:44:11: foouser 20170131134411001 v1.2.3 w/ deploy_ref\n" \
             "  source_ref\n" \
-            "  unshared_ref\n" \
-            "  shared_ref"
+            "  dev_ref\n" \
+            "  infrastructure_ref"
           )
         end
       end
@@ -88,8 +88,8 @@ module Moku
           time: formatted_time,
           source: source_ref,
           deploy: deploy_ref,
-          unshared: unshared_ref,
-          shared: shared_ref
+          dev: dev_ref,
+          infrastructure: infrastructure_ref
         )
       end
     end
