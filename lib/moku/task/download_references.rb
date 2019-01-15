@@ -15,9 +15,9 @@ module Moku
 
       # @param artifact [Artifact]
       def call(artifact)
-        add_reference(artifact.source,   artifact.path)
-        add_reference(artifact.infrastructure,   artifact.path)
-        add_reference(artifact.dev,      artifact.path)
+        add_reference(artifact.source, artifact.path)
+        add_reference(artifact.infrastructure, artifact.path)
+        add_reference(artifact.dev, artifact.path)
         Status.success
       end
 

@@ -33,7 +33,10 @@ module Moku
         name: name,
         source: instance_from_hash(name, contents),
         deploy: ArchiveReference.from_hash(contents["deploy"], git_runner),
-        infrastructure: ArchiveReference.from_hash([contents["infrastructure"]].flatten.first, git_runner),
+        infrastructure: ArchiveReference.from_hash(
+          [contents["infrastructure"]].flatten.first,
+          git_runner
+        ),
         dev: ArchiveReference.from_hash([contents["dev"]].flatten.first, git_runner),
         releases: releases.fetch("releases", []).map {|r| LoggedRelease.from_hash(r) }
       )
@@ -78,12 +81,16 @@ module Moku
     end
 
     def instance_content(name)
-      YAML.load(ERB.new(filesystem.read(path_to_instance(name))).result)
+      YAML.load( # rubocop:disable Security/YAMLLoad
+        ERB.new(filesystem.read(path_to_instance(name))).result
+      )
     end
 
     def releases_content(name)
       if filesystem.exists?(path_to_release(name))
-        YAML.load(filesystem.read(path_to_release(name)))
+        YAML.load( # rubocop:disable Security/YAMLLoad
+          filesystem.read(path_to_release(name))
+        )
       else
         { "releases" => [] }
       end

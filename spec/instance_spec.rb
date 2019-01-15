@@ -86,7 +86,6 @@ module Moku
       end
     end
 
-
     describe "#releases" do
       let(:releases) { [R.new(1), R.new(2), R.new(3), R.new(4), R.new(5), R.new(6)].shuffle }
 
@@ -105,7 +104,6 @@ module Moku
         instance.log_release(another_release)
         expect(instance.releases).to contain_exactly(a_release, another_release)
       end
-
     end
 
     describe "#caches" do

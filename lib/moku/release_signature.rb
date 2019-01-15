@@ -36,10 +36,10 @@ module Moku
 
     def to_hash
       {
-        source:   source.to_hash,
-        deploy:   deploy.to_hash,
-        infrastructure:   infrastructure.to_hash,
-        dev:      dev.to_hash
+        source:         source.to_hash,
+        deploy:         deploy.to_hash,
+        infrastructure: infrastructure.to_hash,
+        dev:            dev.to_hash
       }
     end
   end

@@ -44,14 +44,14 @@ module Moku
 
     def to_brief_hash
       {
-        id:       id,
-        version:  version,
-        time:     formatted_time,
-        user:     user,
-        source:   source,
-        deploy:   deploy,
-        dev:      dev,
-        infrastructure:   infrastructure
+        id:             id,
+        version:        version,
+        time:           formatted_time,
+        user:           user,
+        source:         source,
+        deploy:         deploy,
+        dev:            dev,
+        infrastructure: infrastructure
       }
     end
 

@@ -43,11 +43,11 @@ module Moku
 
         it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/moku-deploy") }
         it { expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git") }
-        it { expect(instance.infrastructure.url).to   eql("git@github.com:mlibrary/moku-infrastructure") }
+        it { expect(instance.infrastructure.url).to eql("git@github.com:mlibrary/moku-infrastructure") }
         it { expect(instance.dev.url).to eql("git@github.com:mlibrary/moku-dev") }
         it { expect(instance.deploy.commitish).to   eql("test-norails") }
         it { expect(instance.source.commitish).to   eql("master") }
-        it { expect(instance.infrastructure.commitish).to   eql("test-norails") }
+        it { expect(instance.infrastructure.commitish).to eql("test-norails") }
         it { expect(instance.dev.commitish).to eql("test-norails") }
       end
     end
