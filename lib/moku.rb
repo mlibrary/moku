@@ -3,6 +3,7 @@
 require "moku/version"
 require "moku/archive_reference"
 require "moku/artifact"
+require "moku/artifact_repo"
 require "moku/auth_service"
 require "moku/cached_bundle"
 require "moku/cli"
@@ -54,6 +55,7 @@ module Moku
             filesystem: c.filesystem
           )
         end
+        container.register(:artifact_repo) {|c| Moku::ArtifactRepo.new(c.build_root) }
         container.register(:ref_repo) do |c|
           Moku::ReferenceRepo.new(
             c.ref_root,
@@ -89,20 +91,17 @@ module Moku
         end
 
         container.register(:invoker) { Moku::Invoker.new }
-        container.register(:instance_root) do
-          Pathname.new(settings.instance_root).expand_path(Moku.root)
-        end
-        container.register(:releases_root) do
-          Pathname.new(settings.releases_root).expand_path(Moku.root)
-        end
-        container.register(:deployer_env_root) do
-          Pathname.new(settings.deployer_env_root).expand_path(Moku.root)
-        end
-        container.register(:ref_root) do
-          Pathname.new(settings.ref_root).expand_path(Moku.root)
-        end
-        container.register(:branches_root) do
-          Pathname.new(settings.branches_root).expand_path(Moku.root)
+        [
+          :instance_root,
+          :releases_root,
+          :deployer_env_root,
+          :ref_root,
+          :branches_root,
+          :build_root
+        ].each do |root|
+          container.register(root) do
+            Pathname.new(settings.public_send(root)).expand_path(Moku.root)
+          end
         end
       end
     end

@@ -34,6 +34,7 @@ module Moku
         config.register(:test_run_root) { Moku.root/"sandbox" }
         config.register(:fixtures_root) { Moku.root/"spec"/"fixtures"/"integration" }
         config.register(:deploy_root) {|c| c.test_run_root/"deploy" }
+        config.register(:build_root) {|c| c.test_run_root/"builds" }
 
         # Configure the application
         config.register(:user) { ENV["USER"] }
