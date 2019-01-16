@@ -32,10 +32,7 @@ module Moku
       end
 
       def finish
-        [
-          Task::SetCurrent.new,
-          Task::Restart.new
-        ]
+        [Task::SetCurrent.new]
       end
 
       private
