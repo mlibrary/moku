@@ -34,7 +34,11 @@ module Moku
 
     def tasks
       @tasks ||= raw_tasks.map do |raw_task|
-        TaskSpec.new(raw_task["cmd"], scope(raw_task["scope"]))
+        if raw_task.is_a? Hash
+          TaskSpec.new(raw_task["cmd"], scope(raw_task["scope"]))
+        else
+          TaskSpec.new(raw_task, scope(nil))
+        end
       end
     end
 
