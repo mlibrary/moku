@@ -8,10 +8,8 @@ module Moku
   # purpose right now is to remove the need to test the functionality
   # in Releases
   class LoggedReleases
-    def initialize(releases, shared_name: nil, unshared_name: nil)
+    def initialize(releases)
       @releases = releases
-      @shared_name = shared_name || Moku.shared_name
-      @unshared_name = unshared_name || Moku.unshared_name
     end
 
     def to_s
@@ -41,7 +39,6 @@ module Moku
     private
 
     attr_reader :releases
-    attr_reader :shared_name, :unshared_name
 
     def short_rows # rubocop:disable Metrics/MethodLength
       releases.map(&:to_brief_hash).map do |hash|
@@ -51,8 +48,8 @@ module Moku
           hash[:version].sub("rollback ", "").slice(0, 11),
           hash[:source].slice(0, 7),
           hash[:deploy].slice(0, 7),
-          hash[:unshared].slice(0, 7),
-          hash[:shared].slice(0, 7)
+          hash[:dev].slice(0, 7),
+          hash[:infrastructure].slice(0, 7)
         ]
       end
     end
@@ -65,8 +62,8 @@ module Moku
           hash[:version],
           hash[:source],
           hash[:deploy],
-          hash[:unshared],
-          hash[:shared]
+          hash[:dev],
+          hash[:infrastructure]
         ]
       end
     end
@@ -78,8 +75,8 @@ module Moku
         "version",
         "source",
         "deployed w/",
-        unshared_name,
-        shared_name
+        "dev",
+        "infrastructure"
       ]
     end
 

@@ -38,30 +38,17 @@ module Moku
     end
 
     describe "#find" do
-      context "when finding legacy instances" do
-        let(:instance) { static_repo.find("test-legacypersistence") }
-
-        it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/moku-deploy") }
-        it { expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git") }
-        it { expect(instance.shared.url).to   eql("git@github.com:mlibrary/moku-infrastructure") }
-        it { expect(instance.unshared.url).to eql("git@github.com:mlibrary/moku-dev") }
-        it { expect(instance.deploy.commitish).to   eql("test-norails") }
-        it { expect(instance.source.commitish).to   eql("master") }
-        it { expect(instance.shared.commitish).to   eql("test-norails") }
-        it { expect(instance.unshared.commitish).to eql("test-norails") }
-      end
-
       context "when finding non-legacy instances" do
-        let(:instance) { static_repo.find("test-legacypersistence") }
+        let(:instance) { static_repo.find("test-persistence") }
 
         it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/moku-deploy") }
         it { expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git") }
-        it { expect(instance.shared.url).to   eql("git@github.com:mlibrary/moku-infrastructure") }
-        it { expect(instance.unshared.url).to eql("git@github.com:mlibrary/moku-dev") }
+        it { expect(instance.infrastructure.url).to eql("git@github.com:mlibrary/moku-infrastructure") }
+        it { expect(instance.dev.url).to eql("git@github.com:mlibrary/moku-dev") }
         it { expect(instance.deploy.commitish).to   eql("test-norails") }
         it { expect(instance.source.commitish).to   eql("master") }
-        it { expect(instance.shared.commitish).to   eql("test-norails") }
-        it { expect(instance.unshared.commitish).to eql("test-norails") }
+        it { expect(instance.infrastructure.commitish).to eql("test-norails") }
+        it { expect(instance.dev.commitish).to eql("test-norails") }
       end
     end
 

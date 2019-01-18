@@ -15,7 +15,7 @@ module Moku
     private
 
     def host_path
-      Moku.deploy_root/(host.hostname)
+      Moku.deploy_root/host.hostname
     end
 
   end

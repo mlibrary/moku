@@ -12,7 +12,7 @@ Naming/FileName:
   ExpectMatchingDefinition: true
   Exclude:
     - 'bin/**/*'
-    - 'lib/fauxpaas/scm/**/*'
+    - 'lib/moku/scm/**/*'
     - 'lib/core_extensions/**/*'
     - 'spec/**/*'
     - 'lib/*/version.rb'
@@ -34,7 +34,7 @@ Layout/SpaceAroundOperators:
 
 Security/YAMLLoad:
   Exclude:
-    - 'lib/fauxpaas/file_instance_repo.rb'
+    - 'lib/moku/file_instance_repo.rb'
     - 'spec/**/*'
 
 Style/Alias:
@@ -50,6 +50,7 @@ Metrics/LineLength:
 
 Metrics/BlockLength:
   Exclude:
+    - 'spec/support/**/*.rb'
     - 'spec/**/*_spec.rb'
 
 Layout/ElseAlignment:

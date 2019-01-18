@@ -40,13 +40,13 @@ module Moku
     # @!method source
     #   This artifact's source
     #   @return [ArchiveReference]
-    # @!method shared
-    #   This artifact's shared config, i.e. the infrastructure config
+    # @!method infrastructure
+    #   This artifact's infrastructure config
     #   @return [ArchiveReference]
-    # @!method source
-    #   This artifact's unshared config, i.e. the developer config
+    # @!method dev
+    #   This artifact's developer config
     #   @return [ArchiveReference]
-    def_delegators :@signature, :source, :shared, :unshared
+    def_delegators :@signature, :source, :infrastructure, :dev
 
     # Run the given command in the context of the artifact.
     # @return [Status]

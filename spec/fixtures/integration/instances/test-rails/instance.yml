@@ -5,9 +5,9 @@ deploy:
 source:
   url: <%= Moku.fixtures_root.to_s %>/repos/rails/source
   commitish: rails_source
-shared:
-  - url: <%= Moku.fixtures_root.to_s %>/repos/rails/shared
-    commitish: rails_shared
-unshared:
-  - url: <%= Moku.fixtures_root.to_s %>/repos/rails/unshared
-    commitish: rails_unshared
+infrastructure:
+  - url: <%= Moku.fixtures_root.to_s %>/repos/rails/infrastructure
+    commitish: rails_infrastructure
+dev:
+  - url: <%= Moku.fixtures_root.to_s %>/repos/rails/dev
+    commitish: rails_dev

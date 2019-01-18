@@ -65,7 +65,6 @@ module Moku
         it "receives commands run once per deploy" do
           expect((current_dir/"just_once").exist?).to be true
         end
-
       end
 
       context "with host #2 at site #1" do
@@ -116,10 +115,6 @@ module Moku
           within(current_dir) do |env|
             expect(`#{env} bundle list`).not_to match(/#{test_gem}/)
           end
-        end
-
-        it "receives commands run against all hosts" do
-          expect((current_dir/"every_host").exist?).to be true
         end
 
         it "does not link files from another site" do

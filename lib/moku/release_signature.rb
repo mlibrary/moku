@@ -12,23 +12,23 @@ module Moku
       new(
         source: ArchiveReference.from_hash(hash[:source]),
         deploy: ArchiveReference.from_hash(hash[:deploy]),
-        shared: ArchiveReference.from_hash([hash.fetch(:shared, [])].flatten.first),
-        unshared: ArchiveReference.from_hash([hash.fetch(:unshared, [])].flatten.first)
+        infrastructure: ArchiveReference.from_hash([hash.fetch(:infrastructure, [])].flatten.first),
+        dev:    ArchiveReference.from_hash([hash.fetch(:dev, [])].flatten.first)
       )
     end
 
     # @param source [ArchiveReference]
     # @param deploy [ArchiveReference]
-    # @param shared [ArchiveReference]
-    # @param unshared [ArchiveReference]
-    def initialize(source:, deploy:, shared:, unshared:)
+    # @param infrastructure [ArchiveReference]
+    # @param dev [ArchiveReference]
+    def initialize(source:, deploy:, infrastructure:, dev:)
       @source = source
       @deploy = deploy
-      @shared = shared
-      @unshared = unshared
+      @infrastructure = infrastructure
+      @dev = dev
     end
 
-    attr_reader :source, :deploy, :shared, :unshared
+    attr_reader :source, :deploy, :infrastructure, :dev
 
     def eql?(other)
       to_hash == other.to_hash
@@ -36,10 +36,10 @@ module Moku
 
     def to_hash
       {
-        source:   source.to_hash,
-        deploy:   deploy.to_hash,
-        shared:   shared.to_hash,
-        unshared: unshared.to_hash
+        source:         source.to_hash,
+        deploy:         deploy.to_hash,
+        infrastructure: infrastructure.to_hash,
+        dev:            dev.to_hash
       }
     end
   end
