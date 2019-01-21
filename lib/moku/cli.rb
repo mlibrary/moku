@@ -14,7 +14,7 @@ module Moku
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     def initialize
-      program_desc "Fake platform-as-a-service"
+      program_desc "A deployment tool"
       synopsis_format :terminal
 
       accept(Hash) do |value|
