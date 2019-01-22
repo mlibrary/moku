@@ -20,7 +20,7 @@ module Moku
         command.long
       end
 
-      def print_releases
+      def print_caches
         string = if long
           LoggedReleases.new(instance.caches).to_s
         else
