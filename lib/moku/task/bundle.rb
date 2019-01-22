@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "moku/task/task"
-require "tmpdir"
 
 module Moku
   module Task

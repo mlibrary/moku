@@ -3,6 +3,7 @@
 require "moku/filesystem"
 require "pathname"
 require "fileutils"
+require "tmpdir"
 
 module Moku
   RSpec.describe Filesystem do
@@ -71,42 +72,6 @@ module Moku
 
       after(:all) do # rubocop:disable RSpec/BeforeAfterAll
         FileUtils.remove_entry_secure TMPPATH
-      end
-
-      describe "#mktmpdir" do
-        context "when given a block" do
-          it "creates a new directory" do
-            before = Pathname.new(File.realpath(Dir.tmpdir)).children
-            fs.mktmpdir do |dir|
-              expect(before).not_to include(dir.realpath)
-            end
-          end
-          it "yields the temporary dir" do
-            fs.mktmpdir do |dir|
-              tmp_base = Pathname.new(File.realpath(Dir.tmpdir))
-              expect(dir.parent.realpath).to eql(tmp_base)
-            end
-          end
-          it "deletes it when the block completes" do
-            x = double(:dir, exist?: "not set")
-            fs.mktmpdir {|dir| x = dir }
-            expect(x.exist?).to be false
-          end
-        end
-
-        context "when no block given" do
-          it "creates a new directory" do
-            before = Pathname.new("/tmp").children
-            dir = fs.mktmpdir
-            expect(before).not_to include(dir)
-          end
-          it "returns a temporary directory" do
-            expect(fs.mktmpdir).to be_a Pathname
-          end
-          it "does not delete the directory" do
-            expect(fs.mktmpdir.exist?).to be true
-          end
-        end
       end
 
       describe "#read" do

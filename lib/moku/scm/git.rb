@@ -5,7 +5,6 @@ require "moku/scm/working_directory"
 require "moku/scm/git/local_resolver"
 require "moku/scm/git/remote_resolver"
 require "pathname"
-require "tmpdir"
 
 module Moku
   module SCM
