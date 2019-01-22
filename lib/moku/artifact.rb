@@ -21,8 +21,6 @@ module Moku
     extend Forwardable
     include Bundleable
 
-    # Where should the path come from? (It shouldn't be Dir.mktmpdir)
-    # Do we want the signature here?
     # @param path [Pathname] The top-level directory under which to construct the artifact.
     #   This path should exist.
     # @param signature [ReleaseSignature] A signature identifying the references that should
