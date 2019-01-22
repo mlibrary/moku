@@ -26,9 +26,9 @@ module Moku
       )
     end
 
-    # @param dir [Lazy::Directory]
+    # @param dir [Pathname]
     def self.from_dir(dir, filename: Moku.deploy_config_filename)
-      from_hash(YAML.load(File.read((dir.path/filename).to_s))) # rubocop:disable Security/YAMLLoad
+      from_hash(YAML.load(File.read((dir/filename).to_s))) # rubocop:disable Security/YAMLLoad
     end
 
     # @param ref [ArchiveReference]

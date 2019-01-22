@@ -48,7 +48,7 @@ module Moku
     describe "::from_dir" do
       include FakeFS::SpecHelpers
       let(:path) { Pathname.new("/some/path/deploy.yml") }
-      let(:dir) { double(:dir, path: path.dirname) }
+      let(:dir) { path.dirname }
 
       before(:each) do
         FileUtils.mkdir_p path.dirname
@@ -63,7 +63,7 @@ module Moku
     describe "::from_ref" do
       include FakeFS::SpecHelpers
       let(:path) { Pathname.new("/some/path/deploy.yml") }
-      let(:dir) { double(:dir, path: path.dirname) }
+      let(:dir) { path.dirname }
       let(:ref) { double(:ref) }
       let(:ref_repo) { double(:ref_repo) }
 

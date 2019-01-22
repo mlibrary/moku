@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "moku/lazy/directory"
 require "fileutils"
 
 module Moku
@@ -20,16 +19,10 @@ module Moku
     # Download the given archive reference, unpack it,
     # and return the contents without metadata.
     # @param ref [ArchiveReference]
-    # @return [Lazy::Directory]
+    # @return [Pathname] The directory path
     def resolve(ref)
       cleanup!
-      wd = checkout(ref, dir_for(ref))
-      Lazy::Directory.for(
-        wd.dir,
-        wd.relative_files.map do |relative_path|
-          wd.dir/relative_path
-        end
-      )
+      checkout(ref, dir_for(ref)).dir
     end
 
     private
