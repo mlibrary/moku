@@ -3,6 +3,7 @@
 require "core_extensions/hash/keys"
 require "moku/sites"
 require "pathname"
+require "shellwords"
 require "yaml"
 
 module Moku
