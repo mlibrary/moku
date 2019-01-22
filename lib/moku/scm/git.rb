@@ -16,7 +16,7 @@ module Moku
       # @param filesystem [Filesystem]
       # @param local_resolver [LocalGitResolver]
       # @param remote_resolver [RemoteGitResolver]
-      def initialize(system_runner:, filesystem:, local_resolver:, remote_resolver:)
+      def initialize(system_runner:, filesystem:, local_resolver: nil, remote_resolver: nil)
         @system_runner = system_runner
         @filesystem = filesystem
         @local_resolver = local_resolver || LocalResolver.new(system_runner)
