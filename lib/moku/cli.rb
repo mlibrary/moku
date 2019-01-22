@@ -116,11 +116,12 @@ module Moku
       command :caches do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
-        c.action do |global_options, _options, _args|
+        c.action do |global_options, options, _args|
           invoker.add_command(
             Command::Caches.new(
               instance_name: global_options[:instance_name],
-              user: global_options[:user]
+              user: global_options[:user],
+              long: options[:long]
             )
           )
         end
