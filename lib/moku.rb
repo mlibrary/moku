@@ -52,7 +52,7 @@ module Moku
         container.register(:filesystem) { Moku::Filesystem.new }
         container.register(:upload_factory) { Moku::Upload }
         container.register(:git_runner) do |c|
-          Moku::GitRunner.new(
+          Moku::SCM::Git.new(
             system_runner: c.system_runner,
             filesystem: c.filesystem
           )
