@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    moku (0.2.0)
+    moku (2.0.0)
       canister
       ettin (~> 1.1.0)
       gli
