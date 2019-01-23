@@ -66,7 +66,7 @@ module Moku
       #   then this will be a successful Status.
       def run(tasks)
         Sequence.for(tasks) do |task|
-          logger.info "Starting task: #{task}"
+          logger.info "Starting: #{task}"
           task.call(target)
         end
       end

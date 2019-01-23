@@ -15,7 +15,7 @@ module Moku
       end
 
       def to_s
-        self.class.to_s
+        @to_s ||= self.class.to_s.split("::").last
       end
     end
 
