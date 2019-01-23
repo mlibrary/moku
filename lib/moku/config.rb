@@ -33,8 +33,7 @@ module Moku
     end
 
     def load_settings!(overrides = {})
-      @settings = Ettin.for(Ettin.settings_files(root/"config", env))
-      @settings.merge(overrides)
+      @settings = Ettin.for(Ettin.settings_files(root/"config", env)).merge!(overrides)
     end
 
     def settings
