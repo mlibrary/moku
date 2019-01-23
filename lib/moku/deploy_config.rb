@@ -23,8 +23,7 @@ module Moku
         deploy_dir: tmp[:deploy_dir],
         env: env,
         systemd_services: tmp[:systemd_services] || [],
-        sites: Sites.new(tmp[:sites]),
-        user: tmp[:user]
+        sites: Sites.new(tmp[:sites])
       )
     end
 
@@ -43,15 +42,14 @@ module Moku
     # @param env [Hash<Symbol, String>]
     # @param systemd_services [Array<String>]
     # @param sites [Sites]
-    def initialize(deploy_dir:, env:, systemd_services:, sites:, user: Moku.user)
+    def initialize(deploy_dir:, env:, systemd_services:, sites:)
       @deploy_dir = Pathname.new(deploy_dir)
       @env = env
       @systemd_services = systemd_services
       @sites = sites
-      @user = user
     end
 
-    attr_reader :deploy_dir, :sites, :systemd_services, :user
+    attr_reader :deploy_dir, :sites, :systemd_services
 
     def shell_env
       @shell_env ||= env.keep_if {|_key, value| value }
