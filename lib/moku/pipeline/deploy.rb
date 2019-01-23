@@ -25,6 +25,7 @@ module Moku
         step :log_release
         step :restart
         step :cleanup_caches
+        Moku.logger.info "Deploy successful!"
       end
 
       private

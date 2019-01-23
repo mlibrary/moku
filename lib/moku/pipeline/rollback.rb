@@ -16,6 +16,7 @@ module Moku
         step :construct_release
         step :set_current
         step :log_release
+        Moku.logger.info "Rollback successful!"
       end
 
       private
