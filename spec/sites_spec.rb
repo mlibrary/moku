@@ -16,21 +16,23 @@ module Moku
     let(:ictc_hash) do
       {
         "ictc" => [
-          { hostname: "ictc1" },
+          { hostname: "ictc1", user: another_user },
           "ictc2"
         ]
       }
     end
-    let(:hash) { macc_hash.merge(ictc_hash) }
-    let(:sites) { described_class.new(hash) }
+    let(:user) { "someuser" }
+    let(:another_user) { "anotheruser" }
+    let(:hash) { macc_hash.merge(ictc_hash).merge(user: user) }
+    let(:sites) { described_class.for(hash) }
 
     describe "#hosts" do
       it "returns all hosts" do
         expect(sites.hosts).to contain_exactly(
-          Sites::Host.new("macc1"),
-          Sites::Host.new("macc2"),
-          Sites::Host.new("ictc1"),
-          Sites::Host.new("ictc2")
+          Sites::Host.new("macc1", user),
+          Sites::Host.new("macc2", user),
+          Sites::Host.new("ictc1", another_user),
+          Sites::Host.new("ictc2", user)
         )
       end
     end
@@ -38,22 +40,22 @@ module Moku
     describe "#primaries" do
       it "returns the first host from each site" do
         expect(sites.primaries).to contain_exactly(
-          Sites::Host.new("macc1"),
-          Sites::Host.new("ictc1")
+          Sites::Host.new("macc1", user),
+          Sites::Host.new("ictc1", another_user),
         )
       end
     end
 
     describe "#primary" do
       it "returns the first host only" do
-        expect(sites.primary).to eql(Sites::Host.new("macc1"))
+        expect(sites.primary).to eql(Sites::Host.new("macc1", user))
       end
     end
 
     describe "#site" do
       it "returns the named site" do
         expect(sites.site("macc")).to eql(
-          described_class.new(macc_hash)
+          described_class.for(macc_hash.merge(user: user))
         )
       end
     end
@@ -63,7 +65,7 @@ module Moku
         let(:host) { "macc2" }
 
         it "returns the named host" do
-          expect(sites.host(host)).to eql([Sites::Host.new("macc2")])
+          expect(sites.host(host)).to eql([Sites::Host.new("macc2", user)])
         end
       end
 
@@ -77,17 +79,17 @@ module Moku
     end
 
     describe Sites::Scope do
-      let(:sites) { Sites.new(hash) }
+      let(:sites) { Sites.for(hash) }
 
       describe "::all" do
         let(:scope) { described_class.all }
 
         it "returns all hosts" do
           expect(scope.apply(sites)).to contain_exactly(
-            Sites::Host.new("macc1"),
-            Sites::Host.new("macc2"),
-            Sites::Host.new("ictc1"),
-            Sites::Host.new("ictc2")
+            Sites::Host.new("macc1", user),
+            Sites::Host.new("macc2", user),
+            Sites::Host.new("ictc1", another_user),
+            Sites::Host.new("ictc2", user)
           )
         end
       end
@@ -97,8 +99,8 @@ module Moku
 
         it "returns one host per site" do
           expect(scope.apply(sites)).to contain_exactly(
-            Sites::Host.new("macc1"),
-            Sites::Host.new("ictc1")
+            Sites::Host.new("macc1", user),
+            Sites::Host.new("ictc1", another_user)
           )
         end
       end
@@ -108,7 +110,7 @@ module Moku
 
         it "returns one host" do
           expect(scope.apply(sites)).to contain_exactly(
-            Sites::Host.new("macc1")
+            Sites::Host.new("macc1", user)
           )
         end
       end
@@ -116,16 +118,16 @@ module Moku
       describe "::site" do
         it "returns the specified site's hosts" do
           expect(described_class.site("macc").apply(sites)).to contain_exactly(
-            Sites::Host.new("macc1"),
-            Sites::Host.new("macc2")
+            Sites::Host.new("macc1", user),
+            Sites::Host.new("macc2", user)
           )
         end
         it "returns the specified sites' hosts" do
           expect(described_class.site("macc", "ictc").apply(sites)).to contain_exactly(
-            Sites::Host.new("macc1"),
-            Sites::Host.new("macc2"),
-            Sites::Host.new("ictc1"),
-            Sites::Host.new("ictc2")
+            Sites::Host.new("macc1", user),
+            Sites::Host.new("macc2", user),
+            Sites::Host.new("ictc1", another_user),
+            Sites::Host.new("ictc2", user)
           )
         end
       end
@@ -133,13 +135,13 @@ module Moku
       describe "::host" do
         it "returns the specified site's hosts" do
           expect(described_class.host("macc2").apply(sites)).to contain_exactly(
-            Sites::Host.new("macc2")
+            Sites::Host.new("macc2", user)
           )
         end
         it "returns the specified sites' hosts" do
           expect(described_class.host("macc1", "ictc2").apply(sites)).to contain_exactly(
-            Sites::Host.new("macc1"),
-            Sites::Host.new("ictc2")
+            Sites::Host.new("macc1", user),
+            Sites::Host.new("ictc2", user)
           )
         end
       end

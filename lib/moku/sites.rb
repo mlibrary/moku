@@ -6,18 +6,57 @@ module Moku
   # A mapping of hosts within zero or more sites.
   class Sites
 
-    Host = Struct.new(:hostname)
+    Host = Struct.new(:hostname, :user)
 
-    # Build an instance from a path to a file
-    def self.from_file(path)
-      new(YAML.safe_load(File.read(path)))
+    class << self
+      def for(object)
+        case object
+        when Pathname
+          from_file(object)
+        when String
+          from_yaml(object)
+        when Hash
+          from_hash(object)
+        else
+          raise ArgumentError, object.inspect
+        end
+      end
+
+      def from_file(path)
+        from_yaml(File.read(path))
+      end
+
+      def from_yaml(yaml)
+        from_hash(YAML.safe_load(yaml))
+      end
+
+      def from_hash(hash)
+        h = hash.symbolize_keys
+        sites = h.reject{|k,_| k == :user }
+          .transform_values do |hosts|
+            hosts.map {|host| normalize_host(host, h[:user]) }
+          end
+        new(sites)
+      end
+
+      private
+
+      def normalize_host(host, default_user)
+        case host
+        when String
+          Host.new(host, default_user)
+        when Hash
+          Host.new(host[:hostname], host[:user] || default_user)
+        when Host
+          host
+        else
+          raise "Could not understand #{host.inspect}"
+        end
+      end
     end
 
     def initialize(sites)
-      @sites = sites.symbolize_keys
-        .transform_values do |hosts|
-          hosts.map {|host| normalize_host(host) }
-        end
+      @sites = sites
     end
 
     # @return [Array<String>]
@@ -70,18 +109,6 @@ module Moku
 
     attr_reader :sites
 
-    def normalize_host(host)
-      case host
-      when String
-        Host.new(host)
-      when Hash
-        Host.new(host[:hostname])
-      when Host
-        host
-      else
-        raise "Could not understand #{host.inspect}"
-      end
-    end
 
   end
 end

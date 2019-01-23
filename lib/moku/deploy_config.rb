@@ -23,7 +23,7 @@ module Moku
         deploy_dir: tmp[:deploy_dir],
         env: env,
         systemd_services: tmp[:systemd_services] || [],
-        sites: Sites.new(tmp[:sites])
+        sites: Sites.for(tmp[:sites])
       )
     end
 

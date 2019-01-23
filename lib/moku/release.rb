@@ -14,19 +14,16 @@ module Moku
 
     # @param artifact [Artifact]
     # @param deploy_config [DeployConfig]
-    def initialize(artifact:, deploy_config:, remote_runner: nil, user: nil)
+    def initialize(artifact:, deploy_config:, remote_runner: nil)
       @artifact = artifact
       @deploy_config = deploy_config
       @remote_runner = remote_runner || Moku.remote_runner
-      @user = user || Moku.user
       @id = Time.now.strftime(Moku.release_time_format)
     end
 
     attr_reader :id
-
-    def path
-      artifact.path
-    end
+    def_delegators :@artifact, :path
+    def_delegators :@deploy_config, :systemd_services, :sites
 
     def deploy_path
       deploy_config.deploy_dir/"releases"/id
@@ -34,14 +31,6 @@ module Moku
 
     def app_path
       deploy_config.deploy_dir/"current"
-    end
-
-    def systemd_services
-      deploy_config.systemd_services
-    end
-
-    def sites
-      deploy_config.sites
     end
 
     def run(scope, command)
@@ -53,7 +42,7 @@ module Moku
 
     private
 
-    attr_reader :artifact, :deploy_config, :remote_runner, :user
+    attr_reader :artifact, :deploy_config, :remote_runner
 
     # Environment manipulation necessary to adopt the rbenv version of the
     # source to be installed. This only has an effect in the test environment
@@ -72,7 +61,7 @@ module Moku
     def run_on_hosts(hosts, command)
       Sequence.for(hosts) do |host|
         remote_runner.run(
-          user: user,
+          user: host.user,
           host: host.hostname,
           command: contextualize(command)
         )
