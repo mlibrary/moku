@@ -15,6 +15,7 @@ module Moku
     # rubocop:disable Metrics/MethodLength
     def initialize
       program_desc "A deployment tool"
+      version Moku::VERSION
       synopsis_format :terminal
 
       accept(Hash) do |value|
