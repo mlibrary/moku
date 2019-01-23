@@ -4,6 +4,7 @@ env:
   rails_env: production
 systemd_services: []
 sites:
+  user: test-rails
   local_site:
     - localhost
     - another_localhost
