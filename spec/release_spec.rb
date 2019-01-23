@@ -52,6 +52,10 @@ module Moku
       it { expect(release.path).to eql(artifact.path) }
     end
 
+    describe "#releases_path" do
+      it { expect(release.releases_path).to eql(deploy_dir/"releases") }
+    end
+
     describe "#deploy_path" do
       it { expect(release.deploy_path).to eql(deploy_dir/"releases"/release.id) }
     end

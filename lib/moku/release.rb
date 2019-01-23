@@ -25,8 +25,12 @@ module Moku
     def_delegators :@artifact, :path
     def_delegators :@deploy_config, :systemd_services, :sites
 
+    def releases_path
+      deploy_config.deploy_dir/"releases"
+    end
+
     def deploy_path
-      deploy_config.deploy_dir/"releases"/id
+      releases_path/id
     end
 
     def app_path

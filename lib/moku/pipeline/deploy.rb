@@ -70,7 +70,7 @@ module Moku
         Sequence.for(instance.releases - instance.caches) do |logged_release|
           release.run(
             Sites::Scope.all,
-            "rm -rf #{release.deploy_config.deploy_dir/logged_release.id}"
+            "rm -rf #{release.releases_path/logged_release.id}"
           )
         end
       end
