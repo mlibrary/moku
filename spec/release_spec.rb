@@ -18,15 +18,15 @@ module Moku
         deploy_dir: deploy_dir,
         systemd_services: ["svc1", "svc2"],
         sites: sites,
-        shell_env: "SHELL=env"
+        shell_env: "SHELL=env",
+        user: user
       )
     end
     let(:release) do
       described_class.new(
         artifact: artifact,
         deploy_config: deploy_config,
-        remote_runner: remote_runner,
-        user: user
+        remote_runner: remote_runner
       )
     end
 
@@ -36,8 +36,7 @@ module Moku
           described_class.new(
             artifact: artifact,
             deploy_config: deploy_config,
-            remote_runner: remote_runner,
-            user: user
+            remote_runner: remote_runner
           )
         end
       end

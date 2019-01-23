@@ -35,7 +35,8 @@ module Moku
         deploy_dir: deploy_dir,
         env: env,
         systemd_services: systemd_services,
-        sites: Sites.new(sites)
+        sites: Sites.new(sites),
+        user: "moku"
       )
     end
 
