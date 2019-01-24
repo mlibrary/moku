@@ -13,6 +13,7 @@ module Moku
         "-o PasswordAuthentication=no",
         "-o UserKnownHostsFile=/dev/null",
         "-o StrictHostKeyChecking=no",
+        "-o LogLevel=ERROR",
         "-a",
         "-i #{ENV["HOME"]}/.ssh/id_rsa-moku"
       ].freeze
