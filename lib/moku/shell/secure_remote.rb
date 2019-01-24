@@ -22,7 +22,7 @@ module Moku
       end
 
       def run(host:, command:, user: Moku.user)
-        system_shell.run("ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} '#{command}'")
+        system_shell.run("ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} bash -c \"'#{command}'\"")
       end
 
       private
