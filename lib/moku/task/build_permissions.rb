@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "moku/task/task"
+require "moku/status"
 require "fileutils"
 require "find"
 require "pathname"
@@ -60,6 +61,7 @@ module Moku
           public_permissions.apply(artifact.path/"public")
           public_permissions.apply(artifact.path/"public"/"assets")
         end
+        Status.success
       end
 
       private
