@@ -18,11 +18,11 @@ module Moku
     class Deploy < Pipeline
 
       def call
-        step :init
-        step :construct_signature
+        step :init #nonstatus
+        step :construct_signature #nonstatus
         step :build_artifact
         step :deploy_release
-        step :log_release
+        step :log_release #nonstatus
         step :restart
         step :cleanup_caches
         Moku.logger.info "Deploy successful!"
@@ -41,7 +41,8 @@ module Moku
       end
 
       def build_artifact
-        @artifact = Moku.artifact_repo.for(signature, Plan::BasicBuild)
+        @artifact, status = Moku.artifact_repo.for(signature, Plan::BasicBuild)
+        status
       end
 
       def deploy_release

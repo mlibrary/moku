@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "moku/artifact"
+require "moku/status"
 require "pathname"
 require "fileutils"
 
@@ -25,20 +26,21 @@ module Moku
     #
     # @param signature [ReleaseSignature]
     # @param plan [Class] The class, which should be Plan::Plan
-    # @return [Artifact] The built artifact
+    # @return [Array<Artifact,Status>] The built artifact, and whether or not
+    #   it was successful.
     def for(signature, plan)
       cleanup!
 
       artifact = artifact_for(signature)
-      unless artifact.path.exist?
-        artifact.path.mkpath
+      status = if artifact.path.exist?
+        Status.success
+      else
         plan.new(artifact).call
       end
 
-      artifact
-    rescue StandardError
-      FileUtils.remove_entry_secure(artifact.path)
-      raise
+      [artifact, status]
+    ensure
+      FileUtils.remove_entry_secure(artifact.path) unless status&.success?
     end
 
     private
