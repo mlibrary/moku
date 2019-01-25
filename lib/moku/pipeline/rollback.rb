@@ -16,6 +16,7 @@ module Moku
         step :construct_release
         step :set_current
         step :log_release
+        step :restart
         Moku.logger.info "Rollback successful!"
       end
 
@@ -49,6 +50,11 @@ module Moku
         ))
         Moku.instance_repo.save_releases(instance)
       end
+
+      def restart
+        Plan::Restart.new(release).call
+      end
+
     end
 
   end
