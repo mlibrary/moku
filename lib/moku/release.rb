@@ -14,34 +14,28 @@ module Moku
 
     # @param artifact [Artifact]
     # @param deploy_config [DeployConfig]
-    def initialize(artifact:, deploy_config:, remote_runner: nil, user: nil)
+    def initialize(artifact:, deploy_config:, remote_runner: nil, release_dir: nil)
       @artifact = artifact
       @deploy_config = deploy_config
       @remote_runner = remote_runner || Moku.remote_runner
-      @user = user || Moku.user
       @id = Time.now.strftime(Moku.release_time_format)
+      @release_dir = release_dir || id
     end
 
     attr_reader :id
+    def_delegators :@artifact, :path
+    def_delegators :@deploy_config, :systemd_services, :sites
 
-    def path
-      artifact.path
+    def releases_path
+      deploy_config.deploy_dir/"releases"
     end
 
     def deploy_path
-      deploy_config.deploy_dir/"releases"/id
+      releases_path/release_dir
     end
 
     def app_path
       deploy_config.deploy_dir/"current"
-    end
-
-    def systemd_services
-      deploy_config.systemd_services
-    end
-
-    def sites
-      deploy_config.sites
     end
 
     def run(scope, command)
@@ -53,26 +47,19 @@ module Moku
 
     private
 
-    attr_reader :artifact, :deploy_config, :remote_runner, :user
-
-    # Environment manipulation necessary to adopt the rbenv version of the
-    # source to be installed. This only has an effect in the test environment
-    # and development enviroments.
-    def rbenv_env
-      "PATH=$RBENV_ROOT/versions/$(rbenv local)/bin:$PATH"
-    end
+    attr_reader :artifact, :deploy_config, :remote_runner, :release_dir
 
     def contextualize(command)
       "if [ -d #{deploy_path} ]; " \
         "then cd #{deploy_path}; " \
         "fi; " \
-        "#{rbenv_env} #{deploy_config.shell_env} #{command}"
+        "#{deploy_config.shell_env} #{command}"
     end
 
     def run_on_hosts(hosts, command)
       Sequence.for(hosts) do |host|
         remote_runner.run(
-          user: user,
+          user: host.user,
           host: host.hostname,
           command: contextualize(command)
         )

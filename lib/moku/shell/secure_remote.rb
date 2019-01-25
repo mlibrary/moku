@@ -13,6 +13,7 @@ module Moku
         "-o PasswordAuthentication=no",
         "-o UserKnownHostsFile=/dev/null",
         "-o StrictHostKeyChecking=no",
+        "-o LogLevel=ERROR",
         "-a",
         "-i #{ENV["HOME"]}/.ssh/id_rsa-moku"
       ].freeze
@@ -22,7 +23,7 @@ module Moku
       end
 
       def run(host:, command:, user: Moku.user)
-        system_shell.run("ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} #{command}")
+        system_shell.run("ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} bash -l -c \"'#{command}'\"")
       end
 
       private

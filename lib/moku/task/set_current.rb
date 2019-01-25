@@ -16,12 +16,6 @@ module Moku
         )
       end
 
-      private
-
-      def target_path(release)
-        release.deploy_path
-          .relative_path_from(release.app_path.dirname)
-      end
     end
 
   end

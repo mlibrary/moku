@@ -16,7 +16,7 @@ module Moku
 
       # @return [Status]
       def run(command)
-        Moku.logger.info(command)
+        Moku.logger.debug(command)
         Bundler.with_clean_env do
           run_command(command)
         end

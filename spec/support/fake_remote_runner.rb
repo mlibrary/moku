@@ -11,8 +11,9 @@ module Moku
 
     def run(host:, command:, user: Moku.user) # rubocop:disable Lint/UnusedMethodArgument
       (Moku.deploy_root/host).mkpath
-      Dir.chdir(Moku.deploy_root/host) do
-        system_runner.run(command)
+      Dir.chdir(Moku.deploy_root/host) do |dir|
+        # Treat the dir as if it were a remote host
+        system_runner.run(command.gsub(/ \//, " #{dir}/"))
       end
     end
 

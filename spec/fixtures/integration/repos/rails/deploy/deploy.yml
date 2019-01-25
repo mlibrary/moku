@@ -1,9 +1,10 @@
-deploy_dir: deploy/here
+deploy_dir: /deploy/here
 env:
   rack_env: production
   rails_env: production
 systemd_services: []
 sites:
+  user: test-rails
   local_site:
     - localhost
     - another_localhost

@@ -10,8 +10,8 @@ module Moku
     let(:deploy_dir) { Pathname.new("/deploy/dir") }
     let(:artifact) { double(:artifact, path: "somepath") }
     let(:remote_runner) { FakeRemoteRunner.new(Shell::Basic.new) }
-    let(:user) { "moku" }
-    let(:sites) { Sites.new("site1" => ["host1"], "site2" => ["host2"]) }
+    let(:user) { "someuser" }
+    let(:sites) { Sites.for("site1" => ["host1"], "site2" => ["host2"]) }
     let(:deploy_config) do
       double(
         :deploy_config,
@@ -25,8 +25,7 @@ module Moku
       described_class.new(
         artifact: artifact,
         deploy_config: deploy_config,
-        remote_runner: remote_runner,
-        user: user
+        remote_runner: remote_runner
       )
     end
 
@@ -36,8 +35,7 @@ module Moku
           described_class.new(
             artifact: artifact,
             deploy_config: deploy_config,
-            remote_runner: remote_runner,
-            user: user
+            remote_runner: remote_runner
           )
         end
       end
@@ -52,6 +50,10 @@ module Moku
 
     describe "#path" do
       it { expect(release.path).to eql(artifact.path) }
+    end
+
+    describe "#releases_path" do
+      it { expect(release.releases_path).to eql(deploy_dir/"releases") }
     end
 
     describe "#deploy_path" do
@@ -70,7 +72,8 @@ module Moku
       let(:remote_runner) { double(:remote_runner, run: double(:status, success?: true)) }
       let(:command) { "somecommand" }
       let(:sites) do
-        Sites.new(
+        Sites.for(
+          "user" => user,
           "site1" => ["host1", "host2"],
           "site2" => ["host3", "host4"]
         )

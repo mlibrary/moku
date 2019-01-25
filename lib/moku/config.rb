@@ -32,8 +32,13 @@ module Moku
       end
     end
 
+    def load_settings!(overrides = {})
+      @settings = Ettin.for(Ettin.settings_files(root/"config", env)).merge!(overrides)
+    end
+
     def settings
-      @settings ||= Ettin.for(Ettin.settings_files(root/"config", env))
+      load_settings! unless @settings
+      @settings
     end
 
     def root

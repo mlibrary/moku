@@ -3,6 +3,7 @@
 require "core_extensions/hash/keys"
 require "moku/sites"
 require "pathname"
+require "shellwords"
 require "yaml"
 
 module Moku
@@ -22,13 +23,13 @@ module Moku
         deploy_dir: tmp[:deploy_dir],
         env: env,
         systemd_services: tmp[:systemd_services] || [],
-        sites: Sites.new(tmp[:sites])
+        sites: Sites.for(tmp[:sites])
       )
     end
 
-    # @param dir [Lazy::Directory]
+    # @param dir [Pathname]
     def self.from_dir(dir, filename: Moku.deploy_config_filename)
-      from_hash(YAML.load(File.read((dir.path/filename).to_s))) # rubocop:disable Security/YAMLLoad
+      from_hash(YAML.load(File.read((dir/filename).to_s))) # rubocop:disable Security/YAMLLoad
     end
 
     # @param ref [ArchiveReference]

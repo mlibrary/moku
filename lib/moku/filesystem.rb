@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "fileutils"
-require "tmpdir"
 
 module Moku
   # We wrap the filesystem for easy mocking,
@@ -93,14 +92,6 @@ module Moku
     # @param [String] contents
     def write(path, contents)
       File.write(path, contents)
-    end
-
-    def mktmpdir
-      if block_given?
-        Dir.mktmpdir {|dir| yield Pathname.new(dir) }
-      else
-        Pathname.new(Dir.mktmpdir)
-      end
     end
 
     def chdir(dir)

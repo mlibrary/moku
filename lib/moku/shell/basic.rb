@@ -12,7 +12,7 @@ module Moku
       # Run the given command
       # @return [Status]
       def run(command)
-        Moku.logger.info(command)
+        Moku.logger.debug(command)
         Bundler.with_clean_env do
           stdout, stderr, status = Open3.capture3(command)
           Status.new(status.success?, stdout, stderr)

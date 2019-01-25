@@ -9,13 +9,8 @@ module Moku
   class LocalUpload < Upload
 
     def full_dest
-      host_path/dest
-    end
-
-    private
-
-    def host_path
-      Moku.deploy_root/host.hostname
+      # workaround for ruby bug #15564
+      Pathname.new(File.join(Moku.deploy_root/host.hostname, dest))
     end
 
   end

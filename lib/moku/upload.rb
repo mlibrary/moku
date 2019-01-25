@@ -29,7 +29,7 @@ module Moku
     end
 
     def full_dest
-      "#{host.hostname}:#{dest}"
+      "#{host.user}@#{host.hostname}:#{dest}"
     end
 
     private

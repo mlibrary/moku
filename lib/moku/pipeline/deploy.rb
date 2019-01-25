@@ -25,6 +25,7 @@ module Moku
         step :log_release
         step :restart
         step :cleanup_caches
+        Moku.logger.info "Deploy successful!"
       end
 
       private
@@ -40,7 +41,8 @@ module Moku
       end
 
       def build_artifact
-        @artifact = Moku.artifact_repo.for(signature, Plan::BasicBuild)
+        @artifact, status = Moku.artifact_repo.for(signature, Plan::BasicBuild)
+        status
       end
 
       def deploy_release
@@ -70,7 +72,7 @@ module Moku
         Sequence.for(instance.releases - instance.caches) do |logged_release|
           release.run(
             Sites::Scope.all,
-            "rm -rf #{release.deploy_config.deploy_dir/logged_release.id}"
+            "rm -rf #{release.releases_path/logged_release.id}"
           )
         end
       end

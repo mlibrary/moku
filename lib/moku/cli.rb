@@ -15,6 +15,7 @@ module Moku
     # rubocop:disable Metrics/MethodLength
     def initialize
       program_desc "A deployment tool"
+      version Moku::VERSION
       synopsis_format :terminal
 
       accept(Hash) do |value|
@@ -101,11 +102,12 @@ module Moku
       command :releases do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
-        c.action do |global_options, _options, _args|
+        c.action do |global_options, options, _args|
           invoker.add_command(
             Command::Releases.new(
               instance_name: global_options[:instance_name],
-              user: global_options[:user]
+              user: global_options[:user],
+              long: options[:long]
             )
           )
         end
@@ -115,11 +117,12 @@ module Moku
       command :caches do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
-        c.action do |global_options, _options, _args|
+        c.action do |global_options, options, _args|
           invoker.add_command(
             Command::Caches.new(
               instance_name: global_options[:instance_name],
-              user: global_options[:user]
+              user: global_options[:user],
+              long: options[:long]
             )
           )
         end

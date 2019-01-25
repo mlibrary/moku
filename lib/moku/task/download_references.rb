@@ -2,6 +2,7 @@
 
 require "moku/task/task"
 require "moku/status"
+require "fileutils"
 
 module Moku
   module Task
@@ -26,11 +27,11 @@ module Moku
       attr_reader :ref_repo
 
       # @param ref [ArchiveReference]
-      # @param path [Pathname] Where to install the files
-      def add_reference(ref, path)
-        ref_repo.resolve(ref)
-          .cp(path)
-          .write
+      # @param dest [Pathname] Where to install the files
+      def add_reference(ref, dest)
+        path = ref_repo.resolve(ref)
+        FileUtils.mkdir_p dest
+        FileUtils.cp_r("#{path}/.", dest)
       end
     end
 

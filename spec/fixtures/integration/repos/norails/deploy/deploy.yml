@@ -1,8 +1,9 @@
-deploy_dir: my/deploy/dir
+deploy_dir: /my/deploy/dir
 env:
   rack_env: production
 systemd_services: []
 sites:
+  user: test-norails
   local_site:
     - localhost
     - another_localhost
