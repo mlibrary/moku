@@ -1,4 +1,4 @@
-deploy_dir: deploy/here
+deploy_dir: /deploy/here
 env:
   rack_env: production
   rails_env: production
