@@ -32,7 +32,7 @@ module Moku
 
       def from_hash(hash)
         h = hash.symbolize_keys
-        sites = h.reject{|k,_| k == :user }
+        sites = h.reject {|k, _| k == :user }
           .transform_values do |hosts|
             hosts.map {|host| normalize_host(host, h[:user]) }
           end
@@ -108,7 +108,6 @@ module Moku
     private
 
     attr_reader :sites
-
 
   end
 end

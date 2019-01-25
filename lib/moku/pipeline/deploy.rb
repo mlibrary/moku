@@ -18,11 +18,11 @@ module Moku
     class Deploy < Pipeline
 
       def call
-        step :init #nonstatus
-        step :construct_signature #nonstatus
+        step :init
+        step :construct_signature
         step :build_artifact
         step :deploy_release
-        step :log_release #nonstatus
+        step :log_release
         step :restart
         step :cleanup_caches
         Moku.logger.info "Deploy successful!"
