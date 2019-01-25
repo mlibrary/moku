@@ -14,11 +14,12 @@ module Moku
 
     # @param artifact [Artifact]
     # @param deploy_config [DeployConfig]
-    def initialize(artifact:, deploy_config:, remote_runner: nil)
+    def initialize(artifact:, deploy_config:, remote_runner: nil, release_dir: nil)
       @artifact = artifact
       @deploy_config = deploy_config
       @remote_runner = remote_runner || Moku.remote_runner
       @id = Time.now.strftime(Moku.release_time_format)
+      @release_dir = release_dir || id
     end
 
     attr_reader :id
@@ -30,7 +31,7 @@ module Moku
     end
 
     def deploy_path
-      releases_path/id
+      releases_path/release_dir
     end
 
     def app_path
@@ -46,7 +47,7 @@ module Moku
 
     private
 
-    attr_reader :artifact, :deploy_config, :remote_runner
+    attr_reader :artifact, :deploy_config, :remote_runner, :release_dir
 
     def contextualize(command)
       "if [ -d #{deploy_path} ]; " \

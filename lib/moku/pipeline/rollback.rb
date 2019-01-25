@@ -29,6 +29,7 @@ module Moku
 
       def construct_release
         @release = Release.new(
+          release_dir: command.cache.id,
           artifact: nil,
           deploy_config: DeployConfig.from_ref(signature.deploy, Moku.ref_repo)
         )
