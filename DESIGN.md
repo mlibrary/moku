@@ -1,4 +1,4 @@
-# Fauxpaas Design
+# Moku Design
 
 This page contains a general overview of how the software is designed.  It
 is not a guide for how to use it--that comes later.
@@ -8,13 +8,27 @@ modify or query the program's state. It has no notion of sessions.
 
 ## Getting Up and Running
 
-This project currently requires ruby 2.4.x, and doesn't quite support ruby 2.5.x. If you have
-rbenv and rbenv-aliases installed, it will pin to 2.4. Otherwise, ensure that the shell and
+This project currently requires ruby 2.4.x, and doesn't quite support ruby 2.5.x. Ruby
+must be installed with rbenv, and the environment RBENV\_ROOT needs to point to your
+installation. Your rbenv install should handle that automatically. If you have
+rbenv-aliases installed, the project will pin to 2.4. Otherwise, ensure that the shell and
 subshells will run in 2.4.x.
+
+When you create a PR, code climate will yell at you. Rubocop is built into the repo, and can be
+run with `bundle exec rubocop`. Try `--help`
+
+### Unit Tests
 
 `git clone, bundle install, bundle exec rspec`
 
-The tests should ass out of the box.
+The unit tests should pass out of the box.
+
+### Integration Tests
+
+The integration tests currently require that you can ssh to localhost without a password
+via ssh keypair. The ssh key should be stored in $HOME/.ssh/id\_rsa-moku. Simply symlinking
+any sshkey you've already set up should accomplish this.
+
 99% of the test run time is the integration tests, which are tagged as "integration".
 You can skip them by using rspec's tag feature, e.g. `--tag ~integration` will skip them,
 and just drop the tilde to only run the integration specs.
@@ -22,6 +36,13 @@ and just drop the tilde to only run the integration specs.
 Finally, the integration specs don't provide a lot of information when they fail by default.
 Set the environment variable `DEBUG` to `true` to see verbose output.
 
+### Additional Steps on Mac
+
+You need SSHD running, and you also need a symlink to rbenv.
+
+    $ sudo systemsetup -setremotelogin on
+    $ mkdir ~/.rbenv/bin
+    $ ln -s /usr/local/bin/rbenv ~/.rbenv/bin/rbenv
 
 ## Named Instance
 
@@ -33,7 +54,6 @@ their configuration differs.
 
 Internally, they are represented by objects of the Instance class in code, and as a folder on disk
 otherwise. We often shorten this name to simply "instance".
-
 
 ## Parts
 
@@ -73,7 +93,7 @@ where the instance will be deployed.
 ## Folder Structure
 
 ```
-faux
+moku
  |- permissions.yml             global whitelist
  |- data
  |  |- instances
@@ -101,13 +121,13 @@ This project assumes that an underprivileged user ("the user") elevated its priv
 a privileged, non-root user. This latter user is the application user, and all commands are run
 with its identity. The software must be able to access the real user's username.
 
-Fauxpaas does not provide any authentication method.
+Moku does not provide any authentication method.
 
 The identity use is expected to be specified on the command line.
 From there, the CLI verifies that the user is allowed to run the given command on the given
 target. It does so by instantiating a Policy from the user object, which can then be interrogated
 for permisions. This mechanism is not especially advanced; therefore, should the authorization
-scope of Fauxpaas increase significantly, more robust mechanisms should be used.
+scope of Moku increase significantly, more robust mechanisms should be used.
 
 The Policy itself will look in the following locations for files named `permissions.yml`.
 The order does not matter.
@@ -184,37 +204,42 @@ We keep a log of every successful deployment.
   calls it
 
 
-## Examle Deploy Config (deploy.yml)
+## Example Deploy Config (deploy.yml)
 
 ```
-appname: test-rails
-deployer_env: rails.capfile
-deploy_dir: null
-rails_env: production
-assets_prefix: assets
+deploy_dir: "/hydra/dromedary-production"
+env:
+  rack_env: production
+  some_var: some_val
+systemd_services:
+  - dromedary-production.target
+sites:
+  macc:
+    - macc1
+    - hostname: macc2
+  hatcher:
+    - hostname: hatcher1
+    - hostname: hatcher2
+    - hostname: hatcher3
 ```
 
 ## Developer Config Repo Structure
 
 ```
 /
- |- after_build.yml             contains after_build commands
+ |- finish_build.yml             contains finish_build commands
  |- after_release.yml           contains after_release commands
  |- yourdir
  |  |- yourfile.cfg             will be installed to yourdir/yourfile.cfg
  |- yourotherfile.txt           will be installed to /yourotherfile.txt
 ```
 
-The structure of `after_build.yml` and `after_release.yml` is as follows:
+The structure of `finish_build.yml` and `after_release.yml` is as follows:
 
 ```yaml
 ---
-- bin: somebin.sh # The command to run
-  opts: 1 2 -v    # Options to the bin
-  roles:          # Host roles on which to run the command (set)
-    - db
-    - app
-    - web
+- cmd: FOO=bar somebin.sh -f --target=sandwich # The full command to run
+- cmd: bundle exec rake some_other_command
 ```
 
 # Examples

@@ -1,85 +1,72 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
 require_relative "./support/memory_filesystem"
-require "fauxpaas/instance"
-require "fauxpaas/archive_reference"
-require "fauxpaas/release_signature"
+require_relative "./support/spoofed_git_runner"
+require "moku/instance"
+require "moku/archive_reference"
+require "moku/release_signature"
 require "pathname"
 
-module Fauxpaas
+module Moku
   RSpec.describe Instance do
+    R = Struct.new(:id)
     let(:app) { "myapp" }
     let(:stage) { "mystage" }
     let(:name) { "#{app}-#{stage}" }
 
     let(:deploy_content) do
       {
-        "appname"       => name,
-        "deployer_env"  => "foo.capfile",
-        "rails_env"     => "testing",
-        "assets_prefix" => "asssets",
-        "deploy_dir"    => "/some/deploy/dir"
+        "appname"      => name,
+        "deployer_env" => "foo.capfile",
+        "rails_env"    => "testing",
+        "deploy_dir"   => "/some/deploy/dir"
       }
     end
-    let(:shared) { ArchiveReference.new("infra.git", runner.branch, runner) }
-    let(:unshared) { ArchiveReference.new("dev.git", runner.branch, runner) }
+    let(:infrastructure) { ArchiveReference.new("infra.git", runner.branch, runner) }
+    let(:dev) { ArchiveReference.new("dev.git", runner.branch, runner) }
     let(:deploy) { ArchiveReference.new("deploy.git", runner.branch, runner) }
     let(:source) { ArchiveReference.new("source.git", runner.branch, runner) }
-    let(:a_release) { double(:a_release) }
-    let(:another_release) { double(:another_release) }
+    let(:releases) { [a_release] }
+    let(:a_release) { double(:a_release, id: "1") }
 
     let(:instance) do
       described_class.new(
         name: name,
-        shared: shared,
-        unshared: unshared,
+        infrastructure: infrastructure,
+        dev: dev,
         deploy: deploy,
         source: source,
-        releases: [a_release]
+        releases: releases
       )
     end
 
-    let(:runner) { Fauxpaas.git_runner }
+    let(:runner) { SpoofedGitRunner.new }
 
     describe "#signature" do
       context "when no commitish given" do
         it "returns the latest release signature" do
           expect(instance.signature).to eql(
             ReleaseSignature.new(
-              shared: shared.latest,
-              unshared: unshared.latest,
+              infrastructure: infrastructure.latest,
+              dev: dev.latest,
               deploy: deploy.latest,
               source: source.latest
             )
           )
         end
       end
+
       context "when commitish given" do
         it "returns an appropriate signature" do
           expect(instance.signature(runner.short)).to eql(
             ReleaseSignature.new(
-              shared: shared.latest,
-              unshared: unshared.latest,
+              infrastructure: infrastructure.latest,
+              dev: dev.latest,
               deploy: deploy.latest,
               source: source.at(runner.short)
             )
           )
         end
-      end
-    end
-
-    describe "#interrogator" do
-      let(:contents) { { "foo" => "bar" } }
-      let(:interrogator) { double(:interrogator) }
-      let(:deploy_config) { double(:deploy_config, runner: interrogator) }
-      let(:fs) { MemoryFilesystem.new(runner.tmpdir/"deploy.yml" => YAML.dump(contents)) }
-      before(:each) do
-        allow(DeployConfig).to receive(:from_hash).with(contents)
-          .and_return(deploy_config)
-      end
-      it "returns a deployer for the latest version of the instance" do
-        expect(instance.interrogator(fs)).to eql(interrogator)
       end
     end
 
@@ -99,10 +86,45 @@ module Fauxpaas
       end
     end
 
-    describe "#releases #log_release" do
+    describe "#releases" do
+      let(:releases) { [R.new(1), R.new(2), R.new(3), R.new(4), R.new(5), R.new(6)].shuffle }
+
+      it "sorts the releases" do
+        expect(instance.releases).to eql(
+          [R.new(6), R.new(5), R.new(4), R.new(3), R.new(2), R.new(1)]
+        )
+      end
+    end
+
+    describe "#log_releases" do
+      let(:releases) { [a_release] }
+      let(:another_release) { double(:another_release, id: "2") }
+
       it "returns logged releases" do
         instance.log_release(another_release)
         expect(instance.releases).to contain_exactly(a_release, another_release)
+      end
+    end
+
+    describe "#caches" do
+      context "with >= 5 releases" do
+        let(:releases) { [R.new(1), R.new(2), R.new(3), R.new(4), R.new(5), R.new(6)].shuffle }
+
+        it "returns the last five releases" do
+          expect(instance.caches).to eql(
+            [R.new(6), R.new(5), R.new(4), R.new(3), R.new(2)]
+          )
+        end
+      end
+
+      context "with < 5 releases" do
+        let(:releases) { [R.new(3), R.new(1), R.new(2)] }
+
+        it "returns all releases" do
+          expect(instance.caches).to eql(
+            [R.new(3), R.new(2), R.new(1)]
+          )
+        end
       end
     end
   end

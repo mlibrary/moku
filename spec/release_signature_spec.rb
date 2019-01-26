@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
-require "fauxpaas/archive_reference"
-require "fauxpaas/release_signature"
+require "moku/archive_reference"
+require "moku/release_signature"
 
-module Fauxpaas
+module Moku
   RSpec.describe ReleaseSignature do
     let(:signature) do
       described_class.new(

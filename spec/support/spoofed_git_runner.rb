@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "pathname"
-require "fauxpaas/working_directory"
+require "moku/scm/working_directory"
 
-module Fauxpaas
+module Moku
   class SpoofedGitRunner
     def initialize(sytem = nil); end
 
@@ -47,8 +47,13 @@ module Fauxpaas
       long_for(commitish)
     end
 
-    def safe_checkout(_url, _commitish)
-      yield WorkingDirectory.new(tmpdir, [])
+    def safe_checkout(_url, _commitish, _dir)
+      wd = WorkingDirectory.new(tmpdir, [])
+      if block_given?
+        yield wd
+      else
+        wd
+      end
     end
 
     def tmpdir

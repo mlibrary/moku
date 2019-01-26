@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "fauxpaas/filesystem"
+require "moku/filesystem"
 require "pathname"
 
-module Fauxpaas
+module Moku
 
   class MemoryFilesystem
 

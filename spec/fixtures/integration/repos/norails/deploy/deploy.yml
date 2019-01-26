@@ -1,5 +1,12 @@
-appname: test-norails
-deployer_env: norails.capfile
-deploy_dir: null
-rails_env: production
-assets_prefix: assets
+deploy_dir: /my/deploy/dir
+env:
+  rack_env: production
+systemd_services: []
+sites:
+  user: test-norails
+  local_site:
+    - localhost
+    - another_localhost
+  remote_site:
+    - remote_host
+

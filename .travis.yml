@@ -2,7 +2,8 @@ sudo: false
 language: ruby
 rvm:
   - 2.4
-  - 2.3
+  - 2.5
+  - 2.6
 
 branches:
   only:
@@ -12,5 +13,5 @@ branches:
 before_install: gem install bundler
 
 script:
-    - bundle exec rspec --tag ~broken_in_travis --tag ~integration
+    - bundle exec rspec --tag ~broken_in_travis
 

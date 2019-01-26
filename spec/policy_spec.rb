@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "./spec_helper"
-require "fauxpaas/policy"
+require "moku/policy"
 
-module Fauxpaas
+module Moku
   RSpec.describe Policy do
     RSpec.shared_examples "can perform" do |name, roles, action|
       it "#{name} can peform #{action}" do
