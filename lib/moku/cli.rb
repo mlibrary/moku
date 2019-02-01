@@ -131,6 +131,26 @@ module Moku
         end
       end
 
+      desc "Setup a new instance"
+      long_desc "Idempotently initialize a new instance with data from stdin"
+      arg "instance"
+      command :init do |c|
+        c.desc "Include default steps to finish rails builds and releases"
+        c.switch [:r, :rails], default_value: true, negateable: true
+        c.desc "Read from the given file instead of stdin"
+        c.flag [:f, :file], type: String
+        c.action do |global_options, options, args|
+          invoker.add_command(
+            Command::Init.new(
+              instance_name: global_options[:instance_name],
+              user: global_options[:user],
+              rails: options[:rails],
+              json: options[:file] ? File.read(options[:file]) : STDIN.read
+            )
+          )
+        end
+      end
+
       desc "Run an command on matching hosts"
       long_desc "Run an arbitrary command from the root of the deployed release, with the " \
         "release's environment. Use the flags to specify on which hosts to run. A default " \

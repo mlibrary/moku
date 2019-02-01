@@ -1,3 +1,5 @@
+default_root: data/defaults
+tmp_root: data/cache/tmp
 branches_root: data/cache/branches
 instance_root: data/instances
 bundle_cache_path: data/cache/bundle
@@ -13,3 +15,9 @@ deploy_config_filename: deploy.yml
 release_time_format: "%Y%m%d%H%M%S%L"
 ref_cache_max: 10
 build_cache_max: 20
+dev_repo_name: moku-dev
+deploy_repo_name: moku-deploy
+infra_repo_name: moku-infrastructure
+dev_repo: "git@github.com:example/moku-dev.git"
+deploy_repo: "git@github.com:example/moku-deploy.git"
+infra_repo: "git@github.com:example/moku-infrastructure.git"

@@ -49,9 +49,8 @@ tags
 /sandbox
 
 # These dirs are for users
-/data
 /data/instances/*
-/data/stages/*
+/data/cache/*
 /releases/*
 
 # Ignore local configuration files

@@ -43,6 +43,7 @@ module Moku
       releases:            :read,
       restart:             :restart,
       exec:                :deploy,
+      init:                :admin
     }.freeze
 
     def role?(role)
