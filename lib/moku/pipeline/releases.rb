@@ -8,6 +8,12 @@ module Moku
 
     # Print the release history
     class Releases < Pipeline
+      register(self)
+
+      def self.handles?(command)
+        command.action == :releases
+      end
+
       def call
         # Avoid calling step because the logger will be used for output,
         # and calling step would make it less clean.

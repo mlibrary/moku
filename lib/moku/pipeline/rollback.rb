@@ -10,6 +10,11 @@ module Moku
 
     # Rollback to a previous, cached release
     class Rollback < Pipeline
+      register(self)
+
+      def self.handles?(command)
+        command.action == :rollback
+      end
 
       def call
         step :retrieve_signature

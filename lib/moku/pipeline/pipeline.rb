@@ -8,6 +8,26 @@ module Moku
     class Pipeline
       extend Forwardable
 
+      def self.for(target)
+        registry.find {|candidate| candidate.handles?(target) }
+          .new(target)
+      end
+
+      def self.registry
+        @@registry ||= []
+      end
+
+      def self.register(candidate)
+        registry.unshift(candidate)
+      end
+
+      def self.handles?(command)
+        true
+      end
+
+      # Register ourself as a default
+      register(self)
+
       def_delegators :@command, :instance, :user, :logger
 
       def initialize(command)
@@ -15,7 +35,7 @@ module Moku
       end
 
       def call
-        raise NotImplementedError
+        logger.error "Unrecognized command"
       end
 
       private

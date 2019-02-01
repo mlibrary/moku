@@ -8,6 +8,12 @@ module Moku
 
     # Retrieve and print the list of cached instances
     class Caches < Pipeline
+      register(self)
+
+      def self.handles?(command)
+        command.action == :caches
+      end
+
       def call
         # Avoid calling step because the logger will be used for output,
         # and calling step would make it less clean.
