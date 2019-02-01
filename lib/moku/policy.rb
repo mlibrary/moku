@@ -43,9 +43,6 @@ module Moku
       releases:            :read,
       restart:             :restart,
       exec:                :deploy,
-      syslog_view:         :read,
-      syslog_grep:         :read,
-      syslog_follow:       :read
     }.freeze
 
     def role?(role)
