@@ -1,11 +1,9 @@
 branches_root: data/cache/branches
 instance_root: data/instances
-bundle_cache_path: data/bundle_cache
-releases_root: releases
-deployer_env_root: deploy/capfiles
+bundle_cache_path: data/cache/bundle
+releases_root: data/releases
 build_root: data/cache/builds
 ref_root: data/cache/references
-split_token: 1239810_moku_split_token_678303
 shared_name: infrastructure
 unshared_name: dev
 user: moku
