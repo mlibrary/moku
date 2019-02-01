@@ -64,6 +64,7 @@ module Moku
         "list of cached releases via the caches command. If a release id is " \
         "given, this will rollback to that release. Otherwise, it rolls back " \
         "to the most recent release."
+      arg "instance"
       arg "release", :optional
       command :rollback do |c|
         c.action do |global_options, _options, args|
@@ -99,6 +100,7 @@ module Moku
       end
 
       desc "List release history"
+      arg "instance"
       command :releases do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
@@ -114,6 +116,7 @@ module Moku
       end
 
       desc "List cached releases"
+      arg "instance"
       command :caches do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
