@@ -7,6 +7,12 @@ module Moku
 
     # Set the default branch
     class SetDefaultBranch < Pipeline
+      register(self)
+
+      def self.handles?(command)
+        command.action == :set_default_branch
+      end
+
       def call
         step :set_default_branch
       end

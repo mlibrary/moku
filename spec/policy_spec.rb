@@ -44,8 +44,7 @@ module Moku
 
     describe "read actions" do
       [
-        :read_default_branch, :caches, :releases,
-        :syslog_view, :syslog_grep, :syslog_follow
+        :read_default_branch, :caches, :releases
       ].each do |action|
         include_examples "can perform", "admins", [:admin], action
         include_examples "can perform", "deployers", [:deploy], action

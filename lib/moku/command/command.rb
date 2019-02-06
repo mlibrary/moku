@@ -5,7 +5,7 @@ module Moku
   module Command
     # Represetns a command within Moku
     class Command
-      attr_reader :user, :logger
+      attr_reader :user, :logger, :instance_name
 
       def initialize(instance_name:, user:, logger: nil, instance_repo: nil)
         @instance_name = instance_name
@@ -34,7 +34,7 @@ module Moku
 
       private
 
-      attr_reader :instance_name, :instance_repo
+      attr_reader :instance_repo
 
     end
 

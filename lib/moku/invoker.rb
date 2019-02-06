@@ -19,8 +19,7 @@ module Moku
       Pipeline.for(command).call
       nil
     rescue StandardError => e
-      Moku.logger.fatal e.message
-      raise # TODO swallow this exception
+      Moku.logger.fatal "#{e.message}\n\t#{e.backtrace.join("\n\t")}"
     end
 
     def authorize!(command)

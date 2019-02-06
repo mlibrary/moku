@@ -99,7 +99,10 @@ module Moku
           :deployer_env_root,
           :ref_root,
           :branches_root,
-          :build_root
+          :build_root,
+          :default_root,
+          :tmp_root
+
         ].each do |root|
           container.register(root) do
             Pathname.new(settings.public_send(root)).expand_path(Moku.root)

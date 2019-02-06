@@ -64,6 +64,7 @@ module Moku
         "list of cached releases via the caches command. If a release id is " \
         "given, this will rollback to that release. Otherwise, it rolls back " \
         "to the most recent release."
+      arg "instance"
       arg "release", :optional
       command :rollback do |c|
         c.action do |global_options, _options, args|
@@ -99,6 +100,7 @@ module Moku
       end
 
       desc "List release history"
+      arg "instance"
       command :releases do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
@@ -114,6 +116,7 @@ module Moku
       end
 
       desc "List cached releases"
+      arg "instance"
       command :caches do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
@@ -123,6 +126,26 @@ module Moku
               instance_name: global_options[:instance_name],
               user: global_options[:user],
               long: options[:long]
+            )
+          )
+        end
+      end
+
+      desc "Setup a new instance"
+      long_desc "Idempotently initialize a new instance with data from stdin"
+      arg "instance"
+      command :init do |c|
+        c.desc "Include default steps to finish rails builds and releases"
+        c.switch [:r, :rails], default_value: true, negateable: true
+        c.desc "Read from the given file instead of stdin"
+        c.flag [:f, :file], type: String
+        c.action do |global_options, options, args|
+          invoker.add_command(
+            Command::Init.new(
+              instance_name: global_options[:instance_name],
+              user: global_options[:user],
+              rails: options[:rails],
+              json: options[:file] ? File.read(options[:file]) : STDIN.read
             )
           )
         end

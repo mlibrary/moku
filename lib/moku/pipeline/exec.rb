@@ -10,6 +10,11 @@ module Moku
 
     # Execute an arbitrary command
     class Exec < Pipeline
+      register(self)
+
+      def self.handles?(command)
+        command.action == :exec
+      end
 
       def call
         step :retrieve_signature

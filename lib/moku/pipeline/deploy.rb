@@ -16,6 +16,11 @@ module Moku
 
     # Build and deploy a release
     class Deploy < Pipeline
+      register(self)
+
+      def self.handles?(command)
+        command.action == :deploy
+      end
 
       def call
         step :init
