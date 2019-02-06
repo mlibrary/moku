@@ -12,7 +12,7 @@ module Moku
       def call(release)
         release.run(
           Sites::Scope.all,
-          "rm -f #{release.app_path} && ln -s $PWD ../../current"
+          "rm -f #{release.app_path} && ln -s #{release.deploy_path} #{release.app_path}"
         )
       end
 
