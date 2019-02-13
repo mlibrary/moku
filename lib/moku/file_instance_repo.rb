@@ -27,6 +27,7 @@ module Moku
     end
 
     def find(name)
+      raise ArgumentError unless name
       lock!(name) if Moku.enable_locking
       contents = instance_content(name)
       releases = releases_content(name)
@@ -51,14 +52,6 @@ module Moku
       write_branch(instance.name, instance.default_branch)
     end
 
-    private
-
-    attr_reader :instances_path, :releases_path, :git_runner, :branches_path, :locks_path
-
-    def active_locks
-      @active_locks ||= []
-    end
-
     # Obtain an exclusive lock on the lockfile, using the OS's flock feature.
     # The OS will release the lock automatically when the program exits.
     # We intentionally do not remove the lockfile under any circumstances.
@@ -71,6 +64,14 @@ module Moku
       raise InstanceBusyError unless lockfile.flock(File::LOCK_EX|File::LOCK_NB)
 
       active_locks << name
+    end
+
+    private
+
+    attr_reader :instances_path, :releases_path, :git_runner, :branches_path, :locks_path
+
+    def active_locks
+      @active_locks ||= []
     end
 
     def instance_from_hash(name, hash)
