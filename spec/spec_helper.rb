@@ -15,7 +15,6 @@ require "fakefs/spec_helpers"
 # Load everything so that we can initialize
 require "moku/config"
 require_relative "support/fake_remote_runner"
-require_relative "support/memory_filesystem"
 require_relative "support/spoofed_git_runner"
 require_relative "support/have_permissions"
 

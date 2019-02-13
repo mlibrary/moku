@@ -11,7 +11,6 @@ require "moku/config"
 require "moku/deploy_config"
 require "moku/file_instance_repo"
 require "moku/file_permissions_repo"
-require "moku/filesystem"
 require "moku/instance"
 require "moku/invoker"
 require "moku/logged_release"
@@ -49,14 +48,8 @@ module Moku
         end
         container.register(:remote_runner) {|c| Moku::Shell::SecureRemote.new(c.system_runner) }
         container.register(:backend_runner) {|c| Moku::CapRunner.new(c.system_runner) }
-        container.register(:filesystem) { Moku::Filesystem.new }
         container.register(:upload_factory) { Moku::Upload }
-        container.register(:git_runner) do |c|
-          Moku::SCM::Git.new(
-            system_runner: c.system_runner,
-            filesystem: c.filesystem
-          )
-        end
+        container.register(:git_runner) {|c| Moku::SCM::Git.new(system_runner: c.system_runner) }
         container.register(:artifact_repo) {|c| Moku::ArtifactRepo.new(c.build_root) }
         container.register(:ref_repo) do |c|
           Moku::ReferenceRepo.new(
@@ -69,7 +62,6 @@ module Moku
             instances_path: c.instance_root,
             releases_path: c.releases_root,
             branches_path: c.branches_root,
-            filesystem: c.filesystem,
             git_runner: c.git_runner
           )
         end

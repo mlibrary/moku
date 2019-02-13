@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
 require "moku/instance"
 require "moku/archive_reference"

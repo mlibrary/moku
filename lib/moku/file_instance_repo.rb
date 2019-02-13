@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "moku/filesystem"
 require "moku/instance"
 require "moku/archive_reference"
 require "moku/logged_release"
@@ -16,13 +15,11 @@ module Moku
       instances_path: Moku.instance_root,
       releases_path: Moku.releases_root,
       branches_path: Moku.branches_root,
-      filesystem: Moku.filesystem,
       git_runner: Moku.git_runner
     )
       @instances_path = Pathname.new(instances_path)
       @releases_path = Pathname.new(releases_path)
       @branches_path = Pathname.new(branches_path)
-      @filesystem = filesystem
       @git_runner = git_runner
     end
 
@@ -52,7 +49,7 @@ module Moku
 
     private
 
-    attr_reader :instances_path, :releases_path, :filesystem, :git_runner, :branches_path
+    attr_reader :instances_path, :releases_path, :git_runner, :branches_path
 
     def instance_from_hash(name, hash)
       ArchiveReference.new(
@@ -63,33 +60,33 @@ module Moku
     end
 
     def branch_for(name)
-      if filesystem.exists?(path_to_branch(name))
-        filesystem.read(branches_path/name).strip
+      if path_to_branch(name).exist?
+        File.read(branches_path/name).strip
       end
     end
 
     def write_branch(name, branch)
-      filesystem.mkdir_p(path_to_branch(name).dirname)
-      filesystem.write(path_to_branch(name), branch)
+      FileUtils.mkdir_p(path_to_branch(name).dirname)
+      File.write(path_to_branch(name), branch)
     end
 
     def write_releases(name, releases)
-      filesystem.mkdir_p(path_to_release(name).dirname)
-      filesystem.write(path_to_release(name), YAML.dump(
+      FileUtils.mkdir_p(path_to_release(name).dirname)
+      File.write(path_to_release(name), YAML.dump(
         "releases" => releases.map(&:to_hash)
       ))
     end
 
     def instance_content(name)
       YAML.load( # rubocop:disable Security/YAMLLoad
-        ERB.new(filesystem.read(path_to_instance(name))).result
+        ERB.new(File.read(path_to_instance(name))).result
       )
     end
 
     def releases_content(name)
-      if filesystem.exists?(path_to_release(name))
+      if path_to_release(name).exist?
         YAML.load( # rubocop:disable Security/YAMLLoad
-          filesystem.read(path_to_release(name))
+          File.read(path_to_release(name))
         )
       else
         { "releases" => [] }

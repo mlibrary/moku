@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "../../support/memory_filesystem"
 require "moku/scm/git/local_resolver"
 
 module Moku
   RSpec.describe SCM::Git::LocalResolver do
     let(:status) { double(:status, success?: true, output: raw) }
     let(:system_runner) { double(:system_runner, run: status) }
-    let(:fs) { MemoryFilesystem.new }
     let(:runner) { described_class.new(system_runner) }
     let(:url) { "url" }
     let(:commitish) { "commitish" }

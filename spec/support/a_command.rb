@@ -43,7 +43,6 @@ RSpec.shared_context "when running a command spec" do
     Moku.config.tap do |container|
       container.register(:auth) { auth }
       container.register(:instance_repo) { instance_repo }
-      container.register(:filesystem) { Moku::MemoryFilesystem.new }
       container.register(:git_runner) { Moku::SpoofedGitRunner.new }
       container.register(:remote_runner) { Moku::FakeRemoteRunner.new }
       container.register(:log_file) { StringIO.new }
