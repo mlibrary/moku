@@ -5,13 +5,19 @@ require "moku/scm/git"
 require "moku/shell/basic"
 require "moku/scm/git/local_resolver"
 require "moku/scm/git/remote_resolver"
+require "moku/config"
 require "pathname"
+require "logger"
 require "tmpdir"
 
 module Moku
   RSpec.describe SCM::Git do
     let(:url) { Pathname.new(__dir__)/".."/".."/".git" }
     let(:commit) { "00dd3a5a8dbb1c19809cfb1499829defd8e16e49" }
+
+    before(:each) do
+      Moku.config.register(:logger) { Logger.new(StringIO.new, level: :info) }
+    end
 
     describe "#sha" do
       let(:local_resolver) { double(:local, sha: "localresult") }
