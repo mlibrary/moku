@@ -1,1 +1,2 @@
 stages_root: spec/fixtures/integration/stages
+enable_locking: false

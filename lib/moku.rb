@@ -93,8 +93,8 @@ module Moku
           :branches_root,
           :build_root,
           :default_root,
-          :tmp_root
-
+          :tmp_root,
+          :locks_root
         ].each do |root|
           container.register(root) do
             Pathname.new(settings.public_send(root)).expand_path(Moku.root)

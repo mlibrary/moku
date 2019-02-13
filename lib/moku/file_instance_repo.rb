@@ -3,6 +3,7 @@
 require "moku/instance"
 require "moku/archive_reference"
 require "moku/logged_release"
+require "moku/instance_busy_error"
 require "erb"
 require "pathname"
 require "yaml"
@@ -15,15 +16,18 @@ module Moku
       instances_path: Moku.instance_root,
       releases_path: Moku.releases_root,
       branches_path: Moku.branches_root,
+      locks_path: Moku.locks_root,
       git_runner: Moku.git_runner
     )
       @instances_path = Pathname.new(instances_path)
       @releases_path = Pathname.new(releases_path)
       @branches_path = Pathname.new(branches_path)
+      @locks_path = Pathname.new(locks_path)
       @git_runner = git_runner
     end
 
     def find(name)
+      lock!(name) if Moku.enable_locking
       contents = instance_content(name)
       releases = releases_content(name)
       Instance.new(
@@ -49,7 +53,25 @@ module Moku
 
     private
 
-    attr_reader :instances_path, :releases_path, :git_runner, :branches_path
+    attr_reader :instances_path, :releases_path, :git_runner, :branches_path, :locks_path
+
+    def active_locks
+      @active_locks ||= []
+    end
+
+    # Obtain an exclusive lock on the lockfile, using the OS's flock feature.
+    # The OS will release the lock automatically when the program exits.
+    # We intentionally do not remove the lockfile under any circumstances.
+    # Idempotent
+    def lock!(name)
+      return if active_locks.include?(name)
+
+      locks_path.mkpath
+      lockfile = File.open(locks_path/name, File::RDWR|File::CREAT, 0o644)
+      raise InstanceBusyError unless lockfile.flock(File::LOCK_EX|File::LOCK_NB)
+
+      active_locks << name
+    end
 
     def instance_from_hash(name, hash)
       ArchiveReference.new(
@@ -78,14 +100,14 @@ module Moku
     end
 
     def instance_content(name)
-      YAML.load( # rubocop:disable Security/YAMLLoad
+      YAML.load(
         ERB.new(File.read(path_to_instance(name))).result
       )
     end
 
     def releases_content(name)
       if path_to_release(name).exist?
-        YAML.load( # rubocop:disable Security/YAMLLoad
+        YAML.load(
           File.read(path_to_release(name))
         )
       else
