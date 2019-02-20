@@ -140,14 +140,18 @@ module Moku
         c.desc "Read from the given file instead of stdin"
         c.flag [:f, :file], type: String
         c.action do |global_options, options, _args|
-          invoker.add_command(
-            Command::Init.new(
-              instance_name: global_options[:instance_name],
-              user: global_options[:user],
-              rails: options[:rails],
-              json: options[:file] ? File.read(options[:file]) : STDIN.read
+          if command.first_run?
+            invoker.add_command(
+              Command::Init.new(
+                instance_name: global_options[:instance_name],
+                user: global_options[:user],
+                rails: options[:rails],
+                json: options[:file] ? File.read(options[:file]) : STDIN.read
+              )
             )
-          )
+          else
+            Moku.logger.info "#{global_options[:instance_name]} already initialized"
+          end
         end
       end
 
