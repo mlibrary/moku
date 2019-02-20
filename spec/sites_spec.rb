@@ -26,6 +26,35 @@ module Moku
     let(:hash) { macc_hash.merge(ictc_hash).merge(user: user) }
     let(:sites) { described_class.for(hash) }
 
+    describe "::for" do
+
+      it "handles a site:[hosts] hash" do
+        expect(described_class.for(hash).hosts).to contain_exactly(
+          Sites::Host.new("macc1", user),
+          Sites::Host.new("macc2", user),
+          Sites::Host.new("ictc1", another_user),
+          Sites::Host.new("ictc2", user)
+        )
+      end
+
+      it "handles a list of host:site" do
+        h = {
+          "user" => user,
+          "nodes" =>  [
+            { "ictc1" => "ictc" },
+            { "ictc2" => "ictc" },
+            { "macc1" => "macc" }
+          ]
+        }
+        expect(described_class.for(h).hosts).to contain_exactly(
+          Sites::Host.new("ictc1", user),
+          Sites::Host.new("ictc2", user),
+          Sites::Host.new("macc1", user)
+        )
+      end
+
+    end
+
     describe "#hosts" do
       it "returns all hosts" do
         expect(sites.hosts).to contain_exactly(
