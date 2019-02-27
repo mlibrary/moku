@@ -33,8 +33,9 @@ module Moku
         arg_name: "USER",
         type: String
 
-      pre do |global_options, _command, _options, args|
-        Moku.load_settings!(global_options)
+      pre do |global_options, _command, options, args|
+        verbosity = global_options[:verbose] || options[:verbose]
+        Moku.load_settings!(global_options.merge(verbose: verbosity))
         Moku.initialize!
         global_options[:instance_name] = args.shift
         @invoker = Moku.invoker
@@ -47,6 +48,7 @@ module Moku
       arg "instance"
       arg "reference", :optional
       command :deploy do |c|
+        c.switch [:v, :verbose]
         c.action do |global_options, _options, args|
           invoker.add_command(
             Command::Deploy.new(
@@ -67,6 +69,7 @@ module Moku
       arg "instance"
       arg "release", :optional
       command :rollback do |c|
+        c.switch [:v, :verbose]
         c.action do |global_options, _options, args|
           invoker.add_command(
             Command::Rollback.new(
@@ -82,6 +85,7 @@ module Moku
       arg "instance"
       arg "new_branch", :optional
       command :default_branch do |c|
+        c.switch [:v, :verbose]
         c.action do |global_options, _options, args|
           command = if args.first
             Command::SetDefaultBranch.new(
@@ -104,6 +108,7 @@ module Moku
       command :releases do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
+        c.switch [:v, :verbose]
         c.action do |global_options, options, _args|
           invoker.add_command(
             Command::Releases.new(
@@ -120,6 +125,7 @@ module Moku
       command :caches do |c|
         c.desc "Show full SHAs"
         c.switch [:l, :long]
+        c.switch [:v, :verbose]
         c.action do |global_options, options, _args|
           invoker.add_command(
             Command::Caches.new(
@@ -139,6 +145,7 @@ module Moku
         c.switch [:r, :rails], default_value: true, negateable: true
         c.desc "Read from the given file instead of stdin"
         c.flag [:f, :file], type: String
+        c.switch [:v, :verbose]
         c.action do |global_options, options, args|
           invoker.add_command(
             Command::Init.new(
@@ -169,6 +176,7 @@ module Moku
         c.flag [:host, :H], type: Array, desc: "Run on each of the specified hosts"
         c.switch [:all, :A], negatable: false, desc: "Run on every host for the instance"
         c.switch [:"each-site", :Z], negatable: false, desc: "Run on the default host at every site"
+        c.switch [:v, :verbose]
         c.action do |global_options, options, args|
           scope = if options[:site]
             Sites::Scope.site(*options[:site])
