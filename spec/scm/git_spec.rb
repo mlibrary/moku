@@ -1,36 +1,33 @@
 # frozen_string_literal: true
 
-require_relative "../support/memory_filesystem"
+require_relative "../spec_helper"
 require "moku/scm/git"
 require "moku/shell/basic"
 require "moku/scm/git/local_resolver"
 require "moku/scm/git/remote_resolver"
-require "pathname"
-require "tmpdir"
 
 module Moku
   RSpec.describe SCM::Git do
     let(:url) { Pathname.new(__dir__)/".."/".."/".git" }
     let(:commit) { "00dd3a5a8dbb1c19809cfb1499829defd8e16e49" }
 
+    before(:each) do
+      Moku.config.register(:logger) { Logger.new(StringIO.new, level: :info) }
+    end
+
     describe "#sha" do
+      include FakeFS::SpecHelpers
       let(:local_resolver) { double(:local, sha: "localresult") }
       let(:remote_resolver) { double(:remote, sha: "remoteresult") }
-      let(:filesystem) { MemoryFilesystem.new }
       let(:runner) do
         described_class.new(
           system_runner: double(:system_runner, run: ""),
           local_resolver: local_resolver,
-          remote_resolver: remote_resolver,
-          filesystem: filesystem
+          remote_resolver: remote_resolver
         )
       end
 
       context "when repo does not exist on local disk" do
-        before(:each) do
-          allow(filesystem).to receive(:exists?).with(url).and_return(false)
-        end
-
         it "resolves the ref remotely" do
           expect(runner.sha(url, commit)).to eql("remoteresult")
         end
@@ -38,7 +35,8 @@ module Moku
 
       context "when repo exists on local disk" do
         before(:each) do
-          allow(filesystem).to receive(:exists?).with(url).and_return(true)
+          FileUtils.mkdir_p(url.dirname.to_s)
+          FileUtils.touch(url.to_s)
         end
 
         it "resolves the ref locally" do
@@ -49,14 +47,13 @@ module Moku
 
     describe "#safe_checkout" do
       context "with full mocking" do
+        include FakeFS::SpecHelpers
         let(:system_runner) { double(:system_runner, run: "") }
-        let(:filesystem) { MemoryFilesystem.new }
         let(:runner) do
           described_class.new(
             system_runner: system_runner,
             local_resolver: double(:local_resolver),
-            remote_resolver: double(:remote_resolver),
-            filesystem: filesystem
+            remote_resolver: double(:remote_resolver)
           )
         end
 
@@ -72,12 +69,12 @@ module Moku
         end
 
         it "yields a working_directory with paths of the contents" do
-          filesystem.mktmpdir do |dir|
+          Dir.mktmpdir do |dir|
             runner.safe_checkout(url, commit, dir) do |working_dir|
-              expect(working_dir.dir).to eql(filesystem.tmpdir)
+              expect(working_dir.dir).to eql(Pathname.new(dir))
               expect(working_dir.real_files).to match_array([
-                filesystem.tmpdir/"one.txt",
-                filesystem.tmpdir/"two.txt"
+                Pathname.new(dir)/"one.txt",
+                Pathname.new(dir)/"two.txt"
               ])
             end
           end
@@ -93,8 +90,7 @@ module Moku
           described_class.new(
             local_resolver: SCM::Git::LocalResolver.new(Shell::Basic.new),
             remote_resolver: SCM::Git::RemoteResolver.new(Shell::Basic.new),
-            system_runner: Shell::Basic.new,
-            filesystem: Filesystem.new
+            system_runner: Shell::Basic.new
           )
         end
 

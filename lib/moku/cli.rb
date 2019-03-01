@@ -139,15 +139,35 @@ module Moku
         c.switch [:r, :rails], default_value: true, negateable: true
         c.desc "Read from the given file instead of stdin"
         c.flag [:f, :file], type: String
-        c.action do |global_options, options, args|
-          invoker.add_command(
-            Command::Init.new(
-              instance_name: global_options[:instance_name],
-              user: global_options[:user],
-              rails: options[:rails],
-              json: options[:file] ? File.read(options[:file]) : STDIN.read
+        c.action do |global_options, options, _args|
+          if command.first_run?
+            invoker.add_command(
+              Command::Init.new(
+                instance_name: global_options[:instance_name],
+                user: global_options[:user],
+                rails: options[:rails],
+                json: options[:file] ? File.read(options[:file]) : STDIN.read
+              )
             )
-          )
+          else
+            Moku.logger.info "#{global_options[:instance_name]} already initialized"
+          end
+        end
+      end
+
+      desc "Determine if an instance is busy"
+      arg "instance"
+      command :available do |c|
+        c.action do |global_options, _options, _args|
+          begin
+            Moku.instance_repo.lock!(global_options[:instance_name])
+            Moku.logger.info("\nThe instance #{global_options[:instance_name]} is available")
+          rescue InstanceBusyError
+            raise GLI::CustomExit.new(
+              "\nThe instance #{global_options[:instance_name]} is unavailable",
+              27
+            )
+          end
         end
       end
 
@@ -184,7 +204,7 @@ module Moku
 
           invoker.add_command(
             Command::Exec.new(
-              instance_name: options[:instance_name],
+              instance_name: global_options[:instance_name],
               user: global_options[:user],
               cmd: args.join(" "),
               scope: scope

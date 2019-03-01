@@ -49,9 +49,19 @@ module Moku
       end
 
       def write_deploy
+        sites = Hash.new {|h, k| h[k] = [] }
+        command.content["deploy"]["sites"]["nodes"]
+          .map(&:to_a)
+          .flatten(1)
+          .each {|host, site| sites[site] << host }
+        sites["user"] = command.content["deploy"]["sites"]["user"]
+
+        deploy_content = command.content["deploy"]
+          .merge("sites" => sites)
+
         path = dir/Moku.deploy_repo_name/"deploy.yml"
         FileUtils.mkdir_p path.dirname
-        File.write(path, YAML.dump(command.content["deploy"]))
+        File.write(path, YAML.dump(deploy_content))
       end
 
       def write_infrastructure

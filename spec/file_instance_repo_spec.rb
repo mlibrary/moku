@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "./support/memory_filesystem"
 require_relative "./support/spoofed_git_runner"
+require "fakefs/spec_helpers"
 require "moku/config"
-require "moku/filesystem"
 require "moku/file_instance_repo"
 require "yaml"
 
@@ -18,17 +17,14 @@ module Moku
         instances_path: instance_root,
         releases_path: releases_root,
         branches_path: branches_root,
-        filesystem: Filesystem.new,
         git_runner: git_runner
       )
     end
-    let(:mem_fs) { MemoryFilesystem.new }
     let(:tmp_repo) do
       described_class.new(
         instances_path: "/instances",
         releases_path: "/releases",
         branches_path: "/branches",
-        filesystem: mem_fs,
         git_runner: git_runner
       )
     end
@@ -53,18 +49,23 @@ module Moku
     end
 
     describe "#save_releases" do
+      include FakeFS::SpecHelpers
       let(:instance) { static_repo.find("test-persistence") }
+      before(:each) do
+        FakeFS::FileSystem.clone(releases_root)
+        FakeFS::FileSystem.clone(instance_root)
+        FakeFS::FileSystem.clone(branches_root)
+      end
 
       it "can save releases" do
         contents_before = YAML.load(File.read(releases_root/"test-persistence.yml"))
-        instance = static_repo.find("test-persistence")
         tmp_repo.save_releases(instance)
-        expect(YAML.load(mem_fs.read("/releases/test-persistence.yml"))).to eql(contents_before)
+        expect(YAML.load(File.read("/releases/test-persistence.yml"))).to eql(contents_before)
       end
 
       it "creates the directories to save in" do
-        expect(mem_fs).to receive(:mkdir_p).with(Pathname.new("/releases"))
         tmp_repo.save_releases(instance)
+        expect(releases_root.exist?).to be true
       end
     end
   end
