@@ -26,8 +26,27 @@ module Moku
     let(:hash) { macc_hash.merge(ictc_hash).merge(user: user) }
     let(:sites) { described_class.for(hash) }
 
-    describe "::for" do
+    let(:reverse_hash) do
+      {
+        "user"  => user,
+        "nodes" => [
+          { "ictc1" => "ictc" },
+          { "ictc2" => "ictc" },
+          { "macc1" => "macc" }
+        ]
+      }
+    end
 
+    let(:reverse_hash_symbolized) do
+      {
+        user:  user,
+        nodes: [
+          { macc1: "macc" }
+        ]
+      }
+    end
+
+    describe "::for" do
       it "handles a site:[hosts] hash" do
         expect(described_class.for(hash).hosts).to contain_exactly(
           Sites::Host.new("macc1", user),
@@ -38,21 +57,39 @@ module Moku
       end
 
       it "handles a list of host:site" do
-        h = {
-          "user" => user,
-          "nodes" =>  [
-            { "ictc1" => "ictc" },
-            { "ictc2" => "ictc" },
-            { "macc1" => "macc" }
-          ]
-        }
-        expect(described_class.for(h).hosts).to contain_exactly(
+        expect(described_class.for(reverse_hash).hosts).to contain_exactly(
           Sites::Host.new("ictc1", user),
           Sites::Host.new("ictc2", user),
           Sites::Host.new("macc1", user)
         )
       end
 
+      it "handles a list of host:site with symbolized hostnames" do
+        expect(described_class.for(reverse_hash_symbolized).hosts).to contain_exactly(
+          Sites::Host.new("macc1", user)
+        )
+      end
+    end
+
+    describe "#to_h" do
+      it "canonicalizes a site:[hosts] hash" do
+        expect(described_class.for(hash).to_h).to eq(
+          "user" => user,
+          "ictc" => [
+            { hostname: "ictc1", user: another_user },
+            "ictc2"
+          ],
+          "macc" => ["macc1", "macc2"]
+        )
+      end
+
+      it "converts a list of host:site to a site:[hosts] hash" do
+        expect(described_class.for(reverse_hash).to_h).to eq(
+          "user" => user,
+          "ictc" => ["ictc1", "ictc2"],
+          "macc" => ["macc1"]
+        )
+      end
     end
 
     describe "#hosts" do
@@ -70,7 +107,7 @@ module Moku
       it "returns the first host from each site" do
         expect(sites.primaries).to contain_exactly(
           Sites::Host.new("macc1", user),
-          Sites::Host.new("ictc1", another_user),
+          Sites::Host.new("ictc1", another_user)
         )
       end
     end

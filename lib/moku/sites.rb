@@ -51,13 +51,15 @@ module Moku
           .transform_values do |hosts|
             hosts.map {|host| normalize_host(host, h[:user]) }
           end
-        new(sites)
+        new(sites, h[:user])
       end
 
       private
 
       def normalize_host(host, default_user)
         case host
+        when Symbol
+          Host.new(host.to_s, default_user)
         when String
           Host.new(host, default_user)
         when Hash
@@ -70,8 +72,9 @@ module Moku
       end
     end
 
-    def initialize(sites)
+    def initialize(sites, default_user = nil)
       @sites = sites
+      @default_user = default_user
     end
 
     # @return [Array<String>]
@@ -120,9 +123,24 @@ module Moku
       sites == other.send(:sites)
     end
 
+    def to_h
+      Hash[sites.map {|site, hosts| [site.to_s, hosts_to_h(hosts)] }]
+        .tap {|h| h["user"] = default_user if default_user }
+    end
+
     private
 
-    attr_reader :sites
+    def hosts_to_h(hosts)
+      hosts.map do |host|
+        if default_user && host.user == default_user
+          host.hostname
+        else
+          host.to_h
+        end
+      end
+    end
+
+    attr_reader :sites, :default_user
 
   end
 end
