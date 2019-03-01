@@ -1,7 +1,0 @@
-Bump moku version to 2.x.x
-Change everyone's deploy.yml
-Purge stages dir
-Ungit the instances and releases dirs
-Rename shared,unshared in releases dir
-Rename shared,unshared in instances dir
-
