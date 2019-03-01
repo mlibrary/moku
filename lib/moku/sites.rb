@@ -16,7 +16,11 @@ module Moku
         when String
           from_yaml(object)
         when Hash
-          from_hash(object)
+          if object.key?("nodes") || object.key?(:nodes)
+            from_reverse_hash(object)
+          else
+            from_hash(object)
+          end
         else
           raise ArgumentError, object.inspect
         end
@@ -28,6 +32,17 @@ module Moku
 
       def from_yaml(yaml)
         from_hash(YAML.safe_load(yaml))
+      end
+
+      def from_reverse_hash(hash)
+        h = hash.symbolize_keys
+
+        sites = Hash.new {|h, k| h[k] = [] }
+        h[:nodes].map(&:to_a)
+          .flatten(1)
+          .each {|host, site| sites[site] << host }
+
+        from_hash({ user: h[:user] }.merge(sites))
       end
 
       def from_hash(hash)

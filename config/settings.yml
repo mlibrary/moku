@@ -1,3 +1,4 @@
+locks_root: data/cache/lock
 default_root: data/defaults
 tmp_root: data/cache/tmp
 branches_root: data/cache/branches
@@ -21,3 +22,4 @@ infra_repo_name: moku-infrastructure
 dev_repo: "git@github.com:example/moku-dev.git"
 deploy_repo: "git@github.com:example/moku-deploy.git"
 infra_repo: "git@github.com:example/moku-infrastructure.git"
+enable_locking: true
