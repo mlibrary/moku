@@ -35,23 +35,21 @@ module Moku
       end
 
       def from_reverse_hash(hash)
-        h = hash.symbolize_keys
+        hash = hash.symbolize_keys
 
         sites = Hash.new {|h, k| h[k] = [] }
-        h[:nodes].map(&:to_a)
-          .flatten(1)
-          .each {|host, site| sites[site] << host }
+        hash[:nodes].each {|host, site| sites[site] << host }
 
-        from_hash({ user: h[:user] }.merge(sites))
+        from_hash({ user: hash[:user] }.merge(sites))
       end
 
       def from_hash(hash)
-        h = hash.symbolize_keys
-        sites = h.reject {|k, _| k == :user }
+        hash = hash.symbolize_keys
+        sites = hash.reject {|k, _| k == :user }
           .transform_values do |hosts|
-            hosts.map {|host| normalize_host(host, h[:user]) }
+            hosts.map {|host| normalize_host(host, hash[:user]) }
           end
-        new(sites, h[:user])
+        new(sites, hash[:user])
       end
 
       private

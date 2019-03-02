@@ -29,20 +29,18 @@ module Moku
     let(:reverse_hash) do
       {
         "user"  => user,
-        "nodes" => [
-          { "ictc1" => "ictc" },
-          { "ictc2" => "ictc" },
-          { "macc1" => "macc" }
-        ]
+        "nodes" => {
+          "ictc1" => "ictc",
+          "ictc2" => "ictc",
+          "macc1" => "macc"
+        }
       }
     end
 
     let(:reverse_hash_symbolized) do
       {
         user:  user,
-        nodes: [
-          { macc1: "macc" }
-        ]
+        nodes: { macc1: "macc" }
       }
     end
 
