@@ -3,9 +3,9 @@
 require "moku/plan/plan"
 require "moku/task_file"
 require "moku/task/create_structure"
+require "moku/task/enable"
 require "moku/task/overlay_sites"
 require "moku/task/remote_shell"
-require "moku/task/restart"
 require "moku/task/set_current"
 require "moku/task/upload"
 
@@ -32,7 +32,10 @@ module Moku
       end
 
       def finish
-        [Task::SetCurrent.new]
+        [
+          Task::SetCurrent.new,
+          Task::Enable.new
+        ]
       end
 
       private
