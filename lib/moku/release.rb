@@ -49,11 +49,18 @@ module Moku
 
     attr_reader :artifact, :deploy_config, :remote_runner, :release_dir
 
+    # Environment manipulation necessary to adopt the rbenv version of the
+    # source to be installed. This only has an effect in the test environment
+    # and development enviroments.
+    def rbenv_env
+      "PATH=$RBENV_ROOT/versions/$(rbenv local)/bin:$PATH"
+    end
+
     def contextualize(command)
       "if [ -d #{deploy_path} ]; " \
         "then cd #{deploy_path}; " \
         "fi; " \
-        "#{deploy_config.shell_env} #{command}"
+        "#{rbenv_env} #{deploy_config.shell_env} #{command}"
     end
 
     def run_on_hosts(hosts, command)
