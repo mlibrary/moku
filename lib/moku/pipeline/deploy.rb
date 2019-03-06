@@ -74,12 +74,10 @@ module Moku
       end
 
       def cleanup_caches
-        Sequence.for(instance.releases - instance.caches) do |logged_release|
-          release.run(
-            Sites::Scope.all,
-            "rm -rf #{release.releases_path/logged_release.id}"
-          )
-        end
+        exclude_caches = instance.caches.map {|cache| "grep -v #{cache.id}" }.join(" | ")
+        cmd = "cd #{release.releases_path} && " \
+          "ls -1 #{release.releases_path} | #{exclude_caches} | xargs rm -rf"
+        release.run(Sites::Scope.all, cmd)
       end
 
     end
