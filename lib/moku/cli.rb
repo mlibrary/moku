@@ -17,6 +17,8 @@ module Moku
       program_desc "A deployment tool"
       version Moku::VERSION
       synopsis_format :terminal
+      subcommand_option_handling(:normal)
+      arguments(:strict)
 
       accept(Hash) do |value|
         value.split(",").map do |pair|
