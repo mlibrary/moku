@@ -23,7 +23,20 @@ module Moku
       end
 
       def run(host:, command:, user: Moku.user)
-        system_shell.run("ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} bash -l -c \"'#{command}'\"")
+        # This is a little gnarly because we need the local bash to pass any
+        # variable expressions through. That can either be done by escaping
+        # individual special characters or single quoting the whole command.
+        # Quoting the whole remote command is preferable, to avoid missing or
+        # mangling anything, but because it used as a local argument, it must
+        # be single quoted again. Using the heredoc allows us to use both types
+        # of quotes in the Ruby string without a bunch of \'s.
+        #
+        # If the ultimate remote command should be: echo $PATH
+        # The local command should be: ssh ... bash -l -c "'"'echo $PATH"'"'
+        # So the command passed to ssh is: bash -l -c 'echo $PATH'
+        system_shell.run <<~CMD
+          ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} bash -l -c "'"'#{command}'"'"
+        CMD
       end
 
       private
