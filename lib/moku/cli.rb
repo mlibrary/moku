@@ -198,7 +198,7 @@ module Moku
         c.action do |global_options, options, args|
           scope = if options[:site]
             Sites::Scope.site(*options[:site])
-          elsif options options[:host]
+          elsif options[:host]
             Sites::Scope.host(*options[:host])
           elsif options[:"each-site"]
             Sites::Scope.each_site
