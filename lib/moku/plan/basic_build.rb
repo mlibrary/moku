@@ -2,10 +2,11 @@
 
 require "moku/plan/plan"
 require "moku/task_file"
+require "moku/task/build_permissions"
 require "moku/task/bundle"
 require "moku/task/download_references"
-require "moku/task/build_permissions"
 require "moku/task/shell"
+require "moku/task/validate_pin"
 
 module Moku
   module Plan
@@ -21,6 +22,7 @@ module Moku
       def main
         [
           Task::DownloadReferences.new,
+          Task::ValidatePin.new,
           Task::Bundle.new
         ]
       end
