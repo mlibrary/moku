@@ -66,6 +66,7 @@ GEM
     terminal-table (1.8.0)
       unicode-display_width (~> 1.1, >= 1.1.1)
     unicode-display_width (1.4.1)
+    yard (0.9.18)
 
 PLATFORMS
   ruby
@@ -80,6 +81,7 @@ DEPENDENCIES
   rubocop
   rubocop-rspec
   simplecov
+  yard
 
 BUNDLED WITH
    2.0.1
