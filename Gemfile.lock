@@ -71,7 +71,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.15)
+  bundler
   fakefs
   moku!
   pry
