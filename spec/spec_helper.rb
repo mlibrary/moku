@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-require "simplecov"
 require "bundler/setup"
+require "coveralls"
+Coveralls.wear!
 
-# We load these here to for fakefs compat
+# We load these here for fakefs compat
 require "fileutils"
 require "find"
 require "pathname"
