@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/mlibrary/moku.svg?branch=master)](https://travis-ci.org/mlibrary/moku?branch=master)
+[![API Docs](https://img.shields.io/badge/API_docs-rubydoc.info-blue.svg)](https://www.rubydoc.info/github/mlibrary/moku)
+[![Coverage Status](https://coveralls.io/repos/github/mlibrary/moku/badge.svg?branch=master)](https://coveralls.io/github/mlibrary/moku?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/moku/badge/?version=latest)](https://moku.readthedocs.io/en/latest/?badge=latest)
+
 # Moku
 
 > Deploying applications has historically been complex in LIT, and the strategy for deploying
@@ -12,7 +17,7 @@
 
 ## More Info
 
-For development instructions, see `DESIGN.md`.
+See the documentation on:
 
-See the documentation on
-[confluence](https://tools.lib.umich.edu/confluence/display/LD/Moku+for+Developers)
+* [Confluence](https://tools.lib.umich.edu/confluence/display/LD/Moku+for+Developers)
+* [ReadTheDocs](https://moku.readthedocs.io) (INCOMPLETE)

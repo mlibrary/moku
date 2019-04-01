@@ -1,0 +1,4 @@
+sphinx
+sphinx-autobuild
+sphinxcontrib-plantuml
+guzzle_sphinx_theme
