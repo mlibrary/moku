@@ -1,10 +1,20 @@
-require: rubocop-rspec
+require:
+  - rubocop-performance
+  - rubocop-rspec
 inherit_from: .rubocop_todo.yml
 
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.5
   Exclude:
+    - 'bin/bundle'
+    - 'bin/console'
+    - 'bin/rspec'
+    - 'bin/rubocop'
+    - 'bin/yard'
+    - '.bundle/**/*'
+    - 'vendor/bundle/**/*'
+    - 'data/**/*'
     - '*.gemspec'
     - 'spec/fixtures/**/*'
 
@@ -144,7 +154,6 @@ Style/SymbolArray:
 
 Layout/BlockAlignment:
   EnforcedStyleAlignWith: start_of_block
-  #EnforcedStyleAlignWith: start_of_line
 
 Layout/EndAlignment:
   EnforcedStyleAlignWith: start_of_line
@@ -157,6 +166,15 @@ Performance/RedundantMerge:
 
 Style/WordArray:
   EnforcedStyle: brackets
+
+# This cop just adds extra work when you want to write an integration test,
+# or test something like a jbuilder view.
+RSpec/DescribeClass:
+  Enabled: false
+
+# Using let! is fine, and can be easier to manage than a before block.
+RSpec/LetSetup:
+  Enabled: false
 
 RSpec/BeEql:
   Enabled: false
@@ -178,7 +196,7 @@ RSpec/MultipleExpectations:
   Max: 3
 
 RSpec/NestedGroups:
-  Max: 2
+  Max: 3
 
 RSpec/VerifiedDoubles:
   Enabled: false
