@@ -4,12 +4,12 @@ require "core_extensions/hash/keys"
 module Moku
 
   # A mapping of hosts within zero or more sites.
-  class Sites
+  class Sites # rubocop:disable Metrics/ClassLength
 
     Host = Struct.new(:hostname, :user)
 
     class << self
-      def for(object)
+      def for(object) # rubocop:disable Metrics/MethodLength
         case object
         when Pathname
           from_file(object)
@@ -54,7 +54,7 @@ module Moku
 
       private
 
-      def normalize_host(host, default_user)
+      def normalize_host(host, default_user) # rubocop:disable Metrics/MethodLength
         case host
         when Symbol
           Host.new(host.to_s, default_user)

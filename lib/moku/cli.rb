@@ -12,7 +12,9 @@ module Moku
     include GLI::App
 
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
     # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/PerceivedComplexity
     def initialize
       program_desc "A deployment tool"
       version Moku::VERSION
@@ -164,15 +166,13 @@ module Moku
       arg "instance"
       command :available do |c|
         c.action do |global_options, _options, _args|
-          begin
-            Moku.instance_repo.lock!(global_options[:instance_name])
-            Moku.logger.info("\nThe instance #{global_options[:instance_name]} is available")
-          rescue InstanceBusyError
-            raise GLI::CustomExit.new(
-              "\nThe instance #{global_options[:instance_name]} is unavailable",
-              27
-            )
-          end
+          Moku.instance_repo.lock!(global_options[:instance_name])
+          Moku.logger.info("\nThe instance #{global_options[:instance_name]} is available")
+        rescue InstanceBusyError
+          raise GLI::CustomExit.new(
+            "\nThe instance #{global_options[:instance_name]} is unavailable",
+            27
+          )
         end
       end
 
@@ -184,7 +184,7 @@ module Moku
         "(to simplify operations like database migrations, which will take effect instance-wide)."
       arg "instance"
       arg "cmd", [:multiple]
-      command :exec do |c|
+      command :exec do |c| # rubocop:disable Metrics/BlockLength
         c.example "exec myapp-mystage bundle exec rake db:migrate",
           desc: "Run database migrations on only one host:"
         c.example "exec myapp-mystage -v --host host1,host2,host3 'DEBUG=true bin/status'",
@@ -220,7 +220,9 @@ module Moku
       end
     end
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/PerceivedComplexity
 
     private
 

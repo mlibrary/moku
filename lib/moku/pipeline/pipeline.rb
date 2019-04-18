@@ -14,14 +14,14 @@ module Moku
       end
 
       def self.registry
-        @@registry ||= []
+        @@registry ||= [] # rubocop:disable Style/ClassVars
       end
 
       def self.register(candidate)
         registry.unshift(candidate)
       end
 
-      def self.handles?(command)
+      def self.handles?(_command)
         true
       end
 
@@ -51,9 +51,7 @@ module Moku
             "\t#{e.backtrace.join("\n\t")}"
           raise
         end
-        if status.respond_to?(:success?) && !status.success?
-          raise status.error
-        end
+        raise status.error if status.respond_to?(:success?) && !status.success?
       end
 
     end

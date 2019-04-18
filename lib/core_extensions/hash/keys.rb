@@ -21,11 +21,9 @@ module Moku
     unless method_defined?(:symbolize_keys)
       def symbolize_keys
         deep_transform_keys do |key|
-          begin
-            key.to_sym
-          rescue StandardError
-            key
-          end
+          key.to_sym
+        rescue StandardError
+          key
         end
       end
     end
@@ -33,11 +31,9 @@ module Moku
     unless method_defined?(:symbolize_keys!)
       def symbolize_keys!
         deep_transform_keys! do |key|
-          begin
-            key.to_sym
-          rescue StandardError
-            key
-          end
+          key.to_sym
+        rescue StandardError
+          key
         end
       end
     end

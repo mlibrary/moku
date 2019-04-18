@@ -12,5 +12,7 @@ module Moku
         deploy: ArchiveReference.new("deploy_url", "deploy_ref")
       )
     end
+
+    xit "should have tests"
   end
 end

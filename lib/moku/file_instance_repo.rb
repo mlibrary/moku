@@ -28,9 +28,12 @@ module Moku
 
     def find(name)
       raise ArgumentError unless name
+
       lock!(name) if Moku.enable_locking
-      contents = instance_content(name)
-      releases = releases_content(name)
+      build_instance(name, instance_content(name), releases_content(name))
+    end
+
+    def build_instance(name, contents, releases)
       Instance.new(
         name: name,
         source: instance_from_hash(name, contents),

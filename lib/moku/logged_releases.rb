@@ -40,7 +40,7 @@ module Moku
 
     attr_reader :releases
 
-    def short_rows # rubocop:disable Metrics/MethodLength
+    def short_rows # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       releases.map(&:to_brief_hash).map do |hash|
         [
           hash[:id],

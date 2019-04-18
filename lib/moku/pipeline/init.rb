@@ -48,7 +48,7 @@ module Moku
         end
       end
 
-      def write_deploy
+      def write_deploy # rubocop:disable Metrics/AbcSize
         sites = Sites.for(command.content["deploy"]["sites"])
 
         deploy_content = command.content["deploy"]
@@ -65,7 +65,7 @@ module Moku
         File.write(path, YAML.dump(command.content["infrastructure"]))
       end
 
-      def write_dev
+      def write_dev # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         FileUtils.mkdir_p dir/Moku.dev_repo_name
         (command.rails? ? "rails" : "default").tap do |rails_or_nah|
           FileUtils.cp(
@@ -79,7 +79,7 @@ module Moku
         end
       end
 
-      def push
+      def push # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         Sequence.do([
           Push.new(
             dir: dir/Moku.deploy_repo_name,

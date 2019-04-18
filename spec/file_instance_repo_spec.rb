@@ -36,10 +36,11 @@ module Moku
     describe "#find" do
       context "when finding non-legacy instances" do
         let(:instance) { static_repo.find("test-persistence") }
+        let(:moku_infrastructure) { "git@github.com:mlibrary/moku-infrastructure" }
 
         it { expect(instance.deploy.url).to   eql("git@github.com:mlibrary/moku-deploy") }
         it { expect(instance.source.url).to   eql("https://github.com/dpn-admin/dpn-client.git") }
-        it { expect(instance.infrastructure.url).to eql("git@github.com:mlibrary/moku-infrastructure") }
+        it { expect(instance.infrastructure.url).to eql(moku_infrastructure) }
         it { expect(instance.dev.url).to eql("git@github.com:mlibrary/moku-dev") }
         it { expect(instance.deploy.commitish).to   eql("test-norails") }
         it { expect(instance.source.commitish).to   eql("master") }
@@ -51,6 +52,7 @@ module Moku
     describe "#save_releases" do
       include FakeFS::SpecHelpers
       let(:instance) { static_repo.find("test-persistence") }
+
       before(:each) do
         FakeFS::FileSystem.clone(releases_root)
         FakeFS::FileSystem.clone(instance_root)

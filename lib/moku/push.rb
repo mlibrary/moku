@@ -15,7 +15,7 @@ module Moku
       @runner = runner
     end
 
-    def call
+    def call # rubocop:disable Metrics/MethodLength
       Dir.mktmpdir do |tmpdir|
         Dir.chdir(tmpdir) do
           Sequence.for([
