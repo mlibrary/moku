@@ -7,7 +7,7 @@ module Moku
     class SecureRemote
 
       SSH_OPTIONS = [
-        "-o BatchMode=yes",
+        #"-o BatchMode=yes",
         "-o ConnectTimeout=3",
         "-o ChallengeResponseAuthentication=no",
         "-o PasswordAuthentication=no",
@@ -20,7 +20,7 @@ module Moku
         @system_shell = system_shell
       end
 
-      def run(host:, command:, user: Moku.user)
+      def run(host:, command:, user: Moku.user, interactive: false)
         # This is a little gnarly because we need the local bash to pass any
         # variable expressions through. That can either be done by escaping
         # individual special characters or single quoting the whole command.
@@ -32,9 +32,16 @@ module Moku
         # If the ultimate remote command should be: echo $PATH
         # The local command should be: ssh ... bash -l -c "'"'echo $PATH"'"'
         # So the command passed to ssh is: bash -l -c 'echo $PATH'
-        system_shell.run <<~CMD
-          ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} bash -l -c "'"'#{command}'"'"
-        CMD
+        if interactive
+          cmd =<<~CMD
+            ssh #{SSH_OPTIONS.join(" ")} -t #{user}@#{host} bash -l -c "'"'#{command}'"'"
+          CMD
+          system_shell.run cmd, true
+        else
+          system_shell.run <<~CMD
+            ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} bash -l -c "'"'#{command}'"'"
+          CMD
+        end
       end
 
       private

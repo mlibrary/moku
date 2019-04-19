@@ -38,10 +38,11 @@ module Moku
       deploy_config.deploy_dir/"current"
     end
 
-    def run(scope, command)
+    def run(scope, command, interactive = false)
       run_on_hosts(
         scope.apply(deploy_config.sites),
-        command
+        command,
+        interactive
       )
     end
 
@@ -63,12 +64,13 @@ module Moku
         "#{rbenv_env} #{deploy_config.shell_env} #{command}"
     end
 
-    def run_on_hosts(hosts, command)
+    def run_on_hosts(hosts, command, interactive)
       Sequence.for(hosts) do |host|
         remote_runner.run(
           user: host.user,
           host: host.hostname,
-          command: contextualize(command)
+          command: contextualize(command),
+          interactive: interactive
         )
       end
     end

@@ -22,11 +22,11 @@ module Moku
       attr_reader :command, :scope
 
       # @param target [Release]
-      def call(release)
+      def call(release, interactive = false)
         return Status.failure("Must specify a command") unless command
         return Status.failure("Must specify scope") unless scope
 
-        release.run(scope, command)
+        release.run(scope, command, interactive)
       end
     end
 

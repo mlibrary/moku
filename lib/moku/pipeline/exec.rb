@@ -33,7 +33,8 @@ module Moku
       def construct_release
         @release = Release.new(
           artifact: nil,
-          deploy_config: DeployConfig.from_ref(signature.deploy, Moku.ref_repo)
+          deploy_config: DeployConfig.from_ref(signature.deploy, Moku.ref_repo),
+	  release_dir: command.send(:instance).releases.first.id
         )
       end
 
@@ -41,7 +42,7 @@ module Moku
         Task::RemoteShell.new(
           command: command.cmd,
           scope: command.scope
-        ).call(release)
+        ).call(release, true)
       end
     end
 

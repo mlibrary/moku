@@ -15,10 +15,14 @@ module Moku
       end
 
       # @return [Status]
-      def run(command)
+      def run(command, interactive = false)
         Moku.logger.debug(command)
         Bundler.with_clean_env do
-          run_command(command)
+	  if interactive
+	    exec(command)
+	  else
+	    run_command(command)
+	  end
         end
       end
 
