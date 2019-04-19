@@ -37,6 +37,9 @@ Style/Documentation:
     - 'lib/*/components/*'
     - 'lib/*/components.rb'
 
+Style/RedundantBegin:
+  Enabled: false
+
 # We disable this cop because we want to use Pathname#/
 # and this cop is not configurable at all.
 Layout/SpaceAroundOperators:

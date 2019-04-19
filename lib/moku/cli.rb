@@ -166,13 +166,15 @@ module Moku
       arg "instance"
       command :available do |c|
         c.action do |global_options, _options, _args|
-          Moku.instance_repo.lock!(global_options[:instance_name])
-          Moku.logger.info("\nThe instance #{global_options[:instance_name]} is available")
-        rescue InstanceBusyError
-          raise GLI::CustomExit.new(
-            "\nThe instance #{global_options[:instance_name]} is unavailable",
-            27
-          )
+          begin
+            Moku.instance_repo.lock!(global_options[:instance_name])
+            Moku.logger.info("\nThe instance #{global_options[:instance_name]} is available")
+          rescue InstanceBusyError
+            raise GLI::CustomExit.new(
+              "\nThe instance #{global_options[:instance_name]} is unavailable",
+              27
+            )
+          end
         end
       end
 
