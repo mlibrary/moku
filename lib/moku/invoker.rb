@@ -17,7 +17,6 @@ module Moku
     def run(command)
       authorize!(command)
       Pipeline.for(command).call
-      nil
     rescue StandardError => e
       Moku.logger.fatal "#{e.message}\n\t#{e.backtrace.join("\n\t")}"
     end
