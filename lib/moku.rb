@@ -42,23 +42,23 @@ module Moku
       config.tap do |container| # rubocoop:
         if settings.verbose
           container.register(:logger) { Logger.new(STDOUT, level: :debug) }
-          container.register(:system_runner) { Moku::Shell::Passthrough.new(STDOUT) }
+          container.register(:system_runner) { Shell::Passthrough.new(STDOUT) }
         else
           container.register(:logger) { Logger.new(STDOUT, level: :info) }
-          container.register(:system_runner) { Moku::Shell::Basic.new }
+          container.register(:system_runner) { Shell::Basic.new }
         end
-        container.register(:remote_runner) {|c| Moku::Shell::SecureRemote.new(c.system_runner) }
-        container.register(:upload_factory) { Moku::Upload }
-        container.register(:git_runner) {|c| Moku::SCM::Git.new(system_runner: c.system_runner) }
-        container.register(:artifact_repo) {|c| Moku::ArtifactRepo.new(c.build_root) }
+        container.register(:remote_runner) {|c| Shell::SecureRemote.new(c.system_runner) }
+        container.register(:upload_factory) { Upload }
+        container.register(:git_runner) {|c| SCM::Git.new(system_runner: c.system_runner) }
+        container.register(:artifact_repo) {|c| ArtifactRepo.new(c.build_root) }
         container.register(:ref_repo) do |c|
-          Moku::ReferenceRepo.new(
+          ReferenceRepo.new(
             c.ref_root,
             c.git_runner
           )
         end
         container.register(:instance_repo) do |c|
-          Moku::FileInstanceRepo.new(
+          FileInstanceRepo.new(
             instances_path: c.instance_root,
             releases_path: c.releases_root,
             branches_path: c.branches_root,
@@ -66,14 +66,14 @@ module Moku
           )
         end
         container.register(:permissions_repo) do |c|
-          Moku::FilePermissionsRepo.new(c.instance_root)
+          FilePermissionsRepo.new(c.instance_root)
         end
         container.register(:auth) do |c|
           data = c.permissions_repo.find
-          Moku::AuthService.new(
+          AuthService.new(
             global: data.fetch(:all, {}),
             instances: data.fetch(:instances, {}),
-            policy_factory: Moku::Policy
+            policy_factory: Policy
           )
         end
 
@@ -81,10 +81,10 @@ module Moku
           Pathname.new(settings.bundle_cache_path).expand_path(Moku.root)
         end
         container.register(:cached_bundle) do |c|
-          Moku::CachedBundle.new(c.bundle_cache_path)
+          CachedBundle.new(c.bundle_cache_path)
         end
 
-        container.register(:invoker) { Moku::Invoker.new(pipeline_factory: Pipeline) }
+        container.register(:invoker) { Invoker.new(pipeline_factory: Pipeline) }
         [
           :instance_root,
           :releases_root,
