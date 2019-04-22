@@ -3,7 +3,7 @@
 module Moku
 
   module Command
-    # Represetns a command within Moku
+    # Represents a command within Moku
     class Command
       attr_reader :user, :logger, :instance_name
 
