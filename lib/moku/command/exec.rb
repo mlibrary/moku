@@ -21,7 +21,17 @@ module Moku
       end
 
       def signature
-        instance.releases.first.signature
+        logged_release.signature
+      end
+
+      def release_id
+        logged_release.id
+      end
+
+      private
+
+      def logged_release
+        instance.releases.first
       end
 
     end

@@ -17,23 +17,16 @@ module Moku
       end
 
       def call
-        step :retrieve_signature
-        step :construct_release
         step :run_command
       end
 
       private
 
-      attr_reader :signature, :release
-
-      def retrieve_signature
-        @signature = command.signature
-      end
-
-      def construct_release
-        @release = Release.new(
+      def release
+        Release.new(
           artifact: nil,
-          deploy_config: DeployConfig.from_ref(signature.deploy, Moku.ref_repo)
+          deploy_config: DeployConfig.from_ref(command.signature.deploy, Moku.ref_repo),
+          release_dir: command.release_id
         )
       end
 
