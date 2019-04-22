@@ -1,22 +1,25 @@
 # frozen_string_literal: true
 
-require "moku/pipeline"
-
 module Moku
 
   # Responsible for when and where commands are executed
   class Invoker
 
-    # TODO: test this
+    def initialize(pipeline_factory:)
+      @pipeline_factory = pipeline_factory
+    end
+
     def add_command(command)
       run(command)
     end
 
     private
 
+    attr_reader :pipeline_factory
+
     def run(command)
       authorize!(command)
-      Pipeline.for(command).call
+      pipeline_factory.for(command).call
     rescue StandardError => e
       Moku.logger.fatal "#{e.message}\n\t#{e.backtrace.join("\n\t")}"
     end
