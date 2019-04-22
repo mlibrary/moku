@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "moku/registered"
+
 module Moku
   module Pipeline
 
@@ -7,25 +9,8 @@ module Moku
     # performs. Pipelines tie everything together.
     class Pipeline
       extend Forwardable
+      extend Registered
 
-      def self.for(target)
-        registry.find {|candidate| candidate.handles?(target) }
-          .new(target)
-      end
-
-      def self.registry
-        @@registry ||= [] # rubocop:disable Style/ClassVars
-      end
-
-      def self.register(candidate)
-        registry.unshift(candidate)
-      end
-
-      def self.handles?(_command)
-        true
-      end
-
-      # Register ourself as a default
       register(self)
 
       def_delegators :@command, :instance, :user, :logger
