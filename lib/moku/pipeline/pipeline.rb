@@ -1,22 +1,17 @@
 # frozen_string_literal: true
 
-require "moku/registered"
-
 module Moku
   module Pipeline
 
     # Pipelines represent the highest level processes that the application
     # performs. Pipelines tie everything together.
     class Pipeline
-      extend Forwardable
-      extend Registered
 
-      register(self)
+      # Allows for injection of the logger in tests.
+      attr_writer :logger
 
-      def_delegators :@command, :instance, :user, :logger
-
-      def initialize(command)
-        @command = command
+      def logger
+        @logger ||= Moku.logger
       end
 
       def call

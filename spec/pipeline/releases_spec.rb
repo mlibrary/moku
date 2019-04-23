@@ -9,16 +9,9 @@ module Moku
     let(:logger) { double(:logger, info: nil) }
     let(:releases) { [1, 2, 3, 4] }
     let(:instance) { double(:instance, releases: releases) }
-    let(:user) { "someuser" }
-    let(:command) do
-      double(
-        instance: instance,
-        user: user,
-        long: false,
-        logger: logger
-      )
+    let(:pipeline) do
+      described_class.new(instance: instance, long: false).tap {|p| p.logger = logger }
     end
-    let(:pipeline) { described_class.new(command) }
 
     describe "#call" do
       let(:logged_releases) do

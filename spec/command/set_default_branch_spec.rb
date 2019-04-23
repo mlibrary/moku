@@ -20,11 +20,6 @@ module Moku
       expect(command.action).to be(:set_default_branch)
     end
 
-    describe "#instance_repo" do
-      it "returns the repo" do
-        expect(command.instance_repo).to eql(Moku.instance_repo)
-      end
-    end
   end
 
 end

@@ -12,10 +12,12 @@ module Moku
 
     # Execute an arbitrary command
     class Init < Pipeline
-      register(self)
 
-      def self.handles?(command)
-        command.action == :init
+      def initialize(instance:, first_run:, content:, rails:)
+        @instance = instance
+        @first_run = first_run
+        @content = content
+        @rails = rails
       end
 
       def call
@@ -33,6 +35,15 @@ module Moku
 
       private
 
+      def first_run?
+        @first_run
+      end
+
+      def rails?
+        @rails
+      end
+
+      attr_reader :instance, :content
       attr_reader :dir
 
       def create_tmpdir
@@ -41,17 +52,17 @@ module Moku
       end
 
       def precheck
-        if command.first_run?
+        if first_run?
           Status.success
         else
-          Status.failure("Instance #{command.instance_name} already initialized")
+          Status.failure("Instance #{instance.name} already initialized")
         end
       end
 
       def write_deploy # rubocop:disable Metrics/AbcSize
-        sites = Sites.for(command.content["deploy"]["sites"])
+        sites = Sites.for(content["deploy"]["sites"])
 
-        deploy_content = command.content["deploy"]
+        deploy_content = content["deploy"]
           .merge("sites" => sites.to_h)
 
         path = dir/Moku.deploy_repo_name/"deploy.yml"
@@ -62,12 +73,12 @@ module Moku
       def write_infrastructure
         path = dir/Moku.infra_repo_name/"infrastructure.yml"
         FileUtils.mkdir_p path.dirname
-        File.write(path, YAML.dump(command.content["infrastructure"]))
+        File.write(path, YAML.dump(content["infrastructure"]))
       end
 
       def write_dev # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         FileUtils.mkdir_p dir/Moku.dev_repo_name
-        (command.rails? ? "rails" : "default").tap do |rails_or_nah|
+        (rails? ? "rails" : "default").tap do |rails_or_nah|
           FileUtils.cp(
             Moku.default_root/rails_or_nah/Moku.finish_build_filename,
             dir/Moku.dev_repo_name/Moku.finish_build_filename
@@ -84,31 +95,31 @@ module Moku
           Push.new(
             dir: dir/Moku.deploy_repo_name,
             repo: Moku.deploy_repo,
-            branch: command.instance_name
+            branch: instance.name
           ),
           Push.new(
             dir: dir/Moku.dev_repo_name,
             repo: Moku.dev_repo,
-            branch: command.instance_name
+            branch: instance.name
           ),
           Push.new(
             dir: dir/Moku.infra_repo_name,
             repo: Moku.infra_repo,
-            branch: command.instance_name
+            branch: instance.name
           )
         ])
       end
 
       def install_instance
-        path = Moku.instance_root/command.instance_name/"instance.yml"
+        path = Moku.instance_root/instance.name/"instance.yml"
         FileUtils.mkdir_p path.dirname
-        File.write(path, YAML.dump(command.content["instance"]))
+        File.write(path, YAML.dump(content["instance"]))
       end
 
       def install_permissions
-        path = Moku.instance_root/command.instance_name/"permissions.yml"
+        path = Moku.instance_root/instance.name/"permissions.yml"
         FileUtils.mkdir_p path.dirname
-        File.write(path, YAML.dump(command.content["permissions"]))
+        File.write(path, YAML.dump(content["permissions"]))
       end
 
       def cleanup

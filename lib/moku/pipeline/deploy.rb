@@ -16,30 +16,27 @@ module Moku
 
     # Build and deploy a release
     class Deploy < Pipeline
-      register(self)
 
-      def self.handles?(command)
-        command.action == :deploy
+      def initialize(instance:, user:, reference:)
+        @instance = instance
+        @user = user
+        @reference = reference
       end
 
       def call
-        step :init
         step :construct_signature
         step :build_artifact
         step :deploy_release
         step :log_release
         step :restart
         step :cleanup_caches
-        Moku.logger.info "Deploy successful!"
+        logger.info "Deploy successful!"
       end
 
       private
 
-      attr_reader :reference, :signature, :artifact, :release
-
-      def init
-        @reference = command.reference
-      end
+      attr_reader :instance, :user, :reference
+      attr_reader :signature, :artifact, :release
 
       def construct_signature
         @signature = instance.signature(reference)

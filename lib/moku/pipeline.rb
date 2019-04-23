@@ -13,9 +13,5 @@ require "moku/pipeline/set_default_branch"
 module Moku
 
   # Namespace and factory for pipelines
-  module Pipeline
-    def self.for(target)
-      Pipeline.for(target)
-    end
-  end
+  module Pipeline; end
 end

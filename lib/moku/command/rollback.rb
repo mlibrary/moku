@@ -2,6 +2,7 @@
 
 require "moku"
 require "moku/command/command"
+require "moku/pipeline/rollback"
 
 module Moku
 
@@ -17,6 +18,17 @@ module Moku
         :rollback
       end
 
+      def call
+        Pipeline::Rollback.new(
+          cache: cache,
+          instance: instance,
+          user: user
+        ).call
+      end
+
+      private
+      attr_reader :cache_id
+
       def cache
         @cache ||= if cache_id
           instance.caches.find {|cache| cache.id == cache_id }
@@ -25,9 +37,6 @@ module Moku
         end
       end
 
-      private
-
-      attr_reader :cache_id
     end
 
   end

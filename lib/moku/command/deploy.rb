@@ -2,6 +2,7 @@
 
 require "moku"
 require "moku/command/command"
+require "moku/pipeline/deploy"
 
 module Moku
 
@@ -16,6 +17,16 @@ module Moku
       def action
         :deploy
       end
+
+      def call
+        Pipeline::Deploy.new(
+          instance: instance,
+          user: user,
+          reference: reference
+        ).call
+      end
+
+      private
 
       def reference
         @reference || instance.default_branch

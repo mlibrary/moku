@@ -2,6 +2,7 @@
 
 require "moku"
 require "moku/command/command"
+require "moku/pipeline/init"
 require "json"
 require "ostruct"
 
@@ -15,6 +16,21 @@ module Moku
         @json = json
         @rails = rails
       end
+
+      def action
+        :init
+      end
+
+      def call
+        Pipeline::Init.new(
+          instance: instance,
+          first_run: first_run?,
+          content: content,
+          rails: rails?
+        ).call
+      end
+
+      private
 
       def content
         @content ||= JSON.parse(@json)
@@ -37,9 +53,6 @@ module Moku
         instance.name == "world"
       end
 
-      def action
-        :init
-      end
     end
 
   end

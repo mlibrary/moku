@@ -10,10 +10,12 @@ module Moku
 
     # Execute an arbitrary command
     class Exec < Pipeline
-      register(self)
 
-      def self.handles?(command)
-        command.action == :exec
+      def initialize(cmd:, scope:, release_id:, signature:)
+        @cmd = cmd
+        @scope = scope
+        @release_id = release_id
+        @signature = signature
       end
 
       def call
@@ -22,18 +24,20 @@ module Moku
 
       private
 
+      attr_reader :cmd, :scope, :release_id, :signature
+
       def release
         Release.new(
           artifact: nil,
-          deploy_config: DeployConfig.from_ref(command.signature.deploy, Moku.ref_repo),
-          release_dir: command.release_id
+          deploy_config: DeployConfig.from_ref(signature.deploy, Moku.ref_repo),
+          release_dir: release_id
         )
       end
 
       def run_command
         Task::RemoteShell.new(
-          command: command.cmd,
-          scope: command.scope
+          command: cmd,
+          scope: scope
         ).call(release)
       end
     end

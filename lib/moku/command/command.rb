@@ -1,29 +1,26 @@
 # frozen_string_literal: true
 
+require "moku/pipeline"
+
 module Moku
 
   module Command
     # Represents a command within Moku
     class Command
-      attr_reader :user, :logger, :instance_name
+      attr_reader :user
 
-      def initialize(instance_name:, user:, logger: nil, instance_repo: nil)
+      def initialize(instance_name:, user:, instance_repo: nil)
         @instance_name = instance_name
-        @user = user
-        @logger = logger || Moku.logger
+        @user = user || "nobody"
         @instance_repo = instance_repo || Moku.instance_repo
+      end
+
+      def call
+        raise NotImplementedError
       end
 
       def action
         :none
-      end
-
-      def authorized?
-        Moku.auth.authorized?(
-          user: user || "nobody",
-          entity: instance,
-          action: action
-        )
       end
 
       def instance
@@ -34,7 +31,11 @@ module Moku
 
       private
 
-      attr_reader :instance_repo
+      attr_reader :instance_repo, :instance_name
+
+      def logger
+        Moku.logger
+      end
 
     end
 

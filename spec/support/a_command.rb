@@ -7,19 +7,6 @@ RSpec.shared_examples "a command" do
     end
   end
 
-  describe "#authorized?" do
-    it "calls out to the auth system" do
-      expect(auth).to receive(:authorized?).with(
-        user: user,
-        entity: instance,
-        action: command.action
-      )
-      command.authorized?
-    end
-    it "delegates to the auth system" do
-      expect(command.authorized?).to eql(auth.authorized?)
-    end
-  end
 end
 
 RSpec.shared_context "when running a command spec" do

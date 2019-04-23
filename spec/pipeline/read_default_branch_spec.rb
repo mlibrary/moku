@@ -6,15 +6,7 @@ module Moku
   RSpec.describe Pipeline::ReadDefaultBranch do
     let(:logger) { double(:logger, info: nil) }
     let(:instance) { double(:instance, default_branch: "master") }
-    let(:user) { "someuser" }
-    let(:command) do
-      double(
-        instance: instance,
-        user: user,
-        logger: logger
-      )
-    end
-    let(:pipeline) { described_class.new(command) }
+    let(:pipeline) { described_class.new(instance: instance).tap {|p| p.logger = logger } }
 
     describe "#call" do
       it "logs the default branch" do

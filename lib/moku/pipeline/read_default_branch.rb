@@ -7,10 +7,9 @@ module Moku
 
     # Read and print the default branch
     class ReadDefaultBranch < Pipeline
-      register(self)
 
-      def self.handles?(command)
-        command.action == :read_default_branch
+      def initialize(instance:)
+        @instance = instance
       end
 
       def call
@@ -20,6 +19,8 @@ module Moku
       end
 
       private
+
+      attr_reader :instance
 
       def print_default_branch
         logger.info "Default branch: #{instance.default_branch}"

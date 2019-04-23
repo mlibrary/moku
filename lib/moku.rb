@@ -85,7 +85,7 @@ module Moku
         end
 
         container.register(:invoker) do |c|
-          Invoker.new(authority: c.auth, pipeline_factory: Pipeline)
+          Invoker.new(authority: c.auth, logger: c.logger)
         end
         [
           :instance_root,

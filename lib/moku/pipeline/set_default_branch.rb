@@ -7,10 +7,11 @@ module Moku
 
     # Set the default branch
     class SetDefaultBranch < Pipeline
-      register(self)
 
-      def self.handles?(command)
-        command.action == :set_default_branch
+      def initialize(instance:, new_branch:, instance_repo:)
+        @instance = instance
+        @new_branch = new_branch
+        @instance_repo = instance_repo
       end
 
       def call
@@ -19,13 +20,7 @@ module Moku
 
       private
 
-      def new_branch
-        command.new_branch
-      end
-
-      def instance_repo
-        command.instance_repo
-      end
+      attr_reader :instance, :new_branch, :instance_repo
 
       def set_default_branch
         old_branch = instance.default_branch

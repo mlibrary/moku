@@ -5,9 +5,9 @@ module Moku
   # Responsible for when and where commands are executed
   class Invoker
 
-    def initialize(authority:, pipeline_factory:)
+    def initialize(authority:, logger:)
       @authority = authority
-      @pipeline_factory = pipeline_factory
+      @logger = logger
     end
 
     def add_command(command)
@@ -16,19 +16,27 @@ module Moku
 
     private
 
-    attr_reader :authority, :pipeline_factory
+    attr_reader :authority, :logger
 
     def run(command)
       authorize!(command)
-      pipeline_factory.for(command).call
+      command.call
     rescue StandardError => e
-      Moku.logger.fatal "#{e.message}\n\t#{e.backtrace.join("\n\t")}"
+      logger.fatal "#{e.message}\n\t#{e.backtrace.join("\n\t")}"
     end
 
     def authorize!(command)
-      unless command.authorized?
+      unless authorized?(command)
         raise "User is not authorized to peform this command"
       end
+    end
+
+    def authorized?(command)
+      authority.authorized?(
+        user: command.user,
+        entity: command.instance,
+        action: command.action
+      )
     end
 
   end

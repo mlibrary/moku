@@ -2,6 +2,7 @@
 
 require "moku"
 require "moku/command/command"
+require "moku/pipeline/caches"
 
 module Moku
   module Command
@@ -13,11 +14,17 @@ module Moku
         @long = long
       end
 
-      attr_reader :long
+      def call
+        Pipeline::Caches.new(instance: instance, long: long).call
+      end
 
       def action
         :caches
       end
+
+      private
+
+      attr_reader :long
 
     end
 

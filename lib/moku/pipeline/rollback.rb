@@ -10,10 +10,11 @@ module Moku
 
     # Rollback to a previous, cached release
     class Rollback < Pipeline
-      register(self)
 
-      def self.handles?(command)
-        command.action == :rollback
+      def initialize(cache:, instance:, user:)
+        @cache = cache
+        @instance = instance
+        @user = user
       end
 
       def call
@@ -22,20 +23,21 @@ module Moku
         step :set_current
         step :log_release
         step :restart
-        Moku.logger.info "Rollback successful!"
+        logger.info "Rollback successful!"
       end
 
       private
 
+      attr_reader :cache, :instance, :user
       attr_reader :signature, :release
 
       def retrieve_signature
-        @signature = command.cache.signature
+        @signature = cache.signature
       end
 
       def construct_release
         @release = Release.new(
-          release_dir: command.cache.id,
+          release_dir: cache.id,
           artifact: nil,
           deploy_config: DeployConfig.from_ref(signature.deploy, Moku.ref_repo)
         )
@@ -51,7 +53,7 @@ module Moku
           user: user,
           time: Time.now,
           signature: signature,
-          version: "rollback -> #{command.cache.id}"
+          version: "rollback -> #{cache.id}"
         ))
         Moku.instance_repo.save_releases(instance)
       end

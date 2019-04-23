@@ -8,10 +8,10 @@ module Moku
 
     # Print the release history
     class Releases < Pipeline
-      register(self)
 
-      def self.handles?(command)
-        command.action == :releases
+      def initialize(instance:, long:)
+        @instance = instance
+        @long = long
       end
 
       def call
@@ -22,9 +22,7 @@ module Moku
 
       private
 
-      def long
-        command.long
-      end
+      attr_reader :instance, :long
 
       def print_releases
         string = if long

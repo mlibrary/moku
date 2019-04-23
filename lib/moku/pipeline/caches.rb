@@ -8,10 +8,10 @@ module Moku
 
     # Retrieve and print the list of cached instances
     class Caches < Pipeline
-      register(self)
 
-      def self.handles?(command)
-        command.action == :caches
+      def initialize(instance:, long:)
+        @instance = instance
+        @long = long
       end
 
       def call
@@ -21,6 +21,8 @@ module Moku
       end
 
       private
+
+      attr_reader :instance, :long
 
       def long
         command.long
@@ -33,7 +35,7 @@ module Moku
           LoggedReleases.new(instance.caches).to_short_s
         end
 
-        Moku.logger.info "\n#{string}"
+        logger.info "\n#{string}"
       end
     end
 

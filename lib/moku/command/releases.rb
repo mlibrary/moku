@@ -2,6 +2,7 @@
 
 require "moku"
 require "moku/command/command"
+require "moku/pipeline/releases"
 
 module Moku
   module Command
@@ -13,11 +14,16 @@ module Moku
         @long = long
       end
 
-      attr_reader :long
+      def call
+        Pipeline::Releases.new(instance: instance, long: long).call
+      end
 
       def action
         :releases
       end
+
+      private
+      attr_reader :long
 
     end
 
