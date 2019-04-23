@@ -67,15 +67,15 @@ module Moku
       private
 
       def private_permissions
-        @private_permissions ||= Permissions.new(bin: 0o6770, dir: 0o2775, file: 0o660)
+        @private_permissions ||= Permissions.new(bin: 0o0740, dir: 0o0755, file: 0o0640)
       end
 
       def public_permissions
-        @public_permissions ||= Permissions.new(bin: 0o6775, dir: 0o2775, file: 0o664)
+        @public_permissions ||= Permissions.new(bin: 0o0744, dir: 0o0755, file: 0o0644)
       end
 
       def sensitive_permissions
-        @sensitive_permissions ||= Permissions.new(bin: 0o6770, dir: 0o2770, file: 0o660)
+        @sensitive_permissions ||= Permissions.new(bin: 0o0740, dir: 0o0750, file: 0o0640)
       end
 
     end
