@@ -15,8 +15,8 @@ module Moku
       private
 
       def command(release)
-        "mkdir -p --mode=2775 #{release.deploy_path.parent} && " \
-          "mkdir -p --mode=2775 #{release.deploy_path}"
+        "mkdir -p --mode=755 #{release.deploy_path.parent} && " \
+          "mkdir -p --mode=755 #{release.deploy_path}"
       end
     end
 
