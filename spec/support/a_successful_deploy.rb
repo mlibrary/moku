@@ -7,7 +7,7 @@ module Moku
   # let(:gem) { some gem name }
   # let(:source) { some source file relative path }
   # let(:deploy_root) { path to the deploy root }
-  # let(:deploy_dir) { path to the releases/id dir where files actually live }
+  # let(:deploy_dir) { path to the dir where files actually live }
   # let(:current_dir) { path to the 'current' symlink, likely deploy_dir/current }
   RSpec.shared_examples "a successful deploy" do
     it "the 'releases' dir exists" do
