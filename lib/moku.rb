@@ -84,7 +84,9 @@ module Moku
           CachedBundle.new(c.bundle_cache_path)
         end
 
-        container.register(:invoker) { Invoker.new(pipeline_factory: Pipeline) }
+        container.register(:invoker) do |c|
+          Invoker.new(authority: c.auth, pipeline_factory: Pipeline)
+        end
         [
           :instance_root,
           :releases_root,

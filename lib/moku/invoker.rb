@@ -5,7 +5,8 @@ module Moku
   # Responsible for when and where commands are executed
   class Invoker
 
-    def initialize(pipeline_factory:)
+    def initialize(authority:, pipeline_factory:)
+      @authority = authority
       @pipeline_factory = pipeline_factory
     end
 
@@ -15,7 +16,7 @@ module Moku
 
     private
 
-    attr_reader :pipeline_factory
+    attr_reader :authority, :pipeline_factory
 
     def run(command)
       authorize!(command)
