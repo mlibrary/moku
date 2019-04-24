@@ -31,7 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "canister"
   spec.add_runtime_dependency "ettin", "~> 1.2.1"
   spec.add_runtime_dependency "gli"
-  spec.add_runtime_dependency "rsync"
   spec.add_runtime_dependency "terminal-table"
 
   spec.add_development_dependency "bundler"
