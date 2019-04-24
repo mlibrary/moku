@@ -47,7 +47,6 @@ module Moku
           container.register(:system_runner) { Moku::Shell::Basic.new }
         end
         container.register(:remote_runner) {|c| Moku::Shell::SecureRemote.new(c.system_runner) }
-        container.register(:backend_runner) {|c| Moku::CapRunner.new(c.system_runner) }
         container.register(:upload_factory) { Moku::Upload }
         container.register(:git_runner) {|c| Moku::SCM::Git.new(system_runner: c.system_runner) }
         container.register(:artifact_repo) {|c| Moku::ArtifactRepo.new(c.build_root) }
