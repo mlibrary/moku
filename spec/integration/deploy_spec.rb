@@ -45,12 +45,6 @@ module Moku
           expect(File.read(current_dir/"site"/"only"/"local.txt"))
             .to eql("this file is specific to this site\n")
         end
-
-        # Other sites have no infrastructure.yml, so will skip this
-        it "creates a symlink for each dir in infrastructure.yml's path stanza" do
-          expect((current_dir/"tmp").readlink).to eql(Pathname.new("/tmp/test-norails"))
-          expect((current_dir/"data").readlink).to eql(Pathname.new("/data"))
-        end
       end
 
       context "with host #1 at site #1" do
@@ -170,10 +164,6 @@ module Moku
             .to match(/CREATE TABLE (IF NOT EXISTS )?"posts"/)
           expect(`sqlite3 #{current_dir/"db"/"production.sqlite3"} ".schema things"`.chomp)
             .to match(/CREATE TABLE (IF NOT EXISTS )?"things"/)
-        end
-
-        it "skips creating a symlink when the directory already exists" do
-          expect((current_dir/"log").symlink?).to be false
         end
       end
 

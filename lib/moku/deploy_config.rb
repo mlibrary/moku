@@ -3,6 +3,7 @@
 require "core_extensions/hash/keys"
 require "moku/sites"
 require "pathname"
+require "shellwords"
 require "yaml"
 
 module Moku
@@ -48,13 +49,24 @@ module Moku
       @sites = sites
     end
 
-    attr_reader :deploy_dir, :sites, :systemd_services, :env
+    attr_reader :deploy_dir, :sites, :systemd_services
+
+    def shell_env
+      @shell_env ||= env.keep_if {|_key, value| value }
+        .map {|key, value| "#{key.to_s.upcase}=#{Shellwords.escape(value)}" }
+        .join(" ")
+    end
 
     def eql?(other)
       deploy_dir == other.deploy_dir &&
         systemd_services == other.systemd_services &&
-        sites.hosts == other.sites.hosts
+        sites.hosts == other.sites.hosts &&
+        shell_env == other.shell_env
     end
+
+    private
+
+    attr_reader :env
 
   end
 end

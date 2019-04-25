@@ -7,7 +7,6 @@ require "moku/task/enable"
 require "moku/task/overlay_sites"
 require "moku/task/remote_shell"
 require "moku/task/set_current"
-require "moku/task/symlink"
 require "moku/task/upload"
 
 module Moku
@@ -22,8 +21,7 @@ module Moku
         [
           Task::CreateStructure.new,
           Task::Upload.new,
-          Task::OverlaySites.new,
-          Task::Symlink.new
+          Task::OverlaySites.new
         ]
       end
 

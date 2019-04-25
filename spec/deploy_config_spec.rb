@@ -77,5 +77,13 @@ module Moku
         expect(described_class.from_ref(ref, ref_repo)).to eql(deploy_config)
       end
     end
+
+    describe "#shell_env" do
+      let(:env) { { rack_env: "staging", "foo" => "bar" } }
+
+      it "renders the env shell readable" do
+        expect(deploy_config.shell_env).to eql("RACK_ENV=staging FOO=bar")
+      end
+    end
   end
 end

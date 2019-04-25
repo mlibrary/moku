@@ -2,12 +2,15 @@
 
 require_relative "spec_helper"
 require "moku/release"
+require "moku/shell/basic"
 require "moku/sites"
 
 module Moku
   RSpec.describe Release do
     let(:deploy_dir) { Pathname.new("/deploy/dir") }
     let(:artifact) { double(:artifact, path: "somepath") }
+    let(:remote_runner) { FakeRemoteRunner.new(Shell::Basic.new) }
+    let(:user) { "someuser" }
     let(:sites) { Sites.for("site1" => ["host1"], "site2" => ["host2"]) }
     let(:deploy_config) do
       double(
@@ -15,13 +18,14 @@ module Moku
         deploy_dir: deploy_dir,
         systemd_services: ["svc1", "svc2"],
         sites: sites,
-        env: { rack_env: "staging" }
+        shell_env: "SHELL=env"
       )
     end
     let(:release) do
       described_class.new(
         artifact: artifact,
-        deploy_config: deploy_config
+        deploy_config: deploy_config,
+        remote_runner: remote_runner
       )
     end
 
@@ -30,7 +34,8 @@ module Moku
         proc do
           described_class.new(
             artifact: artifact,
-            deploy_config: deploy_config
+            deploy_config: deploy_config,
+            remote_runner: remote_runner
           )
         end
       end
@@ -63,16 +68,32 @@ module Moku
       it { expect(release.systemd_services).to contain_exactly("svc1", "svc2") }
     end
 
-    describe "#sites" do
-      it { expect(release.sites).to eql(deploy_config.sites) }
-    end
+    describe "running on remote hosts" do
+      let(:remote_runner) { double(:remote_runner, run: double(:status, success?: true)) }
+      let(:command) { "somecommand" }
+      let(:sites) do
+        Sites.for(
+          "user" => user,
+          "site1" => ["host1", "host2"],
+          "site2" => ["host3", "host4"]
+        )
+      end
 
-    describe "#env" do
-      it { expect(release.env).to eql(deploy_config.env) }
-    end
+      describe "#run" do
+        let(:scope) { double(:scope) }
 
-    describe "#run" do
-      xit "see Shell::RemoteRelease"
+        before(:each) do
+          allow(scope).to receive(:apply).with(sites).and_return(sites.hosts)
+        end
+
+        it "runs the commands on the hosts defined by the scope" do
+          scope.apply(sites).each do |host|
+            expect(remote_runner).to receive(:run)
+              .with(user: user, host: host.hostname, command: /#{command}/)
+          end
+          release.run(scope, command)
+        end
+      end
     end
   end
 end

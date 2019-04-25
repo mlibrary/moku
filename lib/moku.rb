@@ -22,7 +22,6 @@ require "moku/release_signature"
 require "moku/scm/git"
 require "moku/shell/basic"
 require "moku/shell/passthrough"
-require "moku/shell/remote_release"
 require "moku/shell/secure_remote"
 require "moku/upload"
 
@@ -56,9 +55,6 @@ module Moku
             c.ref_root,
             c.git_runner
           )
-        end
-        container.register(:remote_context) do |c|
-          Shell::RemoteRelease::Builder.new(remote_runner: c.remote_runner)
         end
         container.register(:instance_repo) do |c|
           Moku::FileInstanceRepo.new(
