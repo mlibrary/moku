@@ -1,3 +1,4 @@
 path:
   tmp: "/tmp/test-norails"
   data: "/data"
+  log/: "/with/trailing/slash/"
