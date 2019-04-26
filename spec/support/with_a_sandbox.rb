@@ -3,6 +3,8 @@
 require "moku/scm/file"
 require "pathname"
 require_relative "local_upload"
+require_relative "fake_remote_runner"
+require_relative "realistic_remote_runner"
 
 module Moku
 
@@ -42,7 +44,6 @@ module Moku
         config.register(:instance_root) {|c| c.test_run_root/"instances" }
         config.register(:releases_root) {|c| c.test_run_root/"releases" }
         config.register(:git_runner) { SCM::File.new }
-        config.register(:remote_runner) {|c| FakeRemoteRunner.new(c.system_runner) }
         config.register(:upload_factory) { LocalUpload }
 
         # Configure the logger
@@ -51,6 +52,13 @@ module Moku
           config.register(:system_runner) { Shell::Passthrough.new(STDOUT) }
         else
           config.register(:logger) { Logger.new(StringIO.new, level: :info) }
+        end
+
+        # Configure the remote_runner
+        if ENV["SSH"]
+          config.register(:remote_runner) {|c| RealisticRemoteRunner.new(c.system_runner) }
+        else
+          config.register(:remote_runner) {|c| FakeRemoteRunner.new(c.system_runner) }
         end
       end
 

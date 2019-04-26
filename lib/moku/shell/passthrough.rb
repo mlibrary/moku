@@ -14,9 +14,13 @@ module Moku
         @stream = stream
       end
 
+      # Run the given command
+      # @param command [String] The command to run
+      # @param message [String] Optional message to be displayed. When this is not provided,
+      #   the full command is displayed.
       # @return [Status]
-      def run(command)
-        Moku.logger.debug(command)
+      def run(command, message = nil)
+        Moku.logger.debug(message || command)
         Bundler.with_clean_env do
           run_command(command)
         end

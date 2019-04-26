@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "../spec_helper"
-require_relative "../support/fake_remote_runner"
 require_relative "../support/with_a_sandbox"
 require_relative "../support/with_a_deployed_instance"
 require_relative "../support/a_successful_deploy"

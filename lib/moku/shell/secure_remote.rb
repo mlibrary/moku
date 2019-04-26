@@ -1,23 +1,27 @@
 # frozen_string_literal: true
 
+require "base64"
+
 module Moku
   module Shell
 
     # A shell that uses ssh
     class SecureRemote
 
-      SSH_OPTIONS = [
-        "-o BatchMode=yes",
-        "-o ConnectTimeout=3",
-        "-o ChallengeResponseAuthentication=no",
-        "-o PasswordAuthentication=no",
-        "-o LogLevel=ERROR",
-        "-a",
-        "-i #{ENV["HOME"]}/.ssh/id_rsa-moku"
-      ].freeze
-
       def initialize(system_shell)
         @system_shell = system_shell
+      end
+
+      def ssh_options
+        @ssh_options ||= [
+          "-o BatchMode=yes",
+          "-o ConnectTimeout=3",
+          "-o ChallengeResponseAuthentication=no",
+          "-o PasswordAuthentication=no",
+          "-o LogLevel=ERROR",
+          "-a",
+          "-i #{ENV["HOME"]}/.ssh/id_rsa-moku"
+        ].freeze
       end
 
       def run(host:, command:, user: Moku.user)
@@ -32,9 +36,15 @@ module Moku
         # If the ultimate remote command should be: echo $PATH
         # The local command should be: ssh ... bash -l -c "'"'echo $PATH"'"'
         # So the command passed to ssh is: bash -l -c 'echo $PATH'
-        system_shell.run <<~CMD
-          ssh #{SSH_OPTIONS.join(" ")} #{user}@#{host} bash -l -c "'"'#{command}'"'"
+
+        encoded = Base64.strict_encode64(command)
+        message = <<~CMD
+          ssh #{ssh_options.join(" ")} #{user}@#{host} bash -l -c "'"'#{command}'"'"
         CMD
+        real_command = <<~CMD
+          ssh #{ssh_options.join(" ")} #{user}@#{host} bash -l -c "'"'eval "$(echo #{encoded} | base64 -d)"'"'"
+        CMD
+        system_shell.run(real_command, message)
       end
 
       private
