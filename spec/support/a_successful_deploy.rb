@@ -55,12 +55,6 @@ module Moku
         file = current_dir/"some"/"infrastructure"/"file.txt"
         expect(file).to have_permissions("660")
       end
-      it "current/log 2770" do
-        dir = current_dir/"log"
-        expect(dir.exist?).to be true
-        expect(dir.directory?).to be true
-        expect(dir).to have_permissions("2770")
-      end
     end
 
     it "runs finish_build commands" do

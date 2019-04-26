@@ -171,8 +171,10 @@ module Moku
             .to match(/CREATE TABLE (IF NOT EXISTS )?"things"/)
         end
 
-        it "skips creating a symlink when the directory already exists" do
-          expect((current_dir/"log").symlink?).to be false
+        # This test relies on the presence of path.log in the rails infrastructure.yml fixture,
+        # and the presence of the log directory in the rails source repo fixture.
+        it "creates a symlink even if the directory already exists" do
+          expect((current_dir/"log").readlink).to eql(Pathname.new("/log-rails"))
         end
       end
 

@@ -1,0 +1,4 @@
+path:
+  tmp: "/tmp/test-rails"
+  data: "/data-rails"
+  log: "/log-rails"
