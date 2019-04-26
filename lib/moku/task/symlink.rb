@@ -17,7 +17,14 @@ module Moku
 
       def command
         <<~'CMD'
-          ruby -e 'require "yaml"; YAML.load_file("infrastructure.yml")["path"].each{|k,v| `rm -rf #{k} && ln -s #{v} #{k}`} if File.exist?("infrastructure.yml")'
+          ruby \
+          -e 'require "yaml"' \
+          -e 'require "pathname"' \
+          -e 'if File.exist?("infrastructure.yml")' \
+          -e 'YAML.load_file("infrastructure.yml")["path"].each do |link,target|' \
+          -e '`rm -rf #{Pathname.new(link).cleanpath} && ln -s #{target} #{link}`' \
+          -e 'end' \
+          -e 'end'
         CMD
       end
 

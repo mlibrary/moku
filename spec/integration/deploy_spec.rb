@@ -50,6 +50,12 @@ module Moku
           expect((current_dir/"tmp").readlink).to eql(Pathname.new("/tmp/test-norails"))
           expect((current_dir/"data").readlink).to eql(Pathname.new("/data"))
         end
+
+        # This test relies on the presence of path.log/ in the norails infrastructure.yml fixture,
+        # and the presence of the log symlink and target in the norails source repo fixture.
+        it "does not follow links when removing existing tmp directory" do
+          expect((current_dir/"target_of_log"/"important.log").exist?).to be true
+        end
       end
 
       context "with host #1 at site #1" do
