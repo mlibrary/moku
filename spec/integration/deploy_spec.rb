@@ -147,12 +147,12 @@ module Moku
       let(:current_dir) { deploy_dir/"current" }
 
       RSpec.shared_examples "a deployed rails project" do
-        it "current/public/assets 2775" do
-          expect(current_dir/"public"/"assets").to have_permissions("2775")
+        it "current/public/assets 755" do
+          expect(current_dir/"public"/"assets").to have_permissions("755")
         end
 
-        it "current/bin/rails 6770" do
-          expect(current_dir/"bin"/"rails").to have_permissions("6770")
+        it "current/bin/rails 750" do
+          expect(current_dir/"bin"/"rails").to have_permissions("750")
         end
 
         it "installs a working project" do

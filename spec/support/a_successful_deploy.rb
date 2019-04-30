@@ -33,27 +33,27 @@ module Moku
     end
 
     describe "permissions" do
-      it "releases 2775" do
-        expect(deploy_dir/"releases").to have_permissions("2775")
+      it "releases 755" do
+        expect(deploy_dir/"releases").to have_permissions("755")
       end
-      it "releases/<release> 2775" do
+      it "releases/<release> 755" do
         release_dir = (deploy_dir/"releases").children.first
-        expect(release_dir).to have_permissions("2775")
+        expect(release_dir).to have_permissions("755")
       end
-      it "current/public 2775" do
-        expect(current_dir/"public").to have_permissions("2775")
+      it "current/public 755" do
+        expect(current_dir/"public").to have_permissions("755")
       end
-      it "current/public/<file> 664" do
+      it "current/public/<file> 644" do
         file = (current_dir/"public").children.find(&:file?)
-        expect(file).to have_permissions("664")
+        expect(file).to have_permissions("644")
       end
-      it "current/<some_dev> 660" do
+      it "current/<some_dev> 640" do
         file = current_dir/"some"/"dev"/"file.txt"
-        expect(file).to have_permissions("660")
+        expect(file).to have_permissions("640")
       end
-      it "current/<some_infrastructure> 660" do
+      it "current/<some_infrastructure> 640" do
         file = current_dir/"some"/"infrastructure"/"file.txt"
-        expect(file).to have_permissions("660")
+        expect(file).to have_permissions("640")
       end
     end
 
