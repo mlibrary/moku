@@ -10,7 +10,7 @@ module Moku
     class Symlink < Task
 
       def call(release)
-        release.run(Sites::Scope.all, command)
+        release.run(Sites::Scope.all, command.strip)
       end
 
       private
