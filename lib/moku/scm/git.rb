@@ -39,7 +39,9 @@ module Moku
       # @return [WorkingDirectory]
       def safe_checkout(url, commitish, dir)
         cloned_dir = Pathname.new(dir)
-        system_runner.run("git clone --recurse-submodules #{url} #{cloned_dir}")
+        system_runner.run(
+          "git clone --shallow-submodules --recurse-submodules #{url} #{cloned_dir}"
+        )
         working_directory = Dir.chdir(cloned_dir) do
           system_runner.run("git checkout #{commitish}")
           build_working_dir(cloned_dir)
