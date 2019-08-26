@@ -11,7 +11,7 @@ module Moku
     class Gemfile < Validator
       GEMFILE_MALFORMED = "When specifying the ruby version in the Gemfile, the" \
         " optional ruby directive must specify exactly MAJOR.MINOR version."
-      GEMFILE_FORM = /^ruby "[1-9]\.[0-9]+"$/ # rubocop:disable Style/MutableConstant
+      GEMFILE_FORM = /^ruby (['"])[1-9]\.[0-9]+\1$/ # rubocop:disable Style/MutableConstant
 
       def validate
         if path.exist?

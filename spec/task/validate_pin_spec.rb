@@ -68,8 +68,14 @@ module Moku
         end
       end
 
-      context "with a Gemfile w/ a x.y ruby directive" do
+      context "with a Gemfile w/ a ruby \"x.y\" directive" do
         before(:each) { File.write(path/"Gemfile", 'ruby "2.5"') }
+
+        it { expect(status.success?).to be true }
+      end
+
+      context "with a Gemfile w/ a ruby 'x.y' directive" do
+        before(:each) { File.write(path/"Gemfile", "ruby '2.6'") }
 
         it { expect(status.success?).to be true }
       end
