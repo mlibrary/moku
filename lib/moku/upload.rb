@@ -2,7 +2,8 @@
 
 module Moku
 
-  # An upload from a source path to a destination path
+  # An upload from a source path to a destination path. This is the intent to
+  # upload reified.
   class Upload
 
     # @param source [Pathname,String]

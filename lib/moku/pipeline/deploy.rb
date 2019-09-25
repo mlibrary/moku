@@ -15,6 +15,11 @@ module Moku
   module Pipeline
 
     # Build and deploy a release
+    #
+    # Currently, this only supports BasicBuild and BasicDeploy, and does not feature
+    # a method for extending that. Most likely, this sort of extension would be
+    # attached to the instance configuration itself in instance.yml. This pipeline
+    # would then choose appropriate Plans from that data.
     class Deploy < Pipeline
       register(self)
 

@@ -8,7 +8,9 @@ module Moku
 
     # Represents a working directory of a checked-out git
     # repository, with a reference to both the checked-out directory
-    # and all files within the working directory.
+    # and all files within the working directory. This is primarily useful
+    # for getting references to all the files from an ArchiveReference without
+    # also grabbing metadata.
     class WorkingDirectory
 
       def self.from_path(path)

@@ -5,7 +5,9 @@ require "yaml"
 
 module Moku
 
-  # A list of tasks encoded in a file.
+  # A list of tasks encoded in a file. Typically, this is used to allow
+  # users to extend builds or deploys with their own list of tasks in a yaml
+  # file.
   class TaskFile
     include Enumerable
 
@@ -42,6 +44,7 @@ module Moku
       end
     end
 
+    # Retrieve a scope object from the user's string specification of a scope.
     def scope(user_scope)
       case user_scope
       when "all"

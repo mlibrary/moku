@@ -19,6 +19,7 @@ module Moku
       @policy_factory = policy_factory
     end
 
+    # Determine if the user is allowed to perform the action on the entity.
     def authorized?(user:, entity:, action:)
       return false unless user && entity && action
 

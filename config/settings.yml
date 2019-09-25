@@ -1,25 +1,62 @@
+# The directory to store lockfiles to prevent race conditions
 locks_root: data/cache/lock
+
+# The directory where default versions of files are stored. These come with
+# the project.
 default_root: data/defaults
+
+# The directory to store temporary files
 tmp_root: data/cache/tmp
+
+# The directory in which to cache checked out branches
 branches_root: data/cache/branches
+
+# The directory where instance definitions are stored
 instance_root: data/instances
+
+# The directory in which to cache gems
 bundle_cache_path: data/cache/bundle
+
+# The directory where release histroy is logged
 releases_root: data/releases
+
+# The directory in which to cache artifacts i.e. completed builds
 build_root: data/cache/builds
+
+# The directory in which to cache individual git references
 ref_root: data/cache/references
+
+# These are unlikely to need to be changed
 shared_name: infrastructure
 unshared_name: dev
+
+# Whether or not to prevent race conditions via locking. Only disable this
+# for debugging purposes.
+enable_locking: true
+
+# The name of the user on the deployhost moku should run as
 user: moku
+
+# The files that control the finish build and finish deploy phases
 finish_build_filename: finish_build.yml
 finish_deploy_filename: finish_release.yml
+
+# The name of the deploy config yaml file in the deploy config repo
 deploy_config_filename: deploy.yml
+
+# Time format in which to store remote releases
 release_time_format: "%Y%m%d%H%M%S%L"
+
+# The maximum number of references to cache
 ref_cache_max: 10
+
+# The maximum number of builds to cache
 build_cache_max: 20
+
+# Repository names and URIs
 dev_repo_name: moku-dev
 deploy_repo_name: moku-deploy
 infra_repo_name: moku-infrastructure
 dev_repo: "git@github.com:example/moku-dev.git"
 deploy_repo: "git@github.com:example/moku-deploy.git"
 infra_repo: "git@github.com:example/moku-infrastructure.git"
-enable_locking: true

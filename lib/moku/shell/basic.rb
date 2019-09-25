@@ -9,7 +9,7 @@ module Moku
     # A basic shell
     class Basic
 
-      # Run the given command
+      # Log and run the given command. Output is not logged.
       # @param command [String] The command to run
       # @param message [String] Optional message to be displayed. When this is not provided,
       #   the full command is displayed.

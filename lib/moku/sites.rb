@@ -3,7 +3,7 @@
 require "core_extensions/hash/keys"
 module Moku
 
-  # A mapping of hosts within zero or more sites.
+  # A Sites instance contains a map of hosts to zero or more sites.
   class Sites # rubocop:disable Metrics/ClassLength
 
     Host = Struct.new(:hostname, :user)
@@ -26,14 +26,17 @@ module Moku
         end
       end
 
+      # Create an instance from a path to a yaml file
       def from_file(path)
         from_yaml(File.read(path))
       end
 
+      # Create an instance from yaml content
       def from_yaml(yaml)
         from_hash(YAML.safe_load(yaml))
       end
 
+      # Create an instance from a hash of node:site pairs
       def from_reverse_hash(hash)
         hash = hash.symbolize_keys
 
@@ -43,6 +46,7 @@ module Moku
         from_hash({ user: hash[:user] }.merge(sites))
       end
 
+      # Create an instance from a hash of site:[node] pairs
       def from_hash(hash)
         hash = hash.symbolize_keys
         sites = hash.reject {|k, _| k == :user }
@@ -54,6 +58,7 @@ module Moku
 
       private
 
+      # Convert the input into a Host instance
       def normalize_host(host, default_user) # rubocop:disable Metrics/MethodLength
         case host
         when Symbol

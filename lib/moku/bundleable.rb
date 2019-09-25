@@ -6,7 +6,7 @@ module Moku
   module Bundleable
 
     # Evaluate some block in the context of this object's path, shedding
-    # our own bundler context.
+    # moku's own  bundler context.
     def with_env
       Bundler.with_clean_env do
         Dir.chdir(path) do

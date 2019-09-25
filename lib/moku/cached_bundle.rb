@@ -15,7 +15,7 @@ module Moku
 
     attr_reader :path
 
-    # Use moku's cache of gems to install and artifact's bundle. Missing gems
+    # Use moku's cache of gems to install an artifact's bundle. Missing gems
     # will be downloaded from the configured gem source (e.g. rubygems), and
     # also added to this cache.
     # @param artifact [Artifact]

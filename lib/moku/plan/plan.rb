@@ -7,7 +7,7 @@ module Moku
 
     # A plan is a series of tasks assembled to achieve a particular purpose. When
     # a plan is executed, it procedes through the tasks sequentially until either
-    # the series if finished, or a failure is encountered.
+    # the series is finished, or a failure is encountered.
     #
     # Plans are divided into three phases: prepare, main, and finish, in that order.
     # These phases are evaluated separately. {#prepare} is called first, and {#main} is
@@ -27,7 +27,7 @@ module Moku
       end
 
       # Execute the tasks of the plan. If a task fails, halt this process. This
-      # method returns the status of the last task.
+      # method returns the status of the last task to run.
       # @return [Status]
       def call
         Sequence.do([

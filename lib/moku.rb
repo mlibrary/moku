@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# This file loads the project and configures the production canister.
+# Tests should _not_ require this file. If they need access to the
+# configuration framework, they should require moku/config.
+
 require "moku/version"
 require "moku/archive_reference"
 require "moku/artifact"
@@ -30,7 +34,6 @@ require "logger"
 require "pathname"
 require "canister"
 
-# Fake Platform As A Service
 module Moku
   class << self
 
