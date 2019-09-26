@@ -23,6 +23,10 @@ module Moku
       private
 
       attr_reader :target
+
+      def add_error(message)
+        @errors << message
+      end
     end
 
   end
