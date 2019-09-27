@@ -34,6 +34,7 @@ require "logger"
 require "pathname"
 require "canister"
 
+# Moku is used to build and deploy ruby applications
 module Moku
   class << self
 
