@@ -9,9 +9,12 @@ GEM
     i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     method_source (0.9.0)
+    nio4r (2.5.2)
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
+    puma (4.2.0)
+      nio4r (~> 2.0)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -32,7 +35,8 @@ PLATFORMS
 DEPENDENCIES
   faker
   pry
+  puma
   rspec
 
 BUNDLED WITH
-   2.0.1
+   2.0.2
