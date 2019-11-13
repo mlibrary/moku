@@ -18,7 +18,7 @@ module Moku
           directive = File.open(path).grep(/^ruby/)
           unless directive.empty?
             unless GEMFILE_FORM.match?(directive.first)
-              @errors << GEMFILE_MALFORMED
+              add_error GEMFILE_MALFORMED
             end
           end
         end

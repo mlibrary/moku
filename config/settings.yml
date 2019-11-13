@@ -53,6 +53,11 @@ ref_cache_max: 10
 # The maximum number of builds to cache
 build_cache_max: 20
 
+# The puma version requirment that source Gemfiles must satisfy
+# You most likely want a >= requirement here. Failing to provide
+# an inequality will require an exact version mismatch.
+puma_requirement: '>=3.0.0'
+
 # Repository names and URIs
 dev_repo_name: moku-dev
 deploy_repo_name: moku-deploy

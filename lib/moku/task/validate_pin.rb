@@ -3,6 +3,7 @@
 require "moku/task/task"
 require "moku/status"
 require "moku/validator/gemfile"
+require "moku/validator/puma"
 require "moku/validator/ruby_version"
 
 module Moku
@@ -22,6 +23,7 @@ module Moku
       # @return [Status]
       def call(artifact)
         @errors += Validator::Gemfile.new(artifact).errors
+        @errors += Validator::Puma.new(artifact).errors
         @errors += Validator::RubyVersion.new(artifact).errors
         if errors.empty?
           Status.success

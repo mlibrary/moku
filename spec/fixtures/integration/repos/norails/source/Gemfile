@@ -3,6 +3,7 @@
 source "https://rubygems.org"
 
 gem "pry"
+gem "puma"
 
 group :development do
   gem "faker"

@@ -18,10 +18,10 @@ module Moku
       def validate
         if path.exist?
           unless VERSION_FORM.match?(File.read(path))
-            @errors << VERSION_MALFORMED
+            add_error VERSION_MALFORMED
           end
         else
-          @errors << VERSION_MISSING
+          add_error VERSION_MISSING
         end
       end
 
