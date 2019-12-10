@@ -16,7 +16,7 @@ module Moku
       @release_dir = release_dir || id
     end
 
-    attr_reader :id
+    attr_reader :id, :artifact
     def_delegators :@artifact, :path
     def_delegators :@deploy_config, :systemd_services, :sites, :env
 
@@ -44,7 +44,7 @@ module Moku
 
     private
 
-    attr_reader :artifact, :deploy_config, :release_dir
+    attr_reader :deploy_config, :release_dir
 
   end
 end

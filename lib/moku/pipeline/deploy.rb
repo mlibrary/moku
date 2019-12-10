@@ -4,7 +4,9 @@ require "moku/deploy_config"
 require "moku/logged_release"
 require "moku/pipeline/pipeline"
 require "moku/plan/basic_build"
+require "moku/plan/docker_build"
 require "moku/plan/basic_deploy"
+require "moku/plan/docker_deploy"
 require "moku/plan/restart"
 require "moku/release"
 require "moku/sequence"
@@ -33,14 +35,30 @@ module Moku
         step :build_artifact
         step :deploy_release
         step :log_release
-        step :restart
-        step :cleanup_caches
+        step :restart unless instance.docker?
+        step :cleanup_caches unless instance.docker?
         Moku.logger.info "Deploy successful!"
       end
 
       private
 
       attr_reader :reference, :signature, :artifact, :release
+
+      def build_plan
+        if instance.docker?
+          Plan::DockerBuild
+        else
+          Plan::BasicBuild
+        end
+      end
+
+      def deploy_plan
+        if instance.docker?
+          Plan::DockerDeploy
+        else
+          Plan::BasicDeploy
+        end
+      end
 
       def init
         @reference = command.reference
@@ -51,7 +69,7 @@ module Moku
       end
 
       def build_artifact
-        @artifact, status = Moku.artifact_repo.for(signature, Plan::BasicBuild)
+        @artifact, status = Moku.artifact_repo.for(signature, build_plan)
         status
       end
 
@@ -60,7 +78,7 @@ module Moku
           artifact: artifact,
           deploy_config: DeployConfig.from_ref(signature.deploy, Moku.ref_repo)
         )
-        Plan::BasicDeploy.new(release).call
+        deploy_plan.new(release).call
       end
 
       def log_release
