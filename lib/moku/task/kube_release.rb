@@ -5,6 +5,10 @@ require "moku/task/task"
 module Moku
   module Task
 
+    # Release an application to a Kubernetes cluster.
+    #
+    # This amounts to creating or updating a Deployment, which will pull the
+    # newly pushed image and restart containers accordingly.
     class KubeRelease < Task
 
       # @param release [Release]
@@ -14,8 +18,7 @@ module Moku
           release_id = release.artifact.path.basename
           kubelog = `IMAGE_TAG=#{release_id} ./deployment.yaml.sh | kubectl apply -f -`
 
-          status = $?
-          if status == 0
+          if $?.success?
             Status.success
           else
             Status.failure(kubelog)

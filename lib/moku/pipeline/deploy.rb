@@ -46,7 +46,7 @@ module Moku
 
       def build_plan
         if instance.docker?
-          Plan::DockerBuild
+          Plan::DockerBuild::Factory.new(instance)
         else
           Plan::BasicBuild
         end
@@ -54,7 +54,7 @@ module Moku
 
       def deploy_plan
         if instance.docker?
-          Plan::DockerDeploy
+          Plan::DockerDeploy::Factory.new(instance)
         else
           Plan::BasicDeploy
         end
@@ -76,7 +76,7 @@ module Moku
       def deploy_release
         @release = Release.new(
           artifact: artifact,
-          deploy_config: DeployConfig.from_ref(signature.deploy, Moku.ref_repo)
+          deploy_config: instance.deploy_config
         )
         deploy_plan.new(release).call
       end

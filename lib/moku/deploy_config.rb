@@ -21,7 +21,9 @@ module Moku
       new(
         deploy_dir: tmp[:deploy_dir],
         env: env,
-        target_type: tmp[:target_type] || 'app_host',
+        target_type: tmp[:target_type] || "app_host",
+        uid: tmp[:uid] || 1000,
+        gid: tmp[:gid] || 1000,
         systemd_services: tmp[:systemd_services] || [],
         sites: Sites.for(tmp[:sites])
       )
@@ -43,15 +45,17 @@ module Moku
     # @param target_type [String]
     # @param systemd_services [Array<String>]
     # @param sites [Sites]
-    def initialize(deploy_dir:, env:, target_type:, systemd_services:, sites:)
+    def initialize(deploy_dir:, env:, target_type:, systemd_services:, sites:, uid:, gid:)
       @deploy_dir = Pathname.new(deploy_dir)
       @env = env
       @target_type = target_type
       @systemd_services = systemd_services
       @sites = sites
+      @uid = uid
+      @gid = gid
     end
 
-    attr_reader :deploy_dir, :target_type, :sites, :systemd_services, :env
+    attr_reader :deploy_dir, :target_type, :sites, :systemd_services, :env, :uid, :gid
 
     def eql?(other)
       deploy_dir == other.deploy_dir &&

@@ -40,6 +40,9 @@ Style/Documentation:
 Style/RedundantBegin:
   Enabled: false
 
+Style/SpecialGlobalVars:
+  Enabled: false
+
 # We disable this cop because we want to use Pathname#/
 # and this cop is not configurable at all.
 Layout/SpaceAroundOperators:

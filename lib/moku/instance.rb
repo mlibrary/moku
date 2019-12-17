@@ -70,10 +70,8 @@ module Moku
 
     # @return [Boolean]
     def docker?
-      deploy_config.target_type == 'docker'
+      deploy_config.target_type == "docker"
     end
-
-    private
 
     def deploy_config
       @deploy_config ||= DeployConfig.from_ref(deploy.latest, Moku.ref_repo)
