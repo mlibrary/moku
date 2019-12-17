@@ -35,7 +35,7 @@ module Moku
 
       def finish
         [
-          Task::KubeRelease.new
+          Task::KubeRelease.new(instance)
         ]
       end
 
