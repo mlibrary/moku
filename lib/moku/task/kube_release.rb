@@ -25,7 +25,7 @@ module Moku
       def call(release)
         release.artifact.with_env do
           release_id = release.artifact.path.basename
-          kubelog = `IMAGE_NAME=#{image_name} IMAGE_TAG=#{release_id} ./deployment.yaml.sh | kubectl apply -f -`
+          kubelog = `[ -x "kube-deploy" ] && ./kube-deploy #{release_id} || ( IMAGE_NAME=#{image_name} IMAGE_TAG=#{release_id} ./deployment.yaml.sh | kubectl apply -f - )`
 
           if $?.success?
             Status.success
