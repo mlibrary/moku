@@ -31,6 +31,10 @@ module Moku
         instance.deploy_config.gid
       end
 
+      def url_root
+        instance.deploy_config.url_root || '/'
+      end
+
       # @param artifact [Artifact]
       # @return [Status]
       def call(artifact)
@@ -40,6 +44,7 @@ module Moku
             docker build \
               --build-arg UID=#{uid} \
               --build-arg GID=#{gid} \
+              --build-arg URL_ROOT=#{url_root} \
               -t #{app_name}:#{release_id} \
               -f Dockerfile.prod .
           CMD
