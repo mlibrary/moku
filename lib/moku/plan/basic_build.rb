@@ -22,7 +22,7 @@ module Moku
       def main
         [
           Task::DownloadReferences.new,
-          Task::ValidatePin.new,
+          # Task::ValidatePin.new,
           Task::Bundle.new
         ]
       end
