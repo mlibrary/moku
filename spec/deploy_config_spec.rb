@@ -20,12 +20,18 @@ module Moku
 
     let(:deploy_dir) { Pathname.new("/deploy/dir") }
     let(:env) { { rack_env: "staging" } }
+    let(:target_type) { "app_host" }
     let(:systemd_services) { ["foo.service", "bar.service"] }
     let(:sites) { { "site1" => ["host1"], "site2" => ["host2"] } }
+    let(:uid) { 1000 }
+    let(:gid) { 1000 }
     let(:hash) do
       {
         deploy_dir:       deploy_dir.to_s,
         env:              env,
+        target_type:      target_type,
+        uid:              uid,
+        gid:              gid,
         systemd_services: systemd_services,
         sites:            sites
       }
@@ -34,9 +40,20 @@ module Moku
       described_class.new(
         deploy_dir: deploy_dir,
         env: env,
+        target_type: target_type,
+        uid: uid,
+        gid: gid,
         systemd_services: systemd_services,
         sites: Sites.for(sites)
       )
+    end
+
+    describe "attr_readers" do
+      [:deploy_dir, :target_type, :sites, :systemd_services, :env, :uid, :gid].each do |attr|
+        it "supports :#{attr}" do
+          expect(deploy_config).to respond_to(attr)
+        end
+      end
     end
 
     describe "::from_hash" do

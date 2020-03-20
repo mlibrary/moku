@@ -57,7 +57,7 @@ module Moku
     end
 
     def unique_hash(ref)
-      "#{ref.url}#{ref.commitish}".hash.to_s
+      "#{ref.url}#{ref.commitish}".hash.to_s.sub(/^-/, "x")
     end
 
   end

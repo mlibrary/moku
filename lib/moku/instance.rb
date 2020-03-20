@@ -68,10 +68,13 @@ module Moku
         .reverse
     end
 
-    private
+    # @return [Boolean]
+    def docker?
+      deploy_config.target_type == "docker"
+    end
 
-    def deploy_config(ref_repo)
-      @deploy_config ||= DeployConfig.from_ref(deploy.latest, ref_repo)
+    def deploy_config
+      @deploy_config ||= DeployConfig.from_ref(deploy.latest, Moku.ref_repo)
     end
 
   end
