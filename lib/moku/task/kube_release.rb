@@ -26,6 +26,13 @@ module Moku
         release.artifact.with_env do
           release_id = release.artifact.path.basename
 
+          `test -x kube-context`
+          if $?.success?
+            kubelog = `./kube-context`
+          else
+            kubelog = `kubectl config use-context proto`
+          end
+
           `test -x kube-deploy`
           if $?.success?
             kubelog = `./kube-deploy #{release_id} | tee -a /tmp/kdeploy.log`
