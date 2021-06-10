@@ -23,8 +23,8 @@ module Moku
     def install(artifact)
       Sequence.for([
         "rsync -r #{cache_path(artifact)}/. #{artifact.bundle_path}/",
-        "bundle config set deployment 'true'",
-        "bundle config set without 'development test'",
+        "bundle config set --local deployment 'true'",
+        "bundle config set --local without 'development test'",
         "bundle install",
         "rsync -r #{artifact.bundle_path}/. #{cache_path(artifact)}/",
         "bundle clean"
